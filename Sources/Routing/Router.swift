@@ -1,11 +1,11 @@
 import Foundation
+import HTTP
 
 public protocol Router {
     @discardableResult
     func regiter(route: Route) -> Bool
     func unregiter(route: Route)
     func match(method: Request.Method, path: String) -> (Route, ParameterBag<String, Any>?)?
-    func generateURL(for routeName: String, with parameters: ParameterBag<String, Any>)
 }
 
 public class DefaultRouter: Router {

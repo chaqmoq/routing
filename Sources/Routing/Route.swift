@@ -1,4 +1,5 @@
 import Foundation
+import HTTP
 
 public struct Route {
     public typealias Handler = (Request) -> Response

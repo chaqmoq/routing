@@ -11,6 +11,8 @@ public protocol Router {
 public class DefaultRouter: Router {
     private lazy var routes: [String: [Request.Method: Route]] = [:]
 
+    public init() {}
+
     @discardableResult
     public func regiter(route: Route) -> Bool {
         guard let pattern = getPattern(for: route) else { return false }

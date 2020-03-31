@@ -5,9 +5,16 @@ public struct Route {
     public typealias Handler = (Request) -> Response
 
     public var method: Request.Method
-    public var path: String = "/"
+    public var path: String
     public var name: String?
     public var handler: Handler
+
+    public init(method: Request.Method, path: String = "/", name: String? = nil, handler: @escaping Handler) {
+        self.method = method
+        self.path = path
+        self.name = name
+        self.handler = handler
+    }
 }
 
 extension Route: Hashable {

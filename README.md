@@ -1,4 +1,4 @@
-# HTTP Component
+# Routing Component
 
 This is a part of Chaqmoq Web Framework in Swift language
 

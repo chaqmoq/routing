@@ -2,18 +2,21 @@ import Foundation
 import HTTP
 
 public struct Route {
-    public typealias Handler = (Request) -> Response
-
     public var method: Request.Method
     public var path: String
     public var name: String?
-    public var handler: Handler
+    public var requestHandler: RequestHandler
 
-    public init(method: Request.Method, path: String = "/", name: String? = nil, handler: @escaping Handler) {
+    public init(
+        method: Request.Method,
+        path: String = "/",
+        name: String? = nil,
+        requestHandler: @escaping RequestHandler
+    ) {
         self.method = method
         self.path = path
         self.name = name
-        self.handler = handler
+        self.requestHandler = requestHandler
     }
 }
 

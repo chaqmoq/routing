@@ -1,4 +1,3 @@
-import Foundation
 import HTTP
 
 public struct Route {

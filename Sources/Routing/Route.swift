@@ -1,6 +1,8 @@
 import HTTP
 
 public struct Route {
+    public typealias RequestHandler = Server.RequestHandler
+
     public var method: Request.Method
     public var path: String
     public var name: String?

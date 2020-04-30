@@ -2,11 +2,20 @@
   "object": {
     "pins": [
       {
+        "package": "async-http-client",
+        "repositoryURL": "https://github.com/swift-server/async-http-client.git",
+        "state": {
+          "branch": null,
+          "revision": "037b70291941fe43de668066eb6fb802c5e181d2",
+          "version": "1.1.1"
+        }
+      },
+      {
         "package": "chaqmoq-http",
         "repositoryURL": "https://github.com/chaqmoq/http.git",
         "state": {
           "branch": "master",
-          "revision": "85aae426c1d64678773ded51a45b94e7fec54241",
+          "revision": "131098dd9a3ff19103f6bbc58fd5380334e1706f",
           "version": null
         }
       },
@@ -26,6 +35,15 @@
           "branch": null,
           "revision": "e876fb37410e0036b98b5361bb18e6854739572b",
           "version": "2.16.0"
+        }
+      },
+      {
+        "package": "swift-nio-extras",
+        "repositoryURL": "https://github.com/apple/swift-nio-extras.git",
+        "state": {
+          "branch": null,
+          "revision": "b4dbfacff47fb8d0f9e0a422d8d37935a9f10570",
+          "version": "1.4.0"
         }
       },
       {

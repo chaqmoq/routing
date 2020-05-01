@@ -24,7 +24,7 @@ public struct Route {
 
 extension Route: Hashable {
     public static func == (lhs: Route, rhs: Route) -> Bool {
-        (lhs.name != nil && lhs.name == rhs.name) || (lhs.method == rhs.method && lhs.path == rhs.path)
+        lhs.method == rhs.method && lhs.path == rhs.path
     }
 
     public func hash(into hasher: inout Hasher) {

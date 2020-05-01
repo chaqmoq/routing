@@ -58,4 +58,17 @@ final class RequestTests: XCTestCase {
         XCTAssertEqual(route.name, name)
         XCTAssertNotNil(route.requestHandler)
     }
+
+    func testHashable() {
+        // Arrange
+        let route = Route(method: .GET) { request in
+            return Response()
+        }
+
+        // Act
+        let dictionary: [Route: String] = [route: ""]
+
+        // Assert
+        XCTAssertEqual(dictionary.keys.first, route)
+    }
 }

@@ -71,4 +71,19 @@ final class RequestTests: XCTestCase {
         // Assert
         XCTAssertEqual(dictionary.keys.first, route)
     }
+
+    func testDescription() {
+        // Arrange
+        let route = Route(method: .GET, name: "post_get") { request in
+            return Response()
+        }
+        var string = "method=\(route.method.rawValue)\npath=\(route.path)"
+
+        if let name = route.name {
+            string.append("\nname=\(name)")
+        }
+
+        // Assert
+        XCTAssertEqual("\(route)", string)
+    }
 }

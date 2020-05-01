@@ -1,4 +1,5 @@
-import Foundation
+import struct Foundation.NSRange
+import class Foundation.NSRegularExpression
 import HTTP
 
 public protocol Router {

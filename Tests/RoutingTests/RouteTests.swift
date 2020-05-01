@@ -16,4 +16,21 @@ final class RequestTests: XCTestCase {
         XCTAssertNil(route.name)
         XCTAssertNotNil(route.requestHandler)
     }
+
+    func testCustomInit() {
+        // Arrange
+        let method: Request.Method = .POST
+        let path = "/posts"
+        let name = "/post_create"
+        let requestHandler: Route.RequestHandler = { request in
+            return Response(body: .init(string: "Hello World"))
+        }
+        let route = Route(method: method, path: path, name: name, requestHandler: requestHandler)
+
+        // Assert
+        XCTAssertEqual(route.method, method)
+        XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.name, name)
+        XCTAssertNotNil(route.requestHandler)
+    }
 }

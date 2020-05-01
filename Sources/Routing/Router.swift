@@ -1,6 +1,8 @@
 import struct Foundation.NSRange
 import class Foundation.NSRegularExpression
-import HTTP
+import struct HTTP.ParameterBag
+import struct HTTP.Request
+import struct HTTP.Response
 
 public protocol Router {
     @discardableResult

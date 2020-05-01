@@ -1,4 +1,5 @@
-import HTTP
+import struct HTTP.Request
+import struct HTTP.Response
 
 public struct Route {
     public typealias RequestHandler = (Request) -> Response

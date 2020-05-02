@@ -2,14 +2,6 @@ import struct Foundation.NSRange
 import class Foundation.NSRegularExpression
 import struct HTTP.ParameterBag
 import struct HTTP.Request
-import struct HTTP.Response
-
-public protocol Router {
-    @discardableResult
-    func register(route: Route) -> Bool
-    func unregister(route: Route)
-    func match(method: Request.Method, path: String) -> (Route, ParameterBag<String, Any>?)?
-}
 
 public class DefaultRouter: Router {
     private lazy var routes: [String: [Request.Method: Route]] = [:]

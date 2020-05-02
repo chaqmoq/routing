@@ -3,7 +3,7 @@ import struct HTTP.Request
 import struct HTTP.Response
 @testable import struct Routing.Route
 
-final class RequestTests: XCTestCase {
+final class RouteTests: XCTestCase {
     func testDefaultInit() {
         // Arrange
         let route = Route(method: .GET) { request in

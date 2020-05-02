@@ -6,8 +6,8 @@ import struct HTTP.Response
 
 public protocol Router {
     @discardableResult
-    func regiter(route: Route) -> Bool
-    func unregiter(route: Route)
+    func register(route: Route) -> Bool
+    func unregister(route: Route)
     func match(method: Request.Method, path: String) -> (Route, ParameterBag<String, Any>?)?
 }
 
@@ -17,7 +17,7 @@ public class DefaultRouter: Router {
     public init() {}
 
     @discardableResult
-    public func regiter(route: Route) -> Bool {
+    public func register(route: Route) -> Bool {
         guard let pattern = getPattern(for: route) else { return false }
 
         if routes[pattern] == nil {
@@ -29,7 +29,7 @@ public class DefaultRouter: Router {
         return true
     }
 
-    public func unregiter(route: Route) {
+    public func unregister(route: Route) {
         guard let pattern = getPattern(for: route) else { return }
         routes[pattern]![route.method] = nil
     }

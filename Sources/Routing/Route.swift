@@ -1,3 +1,6 @@
+import struct Foundation.NSRange
+import class Foundation.NSRegularExpression
+import struct HTTP.ParameterBag
 import struct HTTP.Request
 import struct HTTP.Response
 
@@ -5,11 +8,11 @@ public struct Route {
     public typealias RequestHandler = (Request) -> Any
 
     public var method: Request.Method
-    public var path: String
+    public let path: String
     public var name: String?
     public var requestHandler: RequestHandler
 
-    public init(
+    public init?(
         method: Request.Method,
         path: String = "/",
         name: String? = nil,
@@ -19,6 +22,10 @@ public struct Route {
         self.path = path
         self.name = name
         self.requestHandler = requestHandler
+
+        if !isValid(path: path) {
+            return nil
+        }
     }
 }
 
@@ -42,5 +49,51 @@ extension Route: CustomStringConvertible {
         }
 
         return description
+    }
+}
+
+extension Route {
+    public func isValid(path: String) -> Bool {
+        if path == "/" { return true }
+        let pattern = "[a-zA-Z0-9_~.-]+|(\\{\\w+(<[^\\/<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+"
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
+        let components = path.components(separatedBy: "/").filter({ $0 != "" })
+        if components.isEmpty { return false }
+
+        for component in components {
+            let range = NSRange(location: 0, length: component.utf8.count)
+            let matches = regex.matches(in: component, range: range)
+
+            if matches.isEmpty {
+                return false
+            } else {
+                var matchesString = ""
+
+                for match in matches {
+                    let subComponent = String(component[Range(match.range, in: component)!])
+
+                    if subComponent.hasPrefix("{"),
+                        var startIndex = subComponent.range(of: "<")?.lowerBound,
+                        var endIndex = subComponent.range(of: ">")?.upperBound {
+                        startIndex = subComponent.index(after: startIndex)
+                        endIndex = subComponent.index(before: endIndex)
+                        let pattern = String(subComponent[startIndex..<endIndex])
+                        let regex = try? NSRegularExpression(pattern: pattern)
+
+                        if regex == nil {
+                            return false
+                        }
+                    }
+
+                    matchesString.append(subComponent)
+                }
+
+                if matchesString != component {
+                    return false
+                }
+            }
+        }
+
+        return true
     }
 }

@@ -6,9 +6,7 @@ import struct HTTP.Response
 final class RouteTests: XCTestCase {
     func testDefaultInit() {
         // Arrange
-        let route = Route(method: .GET) { request in
-            return Response()
-        }
+        let route = Route(method: .GET) { request in Response() }!
 
         // Assert
         XCTAssertEqual(route.method, .GET)
@@ -22,10 +20,8 @@ final class RouteTests: XCTestCase {
         let method: Request.Method = .POST
         let path = "/posts"
         let name = "/post_create"
-        let requestHandler: Route.RequestHandler = { request in
-            return Response(body: .init(string: "Hello World"))
-        }
-        let route = Route(method: method, path: path, name: name, requestHandler: requestHandler)
+        let requestHandler: Route.RequestHandler = { request in Response(body: .init(string: "Hello World")) }
+        let route = Route(method: method, path: path, name: name, requestHandler: requestHandler)!
 
         // Assert
         XCTAssertEqual(route.method, method)
@@ -37,33 +33,25 @@ final class RouteTests: XCTestCase {
     func testUpdate() {
         // Arrange
         let method: Request.Method = .POST
-        let path = "/posts"
         let name = "/post_create"
-        let requestHandler: Route.RequestHandler = { request in
-            return Response(body: .init(string: "Hello World"))
-        }
-        var route = Route(method: .GET) { request in
-            return Response()
-        }
+        let requestHandler: Route.RequestHandler = { request in Response(body: .init(string: "Hello World")) }
+        var route = Route(method: .GET) { request in Response() }!
 
         // Act
         route.method = method
-        route.path = path
         route.name = name
         route.requestHandler = requestHandler
 
         // Assert
         XCTAssertEqual(route.method, method)
-        XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.path, "/")
         XCTAssertEqual(route.name, name)
         XCTAssertNotNil(route.requestHandler)
     }
 
     func testHashable() {
         // Arrange
-        let route = Route(method: .GET) { request in
-            return Response()
-        }
+        let route = Route(method: .GET) { request in Response() }!
 
         // Act
         let dictionary: [Route: String] = [route: ""]
@@ -74,9 +62,7 @@ final class RouteTests: XCTestCase {
 
     func testDescription() {
         // Arrange
-        let route = Route(method: .GET, name: "post_get") { request in
-            return Response()
-        }
+        let route = Route(method: .GET, name: "post_get") { request in Response() }!
         var string = "method=\(route.method.rawValue)\npath=\(route.path)"
 
         if let name = route.name {

@@ -2,7 +2,7 @@ import struct HTTP.Request
 import struct HTTP.Response
 
 public struct Route {
-    public typealias RequestHandler = (Request) -> Response
+    public typealias RequestHandler = (Request) -> Any
 
     public var method: Request.Method
     public var path: String

@@ -1,6 +1,5 @@
 import struct Foundation.NSRange
 import class Foundation.NSRegularExpression
-import struct HTTP.ParameterBag
 import struct HTTP.Request
 import struct HTTP.Response
 
@@ -10,6 +9,7 @@ public struct Route {
     public var method: Request.Method
     public let path: String
     public var name: String?
+    public var parameters: Set<Parameter>?
     public var requestHandler: RequestHandler
 
     public init?(
@@ -25,6 +25,55 @@ public struct Route {
 
         if !isValid(path: path) {
             return nil
+        }
+    }
+}
+
+extension Route {
+    public struct Parameter: Hashable {
+        public var name: String
+        public var value: String?
+        public var requirement: String?
+        public var defaultValue: DefaultValue
+
+        public enum DefaultValue {
+            case none
+            case optional(_ value: String)
+            case required(_ value: String)
+        }
+
+        public var pattern: String {
+            var pattern = "{\(name)"
+
+            if let requirement = requirement {
+                pattern += "<\(requirement)>"
+            }
+
+            switch defaultValue {
+            case .optional(let value):
+                pattern += "?\(value)"
+            case .required(let value):
+                pattern += "!\(value)"
+            default:
+                break
+            }
+
+            pattern += "}"
+
+            return pattern
+        }
+
+        public init(name: String, defaultValue: DefaultValue = .none) {
+            self.name = name
+            self.defaultValue = defaultValue
+        }
+
+        public static func ==(lhs: Parameter, rhs: Parameter) -> Bool {
+            lhs.name == rhs.name
+        }
+
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(name)
         }
     }
 }

@@ -1,6 +1,5 @@
 import struct Foundation.NSRange
 import class Foundation.NSRegularExpression
-import struct HTTP.ParameterBag
 import struct HTTP.Request
 
 public class DefaultRouter: Router {
@@ -26,9 +25,9 @@ public class DefaultRouter: Router {
         routes[pattern]![route.method] = nil
     }
 
-    public func match(method: Request.Method, path: String) -> (Route, ParameterBag<String, Any>?)? {
+    public func match(method: Request.Method, path: String) -> Route? {
         var matchedRoute: Route?
-        var parameters: ParameterBag<String, Any>?
+        var parameters: Set<Route.Parameter>?
 
         for (pattern, routeDictionary) in routes {
             if let route = routeDictionary[method],
@@ -50,7 +49,9 @@ public class DefaultRouter: Router {
                             if let nameRange = Range(match.range, in: route.path),
                                 let valueRange = Range(matchedPattern.range(at: index + 1), in: path) {
                                 let name = route.path[nameRange].dropFirst().dropLast()
-                                parameters?[String(name)] = String(path[valueRange])
+                                var parameter = Route.Parameter(name: String(name))
+                                parameter.value = String(path[valueRange])
+                                parameters?.insert(parameter)
                             }
                         }
 
@@ -60,11 +61,7 @@ public class DefaultRouter: Router {
             }
         }
 
-        if let route = matchedRoute {
-            return (route, parameters)
-        }
-
-        return nil
+        return matchedRoute
     }
 
     private func getPattern(for route: Route) -> String? {

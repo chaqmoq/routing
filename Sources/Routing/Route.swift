@@ -31,6 +31,11 @@ public struct Route {
 
 extension Route {
     public struct Parameter: Hashable {
+        public static let nameBoundarySymbols: (Character, Character) = ("{", "}")
+        public static let requirementBoundarySymbols: (Character, Character) = ("<", ">")
+        public static let optionalSymbol: Character = "?"
+        public static let requiredSymbol: Character = "!"
+
         public var name: String
         public var value: String?
         public var requirement: String?
@@ -38,27 +43,31 @@ extension Route {
 
         public enum DefaultValue {
             case none
-            case optional(_ value: String)
+            case optional(_ value: String? = nil)
             case required(_ value: String)
         }
 
         public var pattern: String {
-            var pattern = "{\(name)"
+            var pattern = "\(Parameter.nameBoundarySymbols.0)\(name)"
 
             if let requirement = requirement {
-                pattern += "<\(requirement)>"
+                pattern += "\(Parameter.requirementBoundarySymbols.0)\(requirement)\(Parameter.requirementBoundarySymbols.1)"
             }
 
             switch defaultValue {
             case .optional(let value):
-                pattern += "?\(value)"
+                if let value = value {
+                    pattern += "\(Parameter.optionalSymbol)\(value)"
+                } else {
+                    pattern += String(Parameter.optionalSymbol)
+                }
             case .required(let value):
-                pattern += "!\(value)"
+                pattern += "\(Parameter.requiredSymbol)\(value)"
             default:
                 break
             }
 
-            pattern += "}"
+            pattern += String(Parameter.nameBoundarySymbols.1)
 
             return pattern
         }
@@ -122,9 +131,9 @@ extension Route {
                 for match in matches {
                     let subComponent = String(component[Range(match.range, in: component)!])
 
-                    if subComponent.hasPrefix("{"),
-                        var startIndex = subComponent.range(of: "<")?.lowerBound,
-                        var endIndex = subComponent.range(of: ">")?.upperBound {
+                    if subComponent.hasPrefix(String(Parameter.nameBoundarySymbols.0)),
+                        var startIndex = subComponent.range(of: String(Parameter.requirementBoundarySymbols.0))?.lowerBound,
+                        var endIndex = subComponent.range(of: String(Parameter.requirementBoundarySymbols.1))?.upperBound {
                         startIndex = subComponent.index(after: startIndex)
                         endIndex = subComponent.index(before: endIndex)
                         let pattern = String(subComponent[startIndex..<endIndex])

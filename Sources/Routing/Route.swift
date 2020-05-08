@@ -31,8 +31,8 @@ public struct Route {
 
 extension Route {
     public struct Parameter: Hashable {
-        public static let nameBoundarySymbols: (Character, Character) = ("{", "}")
-        public static let requirementBoundarySymbols: (Character, Character) = ("<", ">")
+        public static let nameEnclosingSymbols: (Character, Character) = ("{", "}")
+        public static let requirementEnclosingSymbols: (Character, Character) = ("<", ">")
         public static let optionalSymbol: Character = "?"
         public static let requiredSymbol: Character = "!"
 
@@ -48,10 +48,10 @@ extension Route {
         }
 
         public var pattern: String {
-            var pattern = "\(Parameter.nameBoundarySymbols.0)\(name)"
+            var pattern = "\(Parameter.nameEnclosingSymbols.0)\(name)"
 
             if let requirement = requirement {
-                pattern += "\(Parameter.requirementBoundarySymbols.0)\(requirement)\(Parameter.requirementBoundarySymbols.1)"
+                pattern += "\(Parameter.requirementEnclosingSymbols.0)\(requirement)\(Parameter.requirementEnclosingSymbols.1)"
             }
 
             switch defaultValue {
@@ -67,7 +67,7 @@ extension Route {
                 break
             }
 
-            pattern += String(Parameter.nameBoundarySymbols.1)
+            pattern += String(Parameter.nameEnclosingSymbols.1)
 
             return pattern
         }
@@ -116,12 +116,12 @@ extension Route {
         if path.contains("//") { return false }
         let pattern = "[a-zA-Z0-9_~.-]+|(\\{\\w+(<[^\\/<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+"
         guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
-        let components = path.components(separatedBy: "/").filter({ $0 != "" })
-        if components.isEmpty { return false }
+        let pathComponents = path.components(separatedBy: "/").filter({ $0 != "" })
+        if pathComponents.isEmpty { return false }
 
-        for component in components {
-            let range = NSRange(location: 0, length: component.utf8.count)
-            let matches = regex.matches(in: component, range: range)
+        for pathComponent in pathComponents {
+            let range = NSRange(location: 0, length: pathComponent.utf8.count)
+            let matches = regex.matches(in: pathComponent, range: range)
 
             if matches.isEmpty {
                 return false
@@ -129,11 +129,11 @@ extension Route {
                 var matchesString = ""
 
                 for match in matches {
-                    let subComponent = String(component[Range(match.range, in: component)!])
+                    let subComponent = String(pathComponent[Range(match.range, in: pathComponent)!])
 
-                    if subComponent.hasPrefix(String(Parameter.nameBoundarySymbols.0)),
-                        var startIndex = subComponent.range(of: String(Parameter.requirementBoundarySymbols.0))?.lowerBound,
-                        var endIndex = subComponent.range(of: String(Parameter.requirementBoundarySymbols.1))?.upperBound {
+                    if subComponent.hasPrefix(String(Parameter.nameEnclosingSymbols.0)),
+                        var startIndex = subComponent.range(of: String(Parameter.requirementEnclosingSymbols.0))?.lowerBound,
+                        var endIndex = subComponent.range(of: String(Parameter.requirementEnclosingSymbols.1))?.upperBound {
                         startIndex = subComponent.index(after: startIndex)
                         endIndex = subComponent.index(before: endIndex)
                         let pattern = String(subComponent[startIndex..<endIndex])
@@ -147,7 +147,7 @@ extension Route {
                     matchesString.append(subComponent)
                 }
 
-                if matchesString != component {
+                if matchesString != pathComponent {
                     return false
                 }
             }

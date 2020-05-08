@@ -42,10 +42,7 @@ extension Route: Hashable {
 extension Route: CustomStringConvertible {
     public var description: String {
         var description = "method=\(method.rawValue)\npath=\(path)"
-
-        if let name = name {
-            description.append("\nname=\(name)")
-        }
+        if let name = name { description.append("\nname=\(name)") }
 
         return description
     }

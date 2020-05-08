@@ -68,4 +68,32 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertEqual(parameter.defaultValue, defaultValue)
         XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(defaultValue)\(nameEnclosingSymbols.1)")
     }
+
+    func testUpdate() {
+        // Arrange
+        let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
+        let requirementEnclosingSymbols = Route.Parameter.requirementEnclosingSymbols
+
+        let name = "page"
+        let value = "2"
+        let requirement = "\\d+"
+        let defaultValue: Route.Parameter.DefaultValue = .optional("1")
+        var parameter = Route.Parameter(name: "id")
+
+        // Act
+        parameter.name = name
+        parameter.value = value
+        parameter.requirement = requirement
+        parameter.defaultValue = defaultValue
+
+        // Assert
+        XCTAssertEqual(parameter.name, name)
+        XCTAssertEqual(parameter.value, value)
+        XCTAssertEqual(parameter.requirement, requirement)
+        XCTAssertEqual(parameter.defaultValue, defaultValue)
+        XCTAssertEqual(
+            "\(parameter)",
+            "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)"
+        )
+    }
 }

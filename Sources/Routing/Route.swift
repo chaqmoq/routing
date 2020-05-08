@@ -41,7 +41,7 @@ extension Route {
         public var requirement: String?
         public var defaultValue: DefaultValue
 
-        public enum DefaultValue {
+        public enum DefaultValue: Equatable {
             case none
             case optional(_ value: String? = nil)
             case required(_ value: String)

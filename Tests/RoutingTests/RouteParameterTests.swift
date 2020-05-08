@@ -52,4 +52,20 @@ final class RouteParameterTests: XCTestCase {
             "\(nameEnclosingSymbols.0)\(name)\(defaultValue)\(nameEnclosingSymbols.1)"
         )
     }
+
+    func testInitWithRequiredDefaultValue() {
+        // Arrange
+        let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
+
+        let name = "id"
+        let defaultValue: Route.Parameter.DefaultValue = .required("1")
+        let parameter = Route.Parameter(name: name, defaultValue: defaultValue)
+
+        // Assert
+        XCTAssertEqual(parameter.name, name)
+        XCTAssertNil(parameter.value)
+        XCTAssertNil(parameter.requirement)
+        XCTAssertEqual(parameter.defaultValue, defaultValue)
+        XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(defaultValue)\(nameEnclosingSymbols.1)")
+    }
 }

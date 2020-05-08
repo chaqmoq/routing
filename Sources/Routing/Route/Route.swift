@@ -23,9 +23,8 @@ public struct Route {
         self.name = name
         self.requestHandler = requestHandler
 
-        if !isValid(path: path) {
-            return nil
-        }
+        let (isValid, parameters) = validate(path: path)
+        if isValid { self.parameters = parameters }
     }
 }
 
@@ -53,48 +52,91 @@ extension Route: CustomStringConvertible {
 }
 
 extension Route {
-    public func isValid(path: String) -> Bool {
-        if path == "/" { return true }
-        if path.contains("//") { return false }
+    public func validate(path: String) -> (Bool, Set<Route.Parameter>?) {
+        if path == "/" { return (true, nil) }
+        if path.contains("//") { return (false, nil) }
         let pattern = "[a-zA-Z0-9_~.-]+|(\\{\\w+(<[^\\/<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+"
         let regex = try! NSRegularExpression(pattern: pattern)
         let pathComponents = path.components(separatedBy: "/").filter({ $0 != "" })
-        if pathComponents.isEmpty { return false }
+        if pathComponents.isEmpty { return (false, nil) }
+        var parameters: Set<Route.Parameter>?
 
         for pathComponent in pathComponents {
             let range = NSRange(location: 0, length: pathComponent.utf8.count)
             let matches = regex.matches(in: pathComponent, range: range)
 
             if matches.isEmpty {
-                return false
+                return (false, nil)
             } else {
                 var matchesString = ""
 
                 for match in matches {
                     let pathComponentPart = String(pathComponent[Range(match.range, in: pathComponent)!])
 
-                    if pathComponentPart.hasPrefix(String(Parameter.nameEnclosingSymbols.0)),
-                        var startIndex = pathComponentPart.range(of: String(Parameter.requirementEnclosingSymbols.0))?.lowerBound,
-                        var endIndex = pathComponentPart.range(of: String(Parameter.requirementEnclosingSymbols.1))?.upperBound {
-                        startIndex = pathComponentPart.index(after: startIndex)
-                        endIndex = pathComponentPart.index(before: endIndex)
-                        let pattern = String(pathComponentPart[startIndex..<endIndex])
-                        let regex = try? NSRegularExpression(pattern: pattern)
+                    if pathComponentPart.hasPrefix(String(Parameter.nameEnclosingSymbols.0)) {
+                        if var startIndex = pathComponentPart.range(of: String(Parameter.requirementEnclosingSymbols.0))?.lowerBound,
+                            var endIndex = pathComponentPart.range(of: String(Parameter.requirementEnclosingSymbols.1))?.upperBound {
+                            startIndex = pathComponentPart.index(after: startIndex)
+                            endIndex = pathComponentPart.index(before: endIndex)
+                            let pattern = String(pathComponentPart[startIndex..<endIndex])
+                            let regex = try? NSRegularExpression(pattern: pattern)
+                            if regex == nil { return (false, nil) }
+                        }
 
-                        if regex == nil {
-                            return false
+                        if let parameter = extractParameter(from: pathComponentPart) {
+                            if parameters == nil { parameters = [] }
+                            parameters?.insert(parameter)
                         }
                     }
 
                     matchesString.append(pathComponentPart)
                 }
 
-                if matchesString != pathComponent {
-                    return false
-                }
+                if matchesString != pathComponent { return (false, nil) }
             }
         }
 
-        return true
+        return (true, parameters)
+    }
+
+    func extractParameter(from pathComponentPart: String) -> Parameter? {
+        if var nameStartIndex = pathComponentPart.firstIndex(of: Parameter.nameEnclosingSymbols.0),
+            var nameEndIndex = pathComponentPart.firstIndex(of: Parameter.nameEnclosingSymbols.1) {
+            nameStartIndex = pathComponentPart.index(after: nameStartIndex)
+            var parameter = Parameter(name: String(pathComponentPart[nameStartIndex..<nameEndIndex]))
+
+            if var requirementStartIndex = pathComponentPart.firstIndex(of: Parameter.requirementEnclosingSymbols.0),
+                let requirementEndIndex = pathComponentPart.firstIndex(of: Parameter.requirementEnclosingSymbols.1) {
+                if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.optionalSymbol) {
+                    let defaultValueEndIndex = nameEndIndex
+                    defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
+                    parameter.defaultValue = .optional(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
+                } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.requiredSymbol) {
+                    let defaultValueEndIndex = nameEndIndex
+                    defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
+                    parameter.defaultValue = .required(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
+                }
+
+                nameEndIndex = requirementStartIndex
+                requirementStartIndex = pathComponentPart.index(after: requirementStartIndex)
+                parameter.requirement = String(pathComponentPart[requirementStartIndex..<requirementEndIndex])
+            } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.optionalSymbol) {
+                let defaultValueEndIndex = nameEndIndex
+                nameEndIndex = defaultValueStartIndex
+                defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
+                parameter.defaultValue = .optional(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
+            } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.requiredSymbol) {
+                let defaultValueEndIndex = nameEndIndex
+                nameEndIndex = defaultValueStartIndex
+                defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
+                parameter.defaultValue = .required(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
+            }
+
+            parameter.name = String(pathComponentPart[nameStartIndex..<nameEndIndex])
+
+            return parameter
+        }
+
+        return nil
     }
 }

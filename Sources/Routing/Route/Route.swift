@@ -71,14 +71,14 @@ extension Route {
                 var matchesString = ""
 
                 for match in matches {
-                    let subComponent = String(pathComponent[Range(match.range, in: pathComponent)!])
+                    let pathComponentPart = String(pathComponent[Range(match.range, in: pathComponent)!])
 
-                    if subComponent.hasPrefix(String(Parameter.nameEnclosingSymbols.0)),
-                        var startIndex = subComponent.range(of: String(Parameter.requirementEnclosingSymbols.0))?.lowerBound,
-                        var endIndex = subComponent.range(of: String(Parameter.requirementEnclosingSymbols.1))?.upperBound {
-                        startIndex = subComponent.index(after: startIndex)
-                        endIndex = subComponent.index(before: endIndex)
-                        let pattern = String(subComponent[startIndex..<endIndex])
+                    if pathComponentPart.hasPrefix(String(Parameter.nameEnclosingSymbols.0)),
+                        var startIndex = pathComponentPart.range(of: String(Parameter.requirementEnclosingSymbols.0))?.lowerBound,
+                        var endIndex = pathComponentPart.range(of: String(Parameter.requirementEnclosingSymbols.1))?.upperBound {
+                        startIndex = pathComponentPart.index(after: startIndex)
+                        endIndex = pathComponentPart.index(before: endIndex)
+                        let pattern = String(pathComponentPart[startIndex..<endIndex])
                         let regex = try? NSRegularExpression(pattern: pattern)
 
                         if regex == nil {
@@ -86,7 +86,7 @@ extension Route {
                         }
                     }
 
-                    matchesString.append(subComponent)
+                    matchesString.append(pathComponentPart)
                 }
 
                 if matchesString != pathComponent {

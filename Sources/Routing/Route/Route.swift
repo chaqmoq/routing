@@ -57,7 +57,7 @@ extension Route {
         if path == "/" { return true }
         if path.contains("//") { return false }
         let pattern = "[a-zA-Z0-9_~.-]+|(\\{\\w+(<[^\\/<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+"
-        guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
+        let regex = try! NSRegularExpression(pattern: pattern)
         let pathComponents = path.components(separatedBy: "/").filter({ $0 != "" })
         if pathComponents.isEmpty { return false }
 

@@ -14,23 +14,11 @@ extension Route {
             var pattern = "\(Parameter.nameEnclosingSymbols.0)\(name)"
 
             if let requirement = requirement {
-                pattern += "\(Parameter.requirementEnclosingSymbols.0)\(requirement)\(Parameter.requirementEnclosingSymbols.1)"
+                let requirementEnclosingSymbols = Parameter.requirementEnclosingSymbols
+                pattern += "\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)"
             }
 
-            switch defaultValue {
-            case .optional(let value):
-                if let value = value {
-                    pattern += "\(Parameter.optionalSymbol)\(value)"
-                } else {
-                    pattern += String(Parameter.optionalSymbol)
-                }
-            case .required(let value):
-                pattern += "\(Parameter.requiredSymbol)\(value)"
-            default:
-                break
-            }
-
-            pattern += String(Parameter.nameEnclosingSymbols.1)
+            pattern += "\(defaultValue)\(Parameter.nameEnclosingSymbols.1)"
 
             return pattern
         }
@@ -53,9 +41,24 @@ extension Route.Parameter: Hashable {
 }
 
 extension Route.Parameter {
-    public enum DefaultValue: Equatable {
+    public enum DefaultValue: CustomStringConvertible, Equatable {
         case none
         case optional(_ value: String? = nil)
         case required(_ value: String)
+
+        public var description: String {
+            switch self {
+            case .none:
+                return ""
+            case .optional(let value):
+                if let value = value {
+                    return "\(Route.Parameter.optionalSymbol)\(value)"
+                }
+
+                return String(Route.Parameter.optionalSymbol)
+            case .required(let value):
+                 return "\(Route.Parameter.requiredSymbol)\(value)"
+            }
+        }
     }
 }

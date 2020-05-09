@@ -10,8 +10,16 @@ extension Route {
         public var requirement: String?
         public var defaultValue: DefaultValue?
 
-        public init(name: String) {
+        public init(
+            name: String,
+            value: String? = nil,
+            requirement: String? = nil,
+            defaultValue: DefaultValue? = nil
+        ) {
             self.name = name
+            self.value = value
+            self.requirement = requirement
+            self.defaultValue = defaultValue
         }
     }
 }

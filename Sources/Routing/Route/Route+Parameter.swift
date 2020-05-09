@@ -8,9 +8,9 @@ extension Route {
         public var name: String
         public var value: String?
         public var requirement: String?
-        public var defaultValue: DefaultValue
+        public var defaultValue: DefaultValue?
 
-        public init(name: String, defaultValue: DefaultValue = .none) {
+        public init(name: String, defaultValue: DefaultValue? = nil) {
             self.name = name
             self.defaultValue = defaultValue
         }
@@ -31,7 +31,8 @@ extension Route.Parameter: CustomStringConvertible {
             pattern += "\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)"
         }
 
-        pattern += "\(defaultValue)\(Route.Parameter.nameEnclosingSymbols.1)"
+        if let defaultValue = defaultValue { pattern += "\(defaultValue)" }
+        pattern += "\(Route.Parameter.nameEnclosingSymbols.1)"
 
         return pattern
     }

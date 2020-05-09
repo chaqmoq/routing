@@ -76,6 +76,14 @@ final class RouteTests: XCTestCase {
         XCTAssertNil(route)
     }
 
+    func testPathWithInvalidCharacters() {
+        // Arrange/Assert
+        for character in "/{}[]<>" {
+            let route = Route(method: .GET, path: "/\(character)") { request in Response() }
+            XCTAssertNil(route)
+        }
+    }
+
     func testHashable() {
         // Arrange
         let route = Route(method: .GET) { request in Response() }!

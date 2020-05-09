@@ -15,14 +15,6 @@ final class RouteTests: XCTestCase {
         XCTAssertNotNil(route.requestHandler)
     }
 
-    func testPathWithDoubleSlashes() {
-        // Arrange
-        let route = Route(method: .GET, path: "//") { request in Response() }
-
-        // Assert
-        XCTAssertNil(route)
-    }
-
     func testCustomInit() {
         // Arrange
         let method: Request.Method = .POST
@@ -55,6 +47,14 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.path, "/")
         XCTAssertEqual(route.name, name)
         XCTAssertNotNil(route.requestHandler)
+    }
+
+    func testPathWithDoubleSlashes() {
+        // Arrange
+        let route = Route(method: .GET, path: "//") { request in Response() }
+
+        // Assert
+        XCTAssertNil(route)
     }
 
     func testHashable() {

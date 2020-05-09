@@ -12,6 +12,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, .GET)
         XCTAssertEqual(route.path, "/")
         XCTAssertNil(route.name)
+        XCTAssertNil(route.parameters)
         XCTAssertNotNil(route.requestHandler)
     }
 
@@ -27,6 +28,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.name, name)
+        XCTAssertNil(route.parameters)
         XCTAssertNotNil(route.requestHandler)
     }
 
@@ -46,6 +48,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, "/")
         XCTAssertEqual(route.name, name)
+        XCTAssertNil(route.parameters)
         XCTAssertNotNil(route.requestHandler)
     }
 

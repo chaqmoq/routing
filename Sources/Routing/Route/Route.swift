@@ -24,7 +24,12 @@ public struct Route {
         self.requestHandler = requestHandler
 
         let (isValid, parameters) = validate(path: path)
-        if isValid { self.parameters = parameters }
+
+        if isValid {
+            self.parameters = parameters
+        } else {
+            return nil
+        }
     }
 }
 

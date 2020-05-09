@@ -225,6 +225,16 @@ final class RouteTests: XCTestCase {
         XCTAssertNotNil(route.requestHandler)
     }
 
+    func testPathWithForcedParameterHavingRequirement() {
+        // Arrange
+        let method: Request.Method = .GET
+        let path = "/blog/{page<\\d+>!}"
+        let route = Route(method: method, path: path) { request in Response() }
+
+        // Assert
+        XCTAssertNil(route)
+    }
+
     func testHashable() {
         // Arrange
         let route = Route(method: .GET) { request in Response() }!

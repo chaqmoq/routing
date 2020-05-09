@@ -84,6 +84,20 @@ final class RouteTests: XCTestCase {
         }
     }
 
+    func testPathWithoutParameter() {
+        // Arrange
+        let method: Request.Method = .GET
+        let path = "/blog"
+        let route = Route(method: method, path: path) { request in Response() }!
+
+        // Assert
+        XCTAssertEqual(route.method, method)
+        XCTAssertEqual(route.path, path)
+        XCTAssertNil(route.name)
+        XCTAssertNil(route.parameters)
+        XCTAssertNotNil(route.requestHandler)
+    }
+
     func testHashable() {
         // Arrange
         let route = Route(method: .GET) { request in Response() }!

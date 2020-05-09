@@ -83,11 +83,11 @@ extension Route {
                             let regex = try? NSRegularExpression(pattern: pattern)
                             if regex == nil { return (false, nil) }
                         }
+                    }
 
-                        if let parameter = extractParameter(from: pathComponentPart) {
-                            if parameters == nil { parameters = [] }
-                            parameters?.insert(parameter)
-                        }
+                    if let parameter = extractParameter(from: pathComponentPart) {
+                        if parameters == nil { parameters = [] }
+                        parameters?.insert(parameter)
                     }
 
                     matchesString.append(pathComponentPart)

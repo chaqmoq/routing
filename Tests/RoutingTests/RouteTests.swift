@@ -57,6 +57,14 @@ final class RouteTests: XCTestCase {
         XCTAssertNil(route)
     }
 
+    func testPathWithoutPrecedingSlash() {
+        // Arrange
+        let route = Route(method: .GET, path: "blog") { request in Response() }
+
+        // Assert
+        XCTAssertNil(route)
+    }
+
     func testPathWithDoubleSlashes() {
         // Arrange
         let route = Route(method: .GET, path: "//") { request in Response() }

@@ -3,7 +3,7 @@ extension Route {
         public static let nameEnclosingSymbols: (Character, Character) = ("{", "}")
         public static let requirementEnclosingSymbols: (Character, Character) = ("<", ">")
         public static let optionalSymbol: Character = "?"
-        public static let requiredSymbol: Character = "!"
+        public static let forcedSymbol: Character = "!"
 
         public var name: String
         public var value: String?

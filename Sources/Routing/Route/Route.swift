@@ -112,10 +112,10 @@ extension Route {
                     let defaultValueEndIndex = nameEndIndex
                     defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
                     parameter.defaultValue = .optional(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
-                } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.requiredSymbol) {
+                } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.forcedSymbol) {
                     let defaultValueEndIndex = nameEndIndex
                     defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                    parameter.defaultValue = .required(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
+                    parameter.defaultValue = .forced(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
                 }
 
                 nameEndIndex = requirementStartIndex
@@ -126,11 +126,11 @@ extension Route {
                 nameEndIndex = defaultValueStartIndex
                 defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
                 parameter.defaultValue = .optional(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
-            } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.requiredSymbol) {
+            } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.forcedSymbol) {
                 let defaultValueEndIndex = nameEndIndex
                 nameEndIndex = defaultValueStartIndex
                 defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                parameter.defaultValue = .required(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
+                parameter.defaultValue = .forced(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
             }
 
             parameter.name = String(pathComponentPart[nameStartIndex..<nameEndIndex])

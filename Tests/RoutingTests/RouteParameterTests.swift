@@ -53,12 +53,12 @@ final class RouteParameterTests: XCTestCase {
         )
     }
 
-    func testInitWithRequiredDefaultValue() {
+    func testInitWithForcedDefaultValue() {
         // Arrange
         let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
 
         let name = "id"
-        let defaultValue: Route.Parameter.DefaultValue = .required("1")
+        let defaultValue: Route.Parameter.DefaultValue = .forced("1")
         let parameter = Route.Parameter(name: name, defaultValue: defaultValue)
 
         // Assert

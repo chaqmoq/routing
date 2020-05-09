@@ -56,11 +56,10 @@ extension Route: CustomStringConvertible {
 extension Route {
     public func validate(path: String) -> (Bool, Set<Route.Parameter>?) {
         if path == "/" { return (true, nil) }
-        if path.contains("//") { return (false, nil) }
+        if !path.starts(with: "/") || path.contains("//") { return (false, nil) }
         let pattern = "[a-zA-Z0-9_~.-]+|(\\{\\w+(<[^\\/<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+"
         let regex = try! NSRegularExpression(pattern: pattern)
         let pathComponents = path.components(separatedBy: "/").filter({ $0 != "" })
-        if pathComponents.isEmpty { return (false, nil) }
         var parameters: Set<Route.Parameter>?
 
         for pathComponent in pathComponents {

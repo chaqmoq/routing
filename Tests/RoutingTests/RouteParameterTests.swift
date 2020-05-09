@@ -24,7 +24,8 @@ final class RouteParameterTests: XCTestCase {
 
         let name = "id"
         let defaultValue: Route.Parameter.DefaultValue = .optional()
-        let parameter = Route.Parameter(name: name, defaultValue: defaultValue)
+        var parameter = Route.Parameter(name: name)
+        parameter.defaultValue = defaultValue
 
         // Assert
         XCTAssertEqual(parameter.name, name)
@@ -40,7 +41,8 @@ final class RouteParameterTests: XCTestCase {
 
         let name = "id"
         let defaultValue: Route.Parameter.DefaultValue = .optional("1")
-        let parameter = Route.Parameter(name: name, defaultValue: defaultValue)
+        var parameter = Route.Parameter(name: name)
+        parameter.defaultValue = defaultValue
 
         // Assert
         XCTAssertEqual(parameter.name, name)
@@ -59,7 +61,8 @@ final class RouteParameterTests: XCTestCase {
 
         let name = "id"
         let defaultValue: Route.Parameter.DefaultValue = .required("1")
-        let parameter = Route.Parameter(name: name, defaultValue: defaultValue)
+        var parameter = Route.Parameter(name: name)
+        parameter.defaultValue = defaultValue
 
         // Assert
         XCTAssertEqual(parameter.name, name)
@@ -104,12 +107,14 @@ final class RouteParameterTests: XCTestCase {
         let requirement = "\\d+"
         let defaultValue: Route.Parameter.DefaultValue = .optional("1")
 
-        var parameter1 = Route.Parameter(name: name, defaultValue: defaultValue)
+        var parameter1 = Route.Parameter(name: name)
         parameter1.value = value
+        parameter1.defaultValue = defaultValue
         parameter1.requirement = requirement
 
-        var parameter2 = Route.Parameter(name: name, defaultValue: defaultValue)
+        var parameter2 = Route.Parameter(name: name)
         parameter2.value = value
+        parameter2.defaultValue = defaultValue
         parameter2.requirement = requirement
 
         // Assert

@@ -11,7 +11,7 @@ public struct Route {
     static let pathPattern = "\(textPattern)|\(parameterPattern)"
 
     public var method: Request.Method
-    public let path: String
+    public private(set) var path: String
     public var name: String?
     public var parameters: Set<Parameter>?
     public var requestHandler: RequestHandler
@@ -23,13 +23,14 @@ public struct Route {
         requestHandler: @escaping RequestHandler
     ) {
         self.method = method
-        self.path = path.last == "/" ? String(path.dropLast()) : path
+        self.path = path
         self.name = name
         self.requestHandler = requestHandler
 
         let (isValid, parameters) = validate(path: path)
 
         if isValid {
+            self.path = path.last == "/" ? String(path.dropLast()) : path
             self.parameters = parameters
         } else {
             return nil
@@ -58,8 +59,8 @@ extension Route: CustomStringConvertible {
 }
 
 extension Route {
-    public func validate(path: String) -> (Bool, Set<Route.Parameter>?) {
-        if path == "" { return (true, nil) }
+    func validate(path: String) -> (Bool, Set<Route.Parameter>?) {
+        if path == "" || path == "/" { return (true, nil) }
         if !path.starts(with: "/") || path.contains("//") { return (false, nil) }
         guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return (false, nil) }
         let pathComponents = path.components(separatedBy: "/").filter({ $0 != "" })

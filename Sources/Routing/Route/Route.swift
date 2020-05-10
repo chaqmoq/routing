@@ -12,6 +12,7 @@ public struct Route {
 
     public var method: Request.Method
     public private(set) var path: String
+    public private(set) var pattern: String
     public var name: String?
     public var parameters: Set<Parameter>?
     public var requestHandler: RequestHandler
@@ -24,6 +25,7 @@ public struct Route {
     ) {
         self.method = method
         self.path = path
+        pattern = path
         self.name = name
         self.requestHandler = requestHandler
 
@@ -32,6 +34,8 @@ public struct Route {
         if isValid {
             self.path = path.last == "/" ? String(path.dropLast()) : path
             self.parameters = parameters
+            pattern = mapPathToPattern()
+            guard pattern == "" || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
         } else {
             return nil
         }
@@ -40,12 +44,12 @@ public struct Route {
 
 extension Route: Hashable {
     public static func ==(lhs: Route, rhs: Route) -> Bool {
-        lhs.method == rhs.method && lhs.path == rhs.path
+        lhs.method == rhs.method && lhs.pattern == rhs.pattern
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(method)
-        hasher.combine(path)
+        hasher.combine(pattern)
     }
 }
 
@@ -102,6 +106,18 @@ extension Route {
         }
 
         return (true, parameters)
+    }
+
+    func mapPathToPattern() -> String {
+        var pattern = path
+
+        if let parameters = parameters {
+            for parameter in parameters {
+                pattern = pattern.replacingOccurrences(of: "\(parameter)", with: parameter.pattern)
+            }
+        }
+
+        return pattern
     }
 
     func extractParameter(from pathComponentPart: String) -> Parameter? {

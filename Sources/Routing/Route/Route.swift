@@ -14,7 +14,7 @@ public struct Route {
 
     public init?(
         method: Request.Method,
-        path: String = "/",
+        path: String = "",
         name: String? = nil,
         requestHandler: @escaping RequestHandler
     ) {
@@ -55,7 +55,7 @@ extension Route: CustomStringConvertible {
 
 extension Route {
     public func validate(path: String) -> (Bool, Set<Route.Parameter>?) {
-        if path == "/" { return (true, nil) }
+        if path == "" { return (true, nil) }
         if !path.starts(with: "/") || path.contains("//") { return (false, nil) }
         let pattern = "[a-zA-Z0-9_~.-]+|(\\{\\w+(<[^\\/<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+"
         let regex = try! NSRegularExpression(pattern: pattern)

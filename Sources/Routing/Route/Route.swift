@@ -6,6 +6,10 @@ import struct HTTP.Response
 public struct Route {
     public typealias RequestHandler = (Request) -> Any
 
+    static let textPattern = "[a-zA-Z0-9_~.-]+"
+    static let parameterPattern = "(\\{\\w+(<[^\\/{}<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+"
+    static let pathPattern = "\(textPattern)|\(parameterPattern)"
+
     public var method: Request.Method
     public let path: String
     public var name: String?
@@ -34,7 +38,7 @@ public struct Route {
 }
 
 extension Route: Hashable {
-    public static func == (lhs: Route, rhs: Route) -> Bool {
+    public static func ==(lhs: Route, rhs: Route) -> Bool {
         lhs.method == rhs.method && lhs.path == rhs.path
     }
 
@@ -57,8 +61,7 @@ extension Route {
     public func validate(path: String) -> (Bool, Set<Route.Parameter>?) {
         if path == "" { return (true, nil) }
         if !path.starts(with: "/") || path.contains("//") { return (false, nil) }
-        let pattern = "[a-zA-Z0-9_~.-]+|(\\{\\w+(<[^\\/<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+"
-        let regex = try! NSRegularExpression(pattern: pattern)
+        guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return (false, nil) }
         let pathComponents = path.components(separatedBy: "/").filter({ $0 != "" })
         var parameters: Set<Route.Parameter>?
 

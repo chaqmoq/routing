@@ -19,7 +19,7 @@ public struct Route {
         requestHandler: @escaping RequestHandler
     ) {
         self.method = method
-        self.path = path
+        self.path = path.last == "/" ? String(path.dropLast()) : path
         self.name = name
         self.requestHandler = requestHandler
 

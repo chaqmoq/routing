@@ -10,6 +10,38 @@ extension Route {
         public var requirement: String?
         public var defaultValue: DefaultValue?
 
+        public var pattern: String {
+            if let requirement = requirement {
+                if let defaultValue = defaultValue {
+                    switch defaultValue {
+                    case .optional(let value):
+                        if let value = value {
+                            return "(\(requirement)|\(value))?"
+                        }
+
+                        return "(\(requirement))?"
+                    case .forced(let value):
+                        return "(\(requirement)|\(value))?"
+                    }
+                }
+
+                return "(\(requirement))"
+            } else if let defaultValue = defaultValue {
+                switch defaultValue {
+                case .optional(let value):
+                    if let value = value {
+                        return "(\(value))?"
+                    }
+
+                    return ".*"
+                case .forced(let value):
+                    return "(\(value))?"
+                }
+            }
+
+            return ".+"
+        }
+
         public init(
             name: String,
             value: String? = nil,

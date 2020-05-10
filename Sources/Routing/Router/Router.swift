@@ -1,8 +1,9 @@
 import struct HTTP.Request
 
 public protocol Router {
-    @discardableResult
-    func register(route: Route) -> Bool
+    var routes: [Request.Method: Set<Route>] { get }
+
+    func register(route: Route)
     func unregister(route: Route)
     func match(method: Request.Method, path: String) -> Route?
 }

@@ -3,72 +3,51 @@ import class Foundation.NSRegularExpression
 import struct HTTP.Request
 
 public class DefaultRouter: Router {
-    private lazy var routes: [String: [Request.Method: Route]] = [:]
+    public var routes: [Request.Method: Set<Route>] { mutableRoutes }
+    private lazy var mutableRoutes: [Request.Method: Set<Route>] = [:]
 
     public init() {}
 
-    @discardableResult
-    public func register(route: Route) -> Bool {
-        guard let pattern = getPattern(for: route) else { return false }
-
-        if routes[pattern] == nil {
-            routes[pattern] = [:]
-        }
-
-        routes[pattern]![route.method] = route
-
-        return true
+    public func register(route: Route) {
+        if mutableRoutes[route.method] == nil { mutableRoutes[route.method] = Set<Route>() }
+        mutableRoutes[route.method]?.insert(route)
     }
 
     public func unregister(route: Route) {
-        guard let pattern = getPattern(for: route) else { return }
-        routes[pattern]![route.method] = nil
+        mutableRoutes[route.method]?.remove(route)
     }
 
     public func match(method: Request.Method, path: String) -> Route? {
-        var matchedRoute: Route?
-        var parameters: Set<Route.Parameter>?
+        guard let routes = mutableRoutes[method] else { return nil }
 
-        for (pattern, routeDictionary) in routes {
-            if let route = routeDictionary[method],
-                let regex = try? NSRegularExpression(pattern: "^\(pattern)$") {
-                let range = NSRange(location: 0, length: path.utf8.count)
+        for route in routes {
+            if let routeRegex = try? NSRegularExpression(pattern: "^\(route.pattern)$") {
+                let pathRange = NSRange(location: 0, length: path.utf8.count)
 
-                if let matchedPattern = regex.firstMatch(in: path, range: range) {
-                    matchedRoute = route
+                if let matchedPattern = routeRegex.firstMatch(in: path, range: pathRange) {
+                    var matchedRoute = route
 
-                    if let regex2 = try? NSRegularExpression(pattern: "\\{([^}]+)\\}") {
-                        let range = NSRange(location: 0, length: route.path.utf8.count)
-                        let matches = regex2.matches(in: route.path, range: range)
+                    if let parameterRegex = try? NSRegularExpression(pattern: Route.parameterPattern) {
+                        let routePathRange = NSRange(location: 0, length: route.path.utf8.count)
+                        let parameterMatches = parameterRegex.matches(in: route.path, range: routePathRange)
 
-                        if !matches.isEmpty {
-                            parameters = .init()
-                        }
-
-                        for (index, match) in matches.enumerated() {
-                            if let nameRange = Range(match.range, in: route.path),
+                        for (index, parameterMatch) in parameterMatches.enumerated() {
+                            if let nameRange = Range(parameterMatch.range, in: route.path),
                                 let valueRange = Range(matchedPattern.range(at: index + 1), in: path) {
-                                let name = route.path[nameRange].dropFirst().dropLast()
-                                var parameter = Route.Parameter(name: String(name))
-                                parameter.value = String(path[valueRange])
-                                parameters?.insert(parameter)
+
+                                if var parameter = matchedRoute.parameters?.first(where: { "\($0)" == route.path[nameRange] }) {
+                                    parameter.value = String(path[valueRange])
+                                    matchedRoute.parameters?.update(with: parameter)
+                                }
                             }
                         }
-
-                        break
                     }
+
+                    return matchedRoute
                 }
             }
         }
 
-        return matchedRoute
-    }
-
-    private func getPattern(for route: Route) -> String? {
-        guard let regex = try? NSRegularExpression(pattern: "\\{([^}]+)\\}") else { return nil }
-        let path = route.path
-        let range = NSRange(location: 0, length: path.utf8.count)
-
-        return regex.stringByReplacingMatches(in: path, range: range, withTemplate: "([^/]+)")
+        return nil
     }
 }

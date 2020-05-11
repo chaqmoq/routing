@@ -29,11 +29,8 @@ public struct Route {
         self.name = name
         self.requestHandler = requestHandler
 
-        let (isValid, parameters) = validate(path: path)
-
-        if isValid {
+        if isValid(path: path) {
             self.path = path.last == "/" ? String(path.dropLast()) : path
-            self.parameters = parameters
             pattern = mapPathToPattern()
             guard pattern == "" || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
         } else {
@@ -63,19 +60,18 @@ extension Route: CustomStringConvertible {
 }
 
 extension Route {
-    func validate(path: String) -> (Bool, Set<Route.Parameter>?) {
-        if path == "" || path == "/" { return (true, nil) }
-        if !path.starts(with: "/") || path.contains("//") { return (false, nil) }
-        guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return (false, nil) }
+    mutating func isValid(path: String) -> Bool {
+        if path == "" || path == "/" { return true }
+        if !path.starts(with: "/") || path.contains("//") { return false }
+        guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return false }
         let pathComponents = path.components(separatedBy: "/").filter({ $0 != "" })
-        var parameters: Set<Route.Parameter>?
 
         for pathComponent in pathComponents {
             let range = NSRange(location: 0, length: pathComponent.utf8.count)
             let matches = regex.matches(in: pathComponent, range: range)
 
             if matches.isEmpty {
-                return (false, nil)
+                return false
             } else {
                 var matchesString = ""
 
@@ -89,23 +85,30 @@ extension Route {
                             endIndex = pathComponentPart.index(before: endIndex)
                             let pattern = String(pathComponentPart[startIndex..<endIndex])
                             let regex = try? NSRegularExpression(pattern: pattern)
-                            if regex == nil { return (false, nil) }
+                            if regex == nil { return false }
                         }
                     }
 
                     if let parameter = extractParameter(from: pathComponentPart) {
-                        if parameters == nil { parameters = [] }
-                        parameters?.insert(parameter)
+                        if let parameters = parameters {
+                            if parameters.contains(parameter) {
+                                return false
+                            } else {
+                                self.parameters?.insert(parameter)
+                            }
+                        } else {
+                            parameters = [parameter]
+                        }
                     }
 
                     matchesString.append(pathComponentPart)
                 }
 
-                if matchesString != pathComponent { return (false, nil) }
+                if matchesString != pathComponent { return false }
             }
         }
 
-        return (true, parameters)
+        return true
     }
 
     func mapPathToPattern() -> String {

@@ -255,6 +255,22 @@ final class RouteTests: XCTestCase {
         XCTAssertNil(route)
     }
 
+    func testPathWithMultipleParameters() {
+        // Arrange
+        let method: Request.Method = .GET
+        let path = "/blog/{page<\\d+>}/posts/{id<\\d+>}"
+        let route = Route(method: method, path: path) { request in Response() }!
+
+        // Assert
+        XCTAssertEqual(route.method, method)
+        XCTAssertEqual(route.path, path)
+        XCTAssertNil(route.name)
+        XCTAssertEqual(route.parameters?.count, 2)
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")))
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "id", requirement: "\\d+")))
+        XCTAssertNotNil(route.requestHandler)
+    }
+
     func testHashable() {
         // Arrange
         let route = Route(method: .GET) { request in Response() }!

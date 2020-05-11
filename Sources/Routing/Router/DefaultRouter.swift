@@ -27,11 +27,11 @@ public class DefaultRouter: Router {
                 if let matchedPattern = routeRegex.firstMatch(in: path, range: pathRange) {
                     var matchedRoute = route
 
-                    if let parameterRegex = try? NSRegularExpression(pattern: Route.parameterPattern) {
-                        let routePathRange = NSRange(location: 0, length: route.path.utf8.count)
-                        let parameterMatches = parameterRegex.matches(in: route.path, range: routePathRange)
+                    if var parameters = matchedRoute.parameters {
+                        if let parameterRegex = try? NSRegularExpression(pattern: Route.parameterPattern) {
+                            let routePathRange = NSRange(location: 0, length: route.path.utf8.count)
+                            let parameterMatches = parameterRegex.matches(in: route.path, range: routePathRange)
 
-                        if var parameters = matchedRoute.parameters {
                             for (index, parameterMatch) in parameterMatches.enumerated() {
                                 if let nameRange = Range(parameterMatch.range, in: route.path),
                                     let valueRange = Range(matchedPattern.range(at: index + 1), in: path) {

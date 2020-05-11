@@ -248,7 +248,7 @@ final class RouteTests: XCTestCase {
     func testPathHasDuplicateParameters() {
         // Arrange
         let method: Request.Method = .GET
-        let path = "/blog/{page<\\d+>?1}/{page<[a-zA-Z]>?a}"
+        let path = "/blog/{page<\\d+>}/posts/{page<\\d+>}"
         let route = Route(method: method, path: path) { request in Response() }
 
         // Assert

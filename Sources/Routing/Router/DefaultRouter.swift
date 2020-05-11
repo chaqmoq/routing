@@ -31,13 +31,16 @@ public class DefaultRouter: Router {
                         let routePathRange = NSRange(location: 0, length: route.path.utf8.count)
                         let parameterMatches = parameterRegex.matches(in: route.path, range: routePathRange)
 
-                        for (index, parameterMatch) in parameterMatches.enumerated() {
-                            if let nameRange = Range(parameterMatch.range, in: route.path),
-                                let valueRange = Range(matchedPattern.range(at: index + 1), in: path) {
+                        if var parameters = matchedRoute.parameters {
+                            for (index, parameterMatch) in parameterMatches.enumerated() {
+                                if let nameRange = Range(parameterMatch.range, in: route.path),
+                                    let valueRange = Range(matchedPattern.range(at: index + 1), in: path) {
 
-                                if var parameter = matchedRoute.parameters?.first(where: { "\($0)" == route.path[nameRange] }) {
-                                    parameter.value = String(path[valueRange])
-                                    matchedRoute.parameters?.update(with: parameter)
+                                    if var parameter = parameters.first(where: { "\($0)" == route.path[nameRange] }) {
+                                        parameter.value = String(path[valueRange])
+                                        matchedRoute.parameters?.update(with: parameter)
+                                        parameters.remove(parameter)
+                                    }
                                 }
                             }
                         }

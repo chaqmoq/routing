@@ -101,7 +101,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.path, path)
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertEqual("\(route.parameters!.first!)", "\(Route.Parameter(name: "page"))")
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page")))
         XCTAssertNotNil(route.requestHandler)
     }
 
@@ -116,7 +116,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.path, path)
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertEqual("\(route.parameters!.first!)", "\(Route.Parameter(name: "page", defaultValue: .optional()))")
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .optional())))
         XCTAssertNotNil(route.requestHandler)
     }
 
@@ -131,10 +131,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.path, path)
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertEqual(
-            "\(route.parameters!.first!)",
-            "\(Route.Parameter(name: "page", defaultValue: .optional("1")))"
-        )
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .optional("1"))))
         XCTAssertNotNil(route.requestHandler)
     }
 
@@ -159,10 +156,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.path, path)
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertEqual(
-            "\(route.parameters!.first!)",
-            "\(Route.Parameter(name: "page", defaultValue: .forced("1")))"
-        )
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .forced("1"))))
         XCTAssertNotNil(route.requestHandler)
     }
 
@@ -177,7 +171,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.path, path)
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertEqual("\(route.parameters!.first!)", "\(Route.Parameter(name: "page", requirement: "\\d+"))")
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")))
         XCTAssertNotNil(route.requestHandler)
     }
 
@@ -192,9 +186,8 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.path, path)
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertEqual(
-            "\(route.parameters!.first!)",
-            "\(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .optional()))"
+        XCTAssertTrue(
+            route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .optional()))
         )
         XCTAssertNotNil(route.requestHandler)
     }
@@ -210,9 +203,10 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.path, path)
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertEqual(
-            "\(route.parameters!.first!)",
-            "\(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .optional("1")))"
+        XCTAssertTrue(
+            route.parameters!.contains(
+                Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .optional("1"))
+            )
         )
         XCTAssertNotNil(route.requestHandler)
     }
@@ -238,9 +232,8 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.path, path)
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertEqual(
-            "\(route.parameters!.first!)",
-            "\(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .forced("1")))"
+        XCTAssertTrue(
+            route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .forced("1")))
         )
         XCTAssertNotNil(route.requestHandler)
     }
@@ -279,7 +272,8 @@ final class RouteTests: XCTestCase {
         let dictionary: [Route: String] = [route: ""]
 
         // Assert
-        XCTAssertEqual(dictionary.keys.first, route)
+        XCTAssertEqual(dictionary.keys.count, 1)
+        XCTAssertTrue(dictionary.keys.contains(route))
     }
 
     func testDescription() {

@@ -3,22 +3,14 @@ import class Foundation.NSRegularExpression
 import struct HTTP.Request
 
 public class DefaultRouter: Router {
-    public var routes: [Request.Method: Set<Route>] { mutableRoutes }
-    private lazy var mutableRoutes: [Request.Method: Set<Route>] = [:]
+    public var routeCollection: RouteCollection
 
-    public init() {}
-
-    public func register(route: Route) {
-        if mutableRoutes[route.method] == nil { mutableRoutes[route.method] = Set<Route>() }
-        mutableRoutes[route.method]?.insert(route)
-    }
-
-    public func unregister(route: Route) {
-        mutableRoutes[route.method]?.remove(route)
+    public init() {
+        routeCollection = .init()
     }
 
     public func match(method: Request.Method, path: String) -> Route? {
-        guard let routes = mutableRoutes[method] else { return nil }
+        let routes = routeCollection[method]
 
         for route in routes {
             if let routeRegex = try? NSRegularExpression(pattern: "^\(route.pattern)$") {

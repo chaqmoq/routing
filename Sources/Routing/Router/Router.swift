@@ -1,9 +1,7 @@
 import struct HTTP.Request
 
 public protocol Router {
-    var routes: [Request.Method: Set<Route>] { get }
+    var routeCollection: RouteCollection { get set }
 
-    func register(route: Route)
-    func unregister(route: Route)
     func match(method: Request.Method, path: String) -> Route?
 }

@@ -76,32 +76,35 @@ extension Route {
                 var matchesString = ""
 
                 for match in matches {
-                    let pathComponentPart = String(pathComponent[Range(match.range, in: pathComponent)!])
+                    if let range = Range(match.range, in: pathComponent) {
+                        let pathComponentPart = String(pathComponent[range])
 
-                    if pathComponentPart.hasPrefix(String(Parameter.nameEnclosingSymbols.0)) {
-                        if var startIndex = pathComponentPart.range(of: String(Parameter.requirementEnclosingSymbols.0))?.lowerBound,
-                            var endIndex = pathComponentPart.range(of: String(Parameter.requirementEnclosingSymbols.1))?.upperBound {
-                            startIndex = pathComponentPart.index(after: startIndex)
-                            endIndex = pathComponentPart.index(before: endIndex)
-                            let pattern = String(pathComponentPart[startIndex..<endIndex])
-                            let regex = try? NSRegularExpression(pattern: pattern)
-                            if regex == nil { return false }
-                        }
-                    }
+                        if pathComponentPart.hasPrefix(String(Parameter.nameEnclosingSymbols.0)) {
+                            let requirementEnclosingSymbols = Parameter.requirementEnclosingSymbols
+                            let startRange = pathComponentPart.range(of: String(requirementEnclosingSymbols.0))
+                            let endRange = pathComponentPart.range(of: String(requirementEnclosingSymbols.1))
 
-                    if let parameter = extractParameter(from: pathComponentPart) {
-                        if let parameters = parameters {
-                            if parameters.contains(parameter) {
-                                return false
-                            } else {
-                                self.parameters?.insert(parameter)
+                            if let startIndex = startRange?.upperBound,
+                                let endIndex = endRange?.lowerBound {
+                                let pattern = String(pathComponentPart[startIndex..<endIndex])
+                                if (try? NSRegularExpression(pattern: pattern)) == nil { return false }
                             }
-                        } else {
-                            parameters = [parameter]
                         }
-                    }
 
-                    matchesString.append(pathComponentPart)
+                        if let parameter = extractParameter(from: pathComponentPart) {
+                            if let parameters = parameters {
+                                if parameters.contains(parameter) {
+                                    return false
+                                } else {
+                                    self.parameters?.insert(parameter)
+                                }
+                            } else {
+                                parameters = [parameter]
+                            }
+                        }
+
+                        matchesString.append(pathComponentPart)
+                    }
                 }
 
                 if matchesString != pathComponent { return false }
@@ -134,11 +137,15 @@ extension Route {
                 if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.optionalSymbol) {
                     let defaultValueEndIndex = nameEndIndex
                     defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                    parameter.defaultValue = .optional(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
+                    parameter.defaultValue = .optional(
+                        String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex])
+                    )
                 } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.forcedSymbol) {
                     let defaultValueEndIndex = nameEndIndex
                     defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                    parameter.defaultValue = .forced(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
+                    parameter.defaultValue = .forced(
+                        String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex])
+                    )
                 }
 
                 nameEndIndex = requirementStartIndex
@@ -148,12 +155,16 @@ extension Route {
                 let defaultValueEndIndex = nameEndIndex
                 nameEndIndex = defaultValueStartIndex
                 defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                parameter.defaultValue = .optional(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
+                parameter.defaultValue = .optional(
+                    String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex])
+                )
             } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.forcedSymbol) {
                 let defaultValueEndIndex = nameEndIndex
                 nameEndIndex = defaultValueStartIndex
                 defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                parameter.defaultValue = .forced(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
+                parameter.defaultValue = .forced(
+                    String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex])
+                )
             }
 
             parameter.name = String(pathComponentPart[nameStartIndex..<nameEndIndex])

@@ -1,3 +1,4 @@
+import struct Foundation.NSRange
 import class Foundation.NSRegularExpression
 import struct HTTP.Request
 
@@ -44,6 +45,30 @@ public struct RouteCollection {
 
     public mutating func remove(_ route: Route) {
         self[route.method].remove(route)
+    }
+
+    public mutating func addPrefix(_ prefix: String, namePrefix: String = "") {
+        guard !prefix.isEmpty, prefix.starts(with: "/"), !prefix.contains("//") else { return }
+        let prefixRange = NSRange(location: 0, length: prefix.utf8.count)
+        let namePrefixRange = NSRange(location: 0, length: namePrefix.utf8.count)
+        guard
+            let prefixRegex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_~.-/]+$"),
+            let namePrefixRegex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_.-]*$"),
+            prefixRegex.firstMatch(in: prefix, range: prefixRange) != nil,
+            namePrefixRegex.firstMatch(in: namePrefix, range: namePrefixRange) != nil else {
+                return
+        }
+
+        routes = routes.mapValues { routes in
+            Set<Route>(routes.map({ route in
+                Route(
+                    method: route.method,
+                    path: prefix + route.path,
+                    name: namePrefix + (route.name ?? ""),
+                    requestHandler: route.requestHandler
+                )!
+            }))
+        }
     }
 }
 

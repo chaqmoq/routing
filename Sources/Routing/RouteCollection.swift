@@ -6,14 +6,14 @@ public struct RouteCollection {
     public typealias DictionaryType = [Request.Method: Set<Route>]
     private var routes: DictionaryType
 
-    public init(_ routes: Set<Route> = []) {
-        self.routes = [:]
-        insert(routes)
-    }
-
     public init(_ collection: RouteCollection) {
         self.routes = [:]
         insert(collection)
+    }
+
+    public init(_ routes: Set<Route> = []) {
+        self.routes = [:]
+        insert(routes)
     }
 
     public subscript(method: Request.Method) -> Set<Route> {

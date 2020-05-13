@@ -4,22 +4,42 @@ import struct HTTP.Request
 public struct RouteCollection {
     public typealias DictionaryType = [Request.Method: Set<Route>]
     private var routes: DictionaryType
-}
 
-extension RouteCollection {
+    public init(_ routes: Set<Route> = []) {
+        self.routes = [:]
+        insert(routes)
+    }
+
+    public init(_ collection: RouteCollection) {
+        self.routes = [:]
+        insert(collection)
+    }
+
     public subscript(method: Request.Method) -> Set<Route> {
         get { routes[method] ?? .init() }
         set { routes[method] = newValue }
     }
 
     public mutating func insert(_ collection: RouteCollection) {
-        for (method, routes) in collection {
-            self.routes[method] = routes
+        for (_, routes) in collection {
+            insert(routes)
+        }
+    }
+
+    public mutating func insert(_ routes: Set<Route>) {
+        for route in routes {
+            insert(route)
         }
     }
 
     public mutating func insert(_ route: Route) {
         self[route.method].insert(route)
+    }
+
+    public mutating func remove(_ routes: Set<Route>) {
+        for route in routes {
+            remove(route)
+        }
     }
 
     public mutating func remove(_ route: Route) {
@@ -36,17 +56,4 @@ extension RouteCollection: Collection {
 
     public subscript(index: Index) -> RouteCollection.Element { routes[index] }
     public func index(after index: Index) -> Index { routes.index(after: index) }
-}
-
-extension RouteCollection: ExpressibleByDictionaryLiteral {
-    public typealias Key = Request.Method
-    public typealias Value = Set<Route>
-
-    public init(dictionaryLiteral elements: (Request.Method, Set<Route>)...) {
-        routes = .init()
-
-        for (method, routes) in elements {
-            self.routes[method] = routes
-        }
-    }
 }

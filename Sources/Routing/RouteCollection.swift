@@ -2,7 +2,7 @@ import struct Foundation.NSRange
 import class Foundation.NSRegularExpression
 import struct HTTP.Request
 
-public struct RouteCollection {
+public struct RouteCollection: Equatable {
     public typealias DictionaryType = [Request.Method: Set<Route>]
     private var routes: DictionaryType
 

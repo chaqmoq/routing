@@ -27,4 +27,39 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertEqual(routeCollection1, routeCollection2)
         XCTAssertEqual(routeCollection2.count, 2)
     }
+
+    func testInitWithRoutes() {
+        // Arrange
+        var routeCollection = RouteCollection([
+            Route(method: .GET) { request in Response() }!,
+            Route(method: .GET, path: "/blog") { request in Response() }!,
+            Route(method: .POST) { request in Response() }!,
+            Route(method: .POST, path: "/blog") { request in Response() }!,
+        ])
+
+        // Assert
+        XCTAssertEqual(routeCollection.count, 2)
+        XCTAssertEqual(routeCollection[.GET], [
+            Route(method: .GET) { request in Response() }!,
+            Route(method: .GET, path: "/blog") { request in Response() }!]
+        )
+        XCTAssertEqual(routeCollection[.POST], [
+            Route(method: .POST) { request in Response() }!,
+            Route(method: .POST, path: "/blog") { request in Response() }!]
+        )
+
+        // Act
+        routeCollection.remove([
+            Route(method: .GET) { request in Response() }!,
+            Route(method: .GET, path: "/blog") { request in Response() }!
+        ])
+
+        // Assert
+        XCTAssertEqual(routeCollection.count, 2)
+        XCTAssertTrue(routeCollection[.GET].isEmpty)
+        XCTAssertEqual(routeCollection[.POST], [
+            Route(method: .POST) { request in Response() }!,
+            Route(method: .POST, path: "/blog") { request in Response() }!]
+        )
+    }
 }

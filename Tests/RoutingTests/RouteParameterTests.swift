@@ -73,7 +73,7 @@ final class RouteParameterTests: XCTestCase {
         )
     }
 
-    func testInitWithForcedDefaultValue() {
+    func testInitWithNameAndForcedDefaultValue() {
         // Arrange
         let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
 

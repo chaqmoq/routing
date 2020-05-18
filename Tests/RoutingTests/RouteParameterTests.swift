@@ -14,6 +14,7 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertNil(parameter.value)
         XCTAssertNil(parameter.requirement)
         XCTAssertNil(parameter.defaultValue)
+        XCTAssertEqual(parameter.pattern, ".+")
         XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(nameEnclosingSymbols.1)")
     }
 
@@ -31,6 +32,7 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertNil(parameter.value)
         XCTAssertEqual(parameter.requirement, requirement)
         XCTAssertNil(parameter.defaultValue)
+        XCTAssertEqual(parameter.pattern, "(\\d+)")
         XCTAssertEqual(
             "\(parameter)",
             "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(nameEnclosingSymbols.1)"
@@ -51,6 +53,7 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertNil(parameter.value)
         XCTAssertNil(parameter.requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
+        XCTAssertEqual(parameter.pattern, ".*")
         XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(optionalSymbol)\(nameEnclosingSymbols.1)")
     }
 
@@ -67,6 +70,7 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertNil(parameter.value)
         XCTAssertNil(parameter.requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
+        XCTAssertEqual(parameter.pattern, "(1)?")
         XCTAssertEqual(
             "\(parameter)",
             "\(nameEnclosingSymbols.0)\(name)\(defaultValue)\(nameEnclosingSymbols.1)"
@@ -88,6 +92,7 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertNil(parameter.value)
         XCTAssertEqual(parameter.requirement, requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
+        XCTAssertEqual(parameter.pattern, "(\\d+)?")
         XCTAssertEqual(
             "\(parameter)",
             "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)"
@@ -109,6 +114,7 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertNil(parameter.value)
         XCTAssertEqual(parameter.requirement, requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
+        XCTAssertEqual(parameter.pattern, "(\\d+|1)?")
         XCTAssertEqual(
             "\(parameter)",
             "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)"
@@ -128,6 +134,7 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertNil(parameter.value)
         XCTAssertNil(parameter.requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
+        XCTAssertEqual(parameter.pattern, "(1)?")
         XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(defaultValue)\(nameEnclosingSymbols.1)")
     }
 
@@ -146,6 +153,7 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertNil(parameter.value)
         XCTAssertEqual(parameter.requirement, requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
+        XCTAssertEqual(parameter.pattern, "(\\d+|1)?")
         XCTAssertEqual(
             "\(parameter)",
             "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)"
@@ -174,6 +182,7 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertEqual(parameter.value, value)
         XCTAssertEqual(parameter.requirement, requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
+        XCTAssertEqual(parameter.pattern, "(\\d+|1)?")
         XCTAssertEqual(
             "\(parameter)",
             "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)"

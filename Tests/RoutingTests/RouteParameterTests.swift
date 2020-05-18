@@ -54,7 +54,7 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(optionalSymbol)\(nameEnclosingSymbols.1)")
     }
 
-    func testInitWithOptionalDefaultValue() {
+    func testInitWithNameAndOptionalDefaultValue() {
         // Arrange
         let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
 

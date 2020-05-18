@@ -2,7 +2,7 @@ import XCTest
 @testable import struct Routing.Route
 
 final class RouteParameterTests: XCTestCase {
-    func testInit() {
+    func testInitWithName() {
         // Arrange
         let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
 

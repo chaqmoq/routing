@@ -30,7 +30,7 @@ public struct Route {
         self.requestHandler = requestHandler
 
         if isValid(path: path) {
-            self.path = path.last == "/" ? String(path.dropLast()) : path
+            self.path = path != "/" && path.last == "/" ? String(path.dropLast()) : path
             pattern = mapPathToPattern()
             guard pattern == "" || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
         } else {

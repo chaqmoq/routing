@@ -41,12 +41,20 @@ public struct Route {
 
 extension Route: Hashable {
     public static func ==(lhs: Route, rhs: Route) -> Bool {
-        (lhs.method == rhs.method && lhs.pattern == rhs.pattern) || (lhs.name != nil && lhs.name == rhs.name)
+        if let name = lhs.name, !name.isEmpty {
+            return name == rhs.name
+        }
+
+        return lhs.method == rhs.method && lhs.pattern == rhs.pattern
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(method)
-        hasher.combine(pattern)
+        if let name = name, !name.isEmpty {
+            hasher.combine(name)
+        } else {
+            hasher.combine(method)
+            hasher.combine(pattern)
+        }
     }
 }
 

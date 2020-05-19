@@ -3,7 +3,7 @@ import struct HTTP.Response
 @testable import Routing
 
 final class RouteCollectionTests: XCTestCase {
-    func testDefaultInit() {
+    func testInit() {
         // Arrange
         let routeCollection = RouteCollection()
 
@@ -11,7 +11,7 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertTrue(routeCollection.isEmpty)
     }
 
-    func testInitWithCollection() {
+    func testInitWithAnotherCollection() {
         // Arrange
         let routeCollection1 = RouteCollection([
             Route(method: .GET) { request in Response() }!,

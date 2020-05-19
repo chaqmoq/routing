@@ -5,8 +5,8 @@ import struct HTTP.Request
 public class DefaultRouter: Router {
     public var routeCollection: RouteCollection
 
-    public init() {
-        routeCollection = .init()
+    public init(routeCollection: RouteCollection = .init()) {
+        self.routeCollection = routeCollection
     }
 
     public func match(method: Request.Method, path: String) -> Route? {

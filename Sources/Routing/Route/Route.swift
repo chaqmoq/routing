@@ -41,7 +41,7 @@ public struct Route {
 
 extension Route: Hashable {
     public static func ==(lhs: Route, rhs: Route) -> Bool {
-        lhs.method == rhs.method && lhs.pattern == rhs.pattern
+        (lhs.method == rhs.method && lhs.pattern == rhs.pattern) || (lhs.name != nil && lhs.name == rhs.name)
     }
 
     public func hash(into hasher: inout Hasher) {

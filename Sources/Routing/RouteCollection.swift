@@ -34,7 +34,9 @@ public struct RouteCollection: Equatable {
     }
 
     public mutating func insert(_ route: Route) {
-        self[route.method].insert(route)
+        if !routes.contains(where: { $0.value.contains(route) }) {
+            self[route.method].insert(route)
+        }
     }
 
     public mutating func remove(_ routes: Set<Route>) {

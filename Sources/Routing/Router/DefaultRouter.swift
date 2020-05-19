@@ -9,7 +9,7 @@ public class DefaultRouter: Router {
         self.routeCollection = routeCollection
     }
 
-    public func match(method: Request.Method, path: String) -> Route? {
+    public func resolveRouteBy(method: Request.Method, path: String) -> Route? {
         let routes = routeCollection[method]
 
         for route in routes {

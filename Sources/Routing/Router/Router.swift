@@ -4,4 +4,5 @@ public protocol Router {
     var routeCollection: RouteCollection { get set }
 
     func resolveRouteBy(method: Request.Method, path: String) -> Route?
+    func resolveRouteBy(name: String) -> Route?
 }

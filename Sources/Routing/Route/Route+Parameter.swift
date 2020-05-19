@@ -1,9 +1,9 @@
 extension Route {
     public struct Parameter {
-        public static let nameEnclosingSymbols: (Character, Character) = ("{", "}")
-        public static let requirementEnclosingSymbols: (Character, Character) = ("<", ">")
-        public static let optionalSymbol: Character = "?"
-        public static let forcedSymbol: Character = "!"
+        static let nameEnclosingSymbols: (Character, Character) = ("{", "}")
+        static let requirementEnclosingSymbols: (Character, Character) = ("<", ">")
+        static let optionalSymbol: Character = "?"
+        static let forcedSymbol: Character = "!"
 
         public var name: String
         public var value: String?

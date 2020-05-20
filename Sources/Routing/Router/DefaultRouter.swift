@@ -10,8 +10,8 @@ public class DefaultRouter: Router {
         self.routeCollection = routeCollection
     }
 
-    public func resolveRouteBy(method: Request.Method, path: String) -> Route? {
-        guard let path = URLComponents(string: path)?.path else { return nil }
+    public func resolveRouteBy(method: Request.Method, uri: String) -> Route? {
+        guard let path = URLComponents(string: uri)?.path else { return nil }
         let routes = routeCollection[method]
 
         for route in routes {

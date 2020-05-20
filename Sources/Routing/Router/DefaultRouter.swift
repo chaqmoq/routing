@@ -47,6 +47,8 @@ public class DefaultRouter: Router {
     }
 
     public func resolveRoute(named name: String) -> Route? {
+        if name.isEmpty return nil
+
         for (_, routes) in routeCollection {
             if let matchedRoute = routes.first(where: { $0.name == name }) {
                 return matchedRoute

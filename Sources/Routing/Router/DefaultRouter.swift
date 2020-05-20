@@ -1,5 +1,6 @@
 import struct Foundation.NSRange
 import class Foundation.NSRegularExpression
+import struct Foundation.URLComponents
 import struct HTTP.Request
 
 public class DefaultRouter: Router {
@@ -10,6 +11,7 @@ public class DefaultRouter: Router {
     }
 
     public func resolveRouteBy(method: Request.Method, path: String) -> Route? {
+        guard let path = URLComponents(string: path)?.path else { return nil }
         let routes = routeCollection[method]
 
         for route in routes {

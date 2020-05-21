@@ -7,4 +7,5 @@ public protocol Router {
     func resolveRouteBy(method: Request.Method, uri: String) -> Route?
     func resolveRoute(named name: String) -> Route?
     func generateURLForRoute(named name: String) -> URL?
+    func generateURLForRoute(named name: String, parameters: Set<Route.Parameter>) -> URL?
 }

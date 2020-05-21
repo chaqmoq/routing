@@ -68,4 +68,23 @@ public class DefaultRouter: Router {
 
         return nil
     }
+
+    public func generateURLForRoute(named name: String, parameters: Set<Route.Parameter>) -> URL? {
+        if let route = resolveRoute(named: name) {
+            var path = route.path
+            let range = NSRange(location: 0, length: path.utf8.count)
+
+            for parameter in parameters {
+                let pattern = Route.parameterPattern.replacingOccurrences(of: "\\w+", with: parameter.name)
+
+                if let regex = try? NSRegularExpression(pattern: pattern), let value = parameter.value {
+                    path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                }
+            }
+
+            return URL(string: path)
+        }
+
+        return nil
+    }
 }

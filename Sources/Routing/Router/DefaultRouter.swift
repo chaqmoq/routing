@@ -1,5 +1,6 @@
 import struct Foundation.NSRange
 import class Foundation.NSRegularExpression
+import struct Foundation.URL
 import struct Foundation.URLComponents
 import struct HTTP.Request
 
@@ -55,6 +56,14 @@ public class DefaultRouter: Router {
             if let matchedRoute = routes.first(where: { $0.name == name }) {
                 return matchedRoute
             }
+        }
+
+        return nil
+    }
+
+    public func generateURLForRoute(named name: String) -> URL? {
+        if let route = resolveRoute(named: name) {
+            return URL(string: route.path)
         }
 
         return nil

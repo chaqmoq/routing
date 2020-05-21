@@ -19,21 +19,21 @@ public class DefaultRouter: Router {
             if let routeRegex = try? NSRegularExpression(pattern: "^\(route.pattern)$") {
                 let pathRange = NSRange(location: 0, length: path.utf8.count)
 
-                if let matchedPattern = routeRegex.firstMatch(in: path, range: pathRange) {
-                    var matchedRoute = route
+                if let pattern = routeRegex.firstMatch(in: path, range: pathRange) {
+                    var resolvedRoute = route
 
-                    if var parameters = matchedRoute.parameters {
+                    if var parameters = resolvedRoute.parameters {
                         if let parameterRegex = try? NSRegularExpression(pattern: Route.parameterPattern) {
                             let routePathRange = NSRange(location: 0, length: route.path.utf8.count)
                             let parameterMatches = parameterRegex.matches(in: route.path, range: routePathRange)
 
                             for (index, parameterMatch) in parameterMatches.enumerated() {
                                 if let nameRange = Range(parameterMatch.range, in: route.path),
-                                    let valueRange = Range(matchedPattern.range(at: index + 1), in: path) {
+                                    let valueRange = Range(pattern.range(at: index + 1), in: path) {
 
                                     if var parameter = parameters.first(where: { "\($0)" == route.path[nameRange] }) {
                                         parameter.value = String(path[valueRange])
-                                        matchedRoute.parameters?.update(with: parameter)
+                                        resolvedRoute.parameters?.update(with: parameter)
                                         parameters.remove(parameter)
                                     }
                                 }
@@ -41,7 +41,7 @@ public class DefaultRouter: Router {
                         }
                     }
 
-                    return matchedRoute
+                    return resolvedRoute
                 }
             }
         }
@@ -53,8 +53,8 @@ public class DefaultRouter: Router {
         if name.isEmpty { return nil }
 
         for (_, routes) in routeCollection {
-            if let matchedRoute = routes.first(where: { $0.name == name }) {
-                return matchedRoute
+            if let route = routes.first(where: { $0.name == name }) {
+                return route
             }
         }
 

@@ -127,6 +127,12 @@ extension Route {
 
         if let parameters = parameters {
             for parameter in parameters {
+                if parameter.defaultValue != nil {
+                    var parameterPattern = parameter.pattern
+                    parameterPattern.insert("/", at: parameterPattern.index(parameterPattern.startIndex, offsetBy: 1))
+                    pattern = pattern.replacingOccurrences(of: "/\(parameter)", with: parameterPattern)
+                }
+
                 pattern = pattern.replacingOccurrences(of: "\(parameter)", with: parameter.pattern)
             }
         }

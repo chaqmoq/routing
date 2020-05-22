@@ -47,4 +47,29 @@ final class DefaultRouterTests: XCTestCase {
         // Assert
         XCTAssertNil(route)
     }
+
+    func testResolveRouteWithForcedDefaultParameter() {
+        // Act
+        let method: Request.Method = .GET
+        var route = router.resolveRouteBy(method: method, uri: "/blog/")
+
+        // Assert
+        XCTAssertEqual(route?.method, method)
+        XCTAssertEqual(route?.path, "/blog/{page<\\d+>!1}")
+        XCTAssertEqual(route?.name, "blog_page")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/blog/1")
+
+        // Assert
+        XCTAssertEqual(route?.method, method)
+        XCTAssertEqual(route?.path, "/blog/{page<\\d+>!1}")
+        XCTAssertEqual(route?.name, "blog_page")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/blog/a")
+
+        // Assert
+        XCTAssertNil(route)
+    }
 }

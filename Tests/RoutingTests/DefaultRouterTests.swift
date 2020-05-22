@@ -24,7 +24,7 @@ final class DefaultRouterTests: XCTestCase {
         router = DefaultRouter(routeCollection: routeCollection)
     }
 
-    func testResolveRouteWithDeleteMethod() {
+    func testResolveRouteWithRequiredParameter() {
         // Act
         var route = router.resolveRouteBy(method: .DELETE, uri: "/posts/1")
 

@@ -26,22 +26,23 @@ final class DefaultRouterTests: XCTestCase {
 
     func testResolveRouteWithRequiredParameter() {
         // Act
-        var route = router.resolveRouteBy(method: .DELETE, uri: "/posts/1")
+        let method: Request.Method = .DELETE
+        var route = router.resolveRouteBy(method: method, uri: "/posts/1")
 
         // Assert
-        XCTAssertEqual(route?.method, .DELETE)
+        XCTAssertEqual(route?.method, method)
         XCTAssertEqual(route?.path, "/posts/{id<\\d+>}")
         XCTAssertEqual(route?.name, "post_delete")
 
-        route = router.resolveRouteBy(method: .DELETE, uri: "/posts/1/")
+        route = router.resolveRouteBy(method: method, uri: "/posts/1/")
 
         // Assert
-        XCTAssertEqual(route?.method, .DELETE)
+        XCTAssertEqual(route?.method, method)
         XCTAssertEqual(route?.path, "/posts/{id<\\d+>}")
         XCTAssertEqual(route?.name, "post_delete")
 
         // Act
-        route = router.resolveRouteBy(method: .DELETE, uri: "/posts/a")
+        route = router.resolveRouteBy(method: method, uri: "/posts/a")
 
         // Assert
         XCTAssertNil(route)

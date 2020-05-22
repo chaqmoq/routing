@@ -33,6 +33,13 @@ final class DefaultRouterTests: XCTestCase {
         XCTAssertEqual(route?.path, "/posts/{id<\\d+>}")
         XCTAssertEqual(route?.name, "post_delete")
 
+        route = router.resolveRouteBy(method: .DELETE, uri: "/posts/1/")
+
+        // Assert
+        XCTAssertEqual(route?.method, .DELETE)
+        XCTAssertEqual(route?.path, "/posts/{id<\\d+>}")
+        XCTAssertEqual(route?.name, "post_delete")
+
         // Act
         route = router.resolveRouteBy(method: .DELETE, uri: "/posts/a")
 

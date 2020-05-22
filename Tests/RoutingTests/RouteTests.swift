@@ -68,6 +68,21 @@ final class RouteTests: XCTestCase {
         XCTAssertNil(route)
     }
 
+    func testPathWithTrailingSlash() {
+        // Arrange
+        let method: Request.Method = .GET
+        let path = "/blog/"
+        let route = Route(method: method, path: path) { request in Response() }!
+
+        // Assert
+        // Assert
+        XCTAssertEqual(route.method, method)
+        XCTAssertEqual(route.path, String(path.dropLast()))
+        XCTAssertNil(route.name)
+        XCTAssertNil(route.parameters)
+        XCTAssertNotNil(route.requestHandler)
+    }
+
     func testPathWithInvalidCharacters() {
         // Arrange/Assert
         for character in "/{}[]<>" {

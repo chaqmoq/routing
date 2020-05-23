@@ -17,7 +17,7 @@ final class RouteCollectionTests: XCTestCase {
             Route(method: .GET) { request in Response() }!,
             Route(method: .GET, path: "/blog") { request in Response() }!,
             Route(method: .POST) { request in Response() }!,
-            Route(method: .POST, path: "/blog") { request in Response() }!,
+            Route(method: .POST, path: "/blog") { request in Response() }!
         ])
 
         // Act
@@ -34,7 +34,7 @@ final class RouteCollectionTests: XCTestCase {
             Route(method: .GET) { request in Response() }!,
             Route(method: .GET, path: "/blog") { request in Response() }!,
             Route(method: .POST) { request in Response() }!,
-            Route(method: .POST, path: "/blog") { request in Response() }!,
+            Route(method: .POST, path: "/blog") { request in Response() }!
         ])
 
         // Assert

@@ -25,21 +25,26 @@ final class DefaultRouterTests: XCTestCase {
     }
 
     func testResolveRouteWithRequiredParameter() {
-        // Act
+        // Arrange
         let method: Request.Method = .DELETE
+
+        // Act
         var route = router.resolveRouteBy(method: method, uri: "/posts/1")
 
         // Assert
-        XCTAssertEqual(route?.method, method)
-        XCTAssertEqual(route?.path, "/posts/{id<\\d+>}")
         XCTAssertEqual(route?.name, "post_delete")
 
+        // Act
         route = router.resolveRouteBy(method: method, uri: "/posts/1/")
 
         // Assert
-        XCTAssertEqual(route?.method, method)
-        XCTAssertEqual(route?.path, "/posts/{id<\\d+>}")
         XCTAssertEqual(route?.name, "post_delete")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/posts")
+
+        // Assert
+        XCTAssertNotEqual(route?.name, "post_delete")
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/posts/a")
@@ -49,21 +54,31 @@ final class DefaultRouterTests: XCTestCase {
     }
 
     func testResolveRouteWithForcedDefaultParameter() {
-        // Act
+        // Arrange
         let method: Request.Method = .GET
+
+        // Act
         var route = router.resolveRouteBy(method: method, uri: "/blog/")
 
         // Assert
-        XCTAssertEqual(route?.method, method)
-        XCTAssertEqual(route?.path, "/blog/{page<\\d+>!1}")
+        XCTAssertEqual(route?.name, "blog_page")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/blog")
+
+        // Assert
         XCTAssertEqual(route?.name, "blog_page")
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/blog/1")
 
         // Assert
-        XCTAssertEqual(route?.method, method)
-        XCTAssertEqual(route?.path, "/blog/{page<\\d+>!1}")
+        XCTAssertEqual(route?.name, "blog_page")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/blog/1/")
+
+        // Assert
         XCTAssertEqual(route?.name, "blog_page")
 
         // Act

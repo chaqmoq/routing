@@ -49,15 +49,15 @@ public struct RouteCollection: Equatable {
         self[route.method].remove(route)
     }
 
-    public mutating func addPrefix(_ prefix: String, namePrefix: String = "") {
-        var isPrefixValid = false
+    public mutating func addPathPrefix(_ pathPrefix: String, namePrefix: String = "") {
+        var isPathPrefixValid = false
 
-        if prefix.starts(with: "/") && !prefix.contains("//") {
-            let prefixRange = NSRange(location: 0, length: prefix.utf8.count)
+        if pathPrefix.starts(with: "/") && !pathPrefix.contains("//") {
+            let pathPrefixRange = NSRange(location: 0, length: pathPrefix.utf8.count)
 
-            if let prefixRegex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_~.-/]+$"),
-                prefixRegex.firstMatch(in: prefix, range: prefixRange) != nil {
-                isPrefixValid = true
+            if let pathPrefixRegex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_~.-/]+$"),
+                pathPrefixRegex.firstMatch(in: pathPrefix, range: pathPrefixRange) != nil {
+                isPathPrefixValid = true
             }
         }
 
@@ -69,23 +69,23 @@ public struct RouteCollection: Equatable {
             isNamePrefixValid = true
         }
 
-        if isPrefixValid && isNamePrefixValid {
+        if isPathPrefixValid && isNamePrefixValid {
             routes = routes.mapValues { routes in
                 Set<Route>(routes.map({ route in
                     Route(
                         method: route.method,
-                        path: prefix + route.path,
+                        path: pathPrefix + route.path,
                         name: namePrefix + (route.name ?? ""),
                         requestHandler: route.requestHandler
                     )!
                 }))
             }
-        } else if isPrefixValid {
+        } else if isPathPrefixValid {
             routes = routes.mapValues { routes in
                 Set<Route>(routes.map({ route in
                     Route(
                         method: route.method,
-                        path: prefix + route.path,
+                        path: pathPrefix + route.path,
                         name: route.name,
                         requestHandler: route.requestHandler
                     )!

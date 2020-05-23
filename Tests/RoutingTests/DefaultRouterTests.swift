@@ -24,6 +24,17 @@ final class DefaultRouterTests: XCTestCase {
         router = DefaultRouter(routeCollection: routeCollection)
     }
 
+    func testResolveRouteWithEmptyPath() {
+        // Arrange
+        let method: Request.Method = .OPTIONS
+
+        // Act
+        let route = router.resolveRouteBy(method: method, uri: "/")
+
+        // Assert
+        XCTAssertEqual(route?.name, "index")
+    }
+
     func testResolveRouteWithoutParameters() {
         // Arrange
         let method: Request.Method = .GET

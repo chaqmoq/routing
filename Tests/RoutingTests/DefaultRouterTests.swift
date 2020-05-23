@@ -14,7 +14,7 @@ final class DefaultRouterTests: XCTestCase {
             Route(method: .DELETE, path: "/posts/{id<\\d+>}", name: "post_delete") { request in Response() }!,
             Route(method: .GET, path: "/blog/{page<\\d+>!1}", name: "blog_page") { request in Response() }!,
             Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
-            Route(method: .GET, path: "/posts/{id<\\d+>}", name: "post_get") { request in Response() }!,
+            Route(method: .GET, path: "/categories/{id<\\d+>?1}", name: "category_get") { request in Response() }!,
             Route(method: .HEAD, path: "/blog", name: "blog_index") { request in Response() }!,
             Route(method: .OPTIONS, path: "/", name: "index") { request in Response() }!,
             Route(method: .PATCH, path: "/posts/{id<\\d+>}", name: "post_update") { request in Response() }!,
@@ -83,6 +83,41 @@ final class DefaultRouterTests: XCTestCase {
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/blog/a")
+
+        // Assert
+        XCTAssertNil(route)
+    }
+
+    func testResolveRouteWithOptionalDefaultParameter() {
+        // Arrange
+        let method: Request.Method = .GET
+
+        // Act
+        var route = router.resolveRouteBy(method: method, uri: "/categories/")
+
+        // Assert
+        XCTAssertEqual(route?.name, "category_get")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/categories")
+
+        // Assert
+        XCTAssertEqual(route?.name, "category_get")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/categories/1")
+
+        // Assert
+        XCTAssertEqual(route?.name, "category_get")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/categories/1/")
+
+        // Assert
+        XCTAssertEqual(route?.name, "category_get")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/categories/a")
 
         // Assert
         XCTAssertNil(route)

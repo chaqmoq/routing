@@ -62,4 +62,17 @@ final class RouteCollectionTests: XCTestCase {
             Route(method: .POST, path: "/blog") { request in Response() }!]
         )
     }
+
+    func testInitWithRoutesHavingSameName() {
+        // Arrange
+        let routeCollection = RouteCollection([
+            Route(method: .GET, path: "/", name: "blog") { request in Response() }!,
+            Route(method: .GET, path: "/blog", name: "blog") { request in Response() }!
+        ])
+
+        // Assert
+        XCTAssertEqual(routeCollection.count, 1)
+        XCTAssertEqual(routeCollection[.GET].count, 1)
+        XCTAssertEqual(routeCollection[.GET].first?.path, "/")
+    }
 }

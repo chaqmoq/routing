@@ -16,7 +16,8 @@ final class DefaultRouterTests: XCTestCase {
             Route(method: .DELETE, path: "/posts/{id<\\d+>}", name: "post_delete") { request in Response() }!,
             Route(method: .GET, path: "/blog/{page<\\d+>!1}", name: "blog_page") { request in Response() }!,
             Route(method: .GET, path: "/categories/{id<\\d+>?1}", name: "category_get") { request in Response() }!,
-            Route(method: .HEAD, path: "/blog/{page<\\d+>}/posts/{id<\\d+>}", name: "blog_page_post_get") { request in Response() }!
+            Route(method: .HEAD, path: "/blog/{page<\\d+>}/posts/{id<\\d+>}", name: "blog_page_post_get") { request in Response() }!,
+            Route(method: .GET, path: "/categories/{name}/posts/{id<\\d+>?1}", name: "category_post_get") { request in Response() }!
         ])
         router = DefaultRouter(routeCollection: routeCollection)
     }
@@ -165,7 +166,42 @@ final class DefaultRouterTests: XCTestCase {
         XCTAssertEqual(route?.name, "blog_page_post_get")
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/blog/a/posts/b")
+        route = router.resolveRouteBy(method: method, uri: "/blog/a/posts/a")
+
+        // Assert
+        XCTAssertNil(route)
+    }
+
+    func testResolveRouteWithOneRequiredAndOneOptionalDefaultParameters() {
+        // Arrange
+        let method: Request.Method = .GET
+
+        // Act
+        var route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts/1/")
+
+        // Assert
+        XCTAssertEqual(route?.name, "category_post_get")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts/1")
+
+        // Assert
+        XCTAssertEqual(route?.name, "category_post_get")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts/")
+
+        // Assert
+        XCTAssertEqual(route?.name, "category_post_get")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts")
+
+        // Assert
+        XCTAssertEqual(route?.name, "category_post_get")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts/a")
 
         // Assert
         XCTAssertNil(route)

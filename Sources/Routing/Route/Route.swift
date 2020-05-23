@@ -126,11 +126,21 @@ extension Route {
         var pattern = path
 
         if let parameters = parameters {
+            let forwardSlash = "/"
+
             for parameter in parameters {
-                if parameter.defaultValue != nil && pattern.contains("/\(parameter)") {
-                    var parameterPattern = parameter.pattern
-                    parameterPattern.insert("/", at: parameterPattern.index(parameterPattern.startIndex, offsetBy: 1))
-                    pattern = pattern.replacingOccurrences(of: "/\(parameter)", with: parameterPattern)
+                if parameter.defaultValue != nil, let range = pattern.range(of: "\(forwardSlash)\(parameter)") {
+                    if range.upperBound == pattern.endIndex || String(pattern[range.upperBound]) == forwardSlash {
+                        var parameterPattern = parameter.pattern
+                        parameterPattern.insert(
+                            contentsOf: forwardSlash,
+                            at: parameterPattern.index(parameterPattern.startIndex, offsetBy: 1)
+                        )
+                        pattern = pattern.replacingOccurrences(
+                            of: "\(forwardSlash)\(parameter)",
+                            with: parameterPattern
+                        )
+                    }
                 }
 
                 pattern = pattern.replacingOccurrences(of: "\(parameter)", with: parameter.pattern)

@@ -25,52 +25,55 @@ final class DefaultRouterTests: XCTestCase {
     func testResolveRouteWithEmptyPath() {
         // Arrange
         let method: Request.Method = .OPTIONS
+        let name = "index"
 
         // Act
         let route = router.resolveRouteBy(method: method, uri: "/")
 
         // Assert
-        XCTAssertEqual(route?.name, "index")
+        XCTAssertEqual(route?.name, name)
     }
 
     func testResolveRouteWithStaticPath() {
         // Arrange
         let method: Request.Method = .GET
+        let name = "post_list"
 
         // Act
         var route = router.resolveRouteBy(method: method, uri: "/posts/")
 
         // Assert
-        XCTAssertEqual(route?.name, "post_list")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/posts")
 
         // Assert
-        XCTAssertEqual(route?.name, "post_list")
+        XCTAssertEqual(route?.name, name)
     }
 
     func testResolveRouteWithRequiredParameter() {
         // Arrange
         let method: Request.Method = .DELETE
+        let name = "post_delete"
 
         // Act
         var route = router.resolveRouteBy(method: method, uri: "/posts/1")
 
         // Assert
-        XCTAssertEqual(route?.name, "post_delete")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/posts/1/")
 
         // Assert
-        XCTAssertEqual(route?.name, "post_delete")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/posts")
 
         // Assert
-        XCTAssertNotEqual(route?.name, "post_delete")
+        XCTAssertNotEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/posts/a")
@@ -82,30 +85,31 @@ final class DefaultRouterTests: XCTestCase {
     func testResolveRouteWithForcedDefaultParameter() {
         // Arrange
         let method: Request.Method = .GET
+        let name = "blog_page"
 
         // Act
         var route = router.resolveRouteBy(method: method, uri: "/blog/")
 
         // Assert
-        XCTAssertEqual(route?.name, "blog_page")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/blog")
 
         // Assert
-        XCTAssertEqual(route?.name, "blog_page")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/blog/1")
 
         // Assert
-        XCTAssertEqual(route?.name, "blog_page")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/blog/1/")
 
         // Assert
-        XCTAssertEqual(route?.name, "blog_page")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/blog/a")
@@ -117,30 +121,31 @@ final class DefaultRouterTests: XCTestCase {
     func testResolveRouteWithOptionalDefaultParameter() {
         // Arrange
         let method: Request.Method = .GET
+        let name = "category_get"
 
         // Act
         var route = router.resolveRouteBy(method: method, uri: "/categories/")
 
         // Assert
-        XCTAssertEqual(route?.name, "category_get")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/categories")
 
         // Assert
-        XCTAssertEqual(route?.name, "category_get")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/categories/1")
 
         // Assert
-        XCTAssertEqual(route?.name, "category_get")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/categories/1/")
 
         // Assert
-        XCTAssertEqual(route?.name, "category_get")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/categories/a")
@@ -152,18 +157,19 @@ final class DefaultRouterTests: XCTestCase {
     func testResolveRouteWithMultipleParameters() {
         // Arrange
         let method: Request.Method = .HEAD
+        let name = "blog_page_post_get"
 
         // Act
         var route = router.resolveRouteBy(method: method, uri: "/blog/1/posts/2/")
 
         // Assert
-        XCTAssertEqual(route?.name, "blog_page_post_get")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/blog/1/posts/2")
 
         // Assert
-        XCTAssertEqual(route?.name, "blog_page_post_get")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/blog/a/posts/a")
@@ -175,30 +181,31 @@ final class DefaultRouterTests: XCTestCase {
     func testResolveRouteWithOneRequiredAndOneOptionalDefaultParameters() {
         // Arrange
         let method: Request.Method = .GET
+        let name = "category_post_get"
 
         // Act
         var route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts/1/")
 
         // Assert
-        XCTAssertEqual(route?.name, "category_post_get")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts/1")
 
         // Assert
-        XCTAssertEqual(route?.name, "category_post_get")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts/")
 
         // Assert
-        XCTAssertEqual(route?.name, "category_post_get")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts")
 
         // Assert
-        XCTAssertEqual(route?.name, "category_post_get")
+        XCTAssertEqual(route?.name, name)
 
         // Act
         route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts/a")

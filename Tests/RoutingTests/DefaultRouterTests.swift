@@ -122,4 +122,21 @@ final class DefaultRouterTests: XCTestCase {
         // Assert
         XCTAssertNil(route)
     }
+
+    func testResolveRouteWithoutParameters() {
+        // Arrange
+        let method: Request.Method = .GET
+
+        // Act
+        var route = router.resolveRouteBy(method: method, uri: "/posts/")
+
+        // Assert
+        XCTAssertEqual(route?.name, "post_list")
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/posts")
+
+        // Assert
+        XCTAssertEqual(route?.name, "post_list")
+    }
 }

@@ -33,13 +33,13 @@ extension Route {
                         return "(\(value))?"
                     }
 
-                    return ".*"
+                    return "(.*)"
                 case .forced(let value):
                     return "(\(value))?"
                 }
             }
 
-            return ".+"
+            return "(.+)"
         }
 
         public init(

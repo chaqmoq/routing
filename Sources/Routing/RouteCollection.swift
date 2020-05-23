@@ -51,8 +51,9 @@ public struct RouteCollection: Equatable {
 
     public mutating func addPathPrefix(_ pathPrefix: String, namePrefix: String = "") {
         var isPathPrefixValid = false
+        let separator = String(Route.pathComponentSeparator)
 
-        if pathPrefix.starts(with: "/") && !pathPrefix.contains("//") {
+        if pathPrefix.starts(with: separator) && !pathPrefix.contains(separator + separator) {
             let pathPrefixRange = NSRange(location: 0, length: pathPrefix.utf8.count)
 
             if let pathPrefixRegex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_~.-/]+$"),

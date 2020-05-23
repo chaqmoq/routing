@@ -12,7 +12,8 @@ public class DefaultRouter: Router {
     }
 
     public func resolveRouteBy(method: Request.Method, uri: String) -> Route? {
-        let uri = uri != "/" && uri.last == "/" ? String(uri.dropLast()) : uri
+        let separator = Route.pathComponentSeparator
+        let uri = uri != String(separator) && uri.last == separator ? String(uri.dropLast()) : uri
         guard let path = URLComponents(string: uri)?.path else { return nil }
         let routes = routeCollection[method]
 

@@ -9,6 +9,7 @@ public struct Route {
     static let textPattern = "[a-zA-Z0-9_~.-]+"
     static let parameterPattern = "(\\{\\w+(<[^\\/{}<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+"
     static let pathPattern = "\(textPattern)|\(parameterPattern)"
+    static let pathComponentSeparator: Character = "/"
 
     public var method: Request.Method
     public private(set) var path: String
@@ -30,7 +31,8 @@ public struct Route {
         self.requestHandler = requestHandler
 
         if isValid(path: path) {
-            self.path = path != "/" && path.last == "/" ? String(path.dropLast()) : path
+            let separator = Route.pathComponentSeparator
+            self.path = path != String(separator) && path.last == separator ? String(path.dropLast()) : path
             pattern = mapPathToPattern()
             guard pattern == "" || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
         } else {
@@ -69,10 +71,11 @@ extension Route: CustomStringConvertible {
 
 extension Route {
     mutating func isValid(path: String) -> Bool {
-        if path == "" || path == "/" { return true }
-        if !path.starts(with: "/") || path.contains("//") { return false }
+        let separator = String(Route.pathComponentSeparator)
+        if path == "" || path == separator { return true }
+        if !path.starts(with: separator) || path.contains(separator + separator) { return false }
         guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return false }
-        let pathComponents = path.components(separatedBy: "/").filter({ $0 != "" })
+        let pathComponents = path.components(separatedBy: separator).filter({ $0 != "" })
 
         for pathComponent in pathComponents {
             let range = NSRange(location: 0, length: pathComponent.utf8.count)
@@ -126,18 +129,18 @@ extension Route {
         var pattern = path
 
         if let parameters = parameters {
-            let forwardSlash = "/"
+            let separator = String(Route.pathComponentSeparator)
 
             for parameter in parameters {
-                if parameter.defaultValue != nil, let range = pattern.range(of: "\(forwardSlash)\(parameter)") {
-                    if range.upperBound == pattern.endIndex || String(pattern[range.upperBound]) == forwardSlash {
+                if parameter.defaultValue != nil, let range = pattern.range(of: "\(separator)\(parameter)") {
+                    if range.upperBound == pattern.endIndex || String(pattern[range.upperBound]) == separator {
                         var parameterPattern = parameter.pattern
                         parameterPattern.insert(
-                            contentsOf: forwardSlash,
+                            contentsOf: separator,
                             at: parameterPattern.index(parameterPattern.startIndex, offsetBy: 1)
                         )
                         pattern = pattern.replacingOccurrences(
-                            of: "\(forwardSlash)\(parameter)",
+                            of: "\(separator)\(parameter)",
                             with: parameterPattern
                         )
                     }

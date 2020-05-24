@@ -6,13 +6,13 @@ import struct HTTP.Response
 public struct Route {
     public typealias RequestHandler = (Request) -> Any
 
+    public static let pathComponentSeparator: Character = "/"
     static let textPattern = "[a-zA-Z0-9_~.-]+"
     static let parameterNamePattern = "\\w+"
     static let parameterPattern = """
     (\\{\(parameterNamePattern)(<[^\\/{}<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+
     """
     static let pathPattern = "\(textPattern)|\(parameterPattern)"
-    static let pathComponentSeparator: Character = "/"
 
     public var method: Request.Method
     public private(set) var path: String
@@ -23,7 +23,7 @@ public struct Route {
 
     public init?(
         method: Request.Method,
-        path: String = "",
+        path: String = String(pathComponentSeparator),
         name: String? = nil,
         requestHandler: @escaping RequestHandler
     ) {

@@ -26,10 +26,10 @@ extension Route {
             } else if let defaultValue = defaultValue {
                 switch defaultValue {
                 case .optional(let value):
-                    if let value = value, !value.isEmpty { return "(\(value))?" }
-                    return "(.*)"
+                    if let value = value, !value.isEmpty { return "(.+|\(value))?" }
+                    return "(.+)?"
                 case .forced(let value):
-                    return "(\(value))?"
+                    return "(.+|\(value))?"
                 }
             }
 

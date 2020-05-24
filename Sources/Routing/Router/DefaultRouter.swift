@@ -35,7 +35,7 @@ public class DefaultRouter: Router {
 
                                     if var parameter = parameters.first(where: { "\($0)" == route.path[nameRange] }) {
                                         parameter.value = String(path[valueRange])
-                                        resolvedRoute.parameters?.update(with: parameter)
+                                        resolvedRoute.updateParameter(parameter)
                                         parameters.remove(parameter)
                                     }
                                 }

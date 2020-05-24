@@ -18,7 +18,7 @@ public struct Route {
     public private(set) var path: String
     public private(set) var pattern: String
     public var name: String?
-    public var parameters: Set<Parameter>?
+    public private(set) var parameters: Set<Parameter>?
     public var requestHandler: RequestHandler
 
     public init?(
@@ -203,5 +203,9 @@ extension Route {
         }
 
         return nil
+    }
+
+    mutating func updateParameter(_ parameter: Parameter) {
+        parameters?.update(with: parameter)
     }
 }

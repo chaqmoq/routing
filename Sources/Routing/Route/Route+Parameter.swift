@@ -15,12 +15,10 @@ extension Route {
                 if let defaultValue = defaultValue {
                     switch defaultValue {
                     case .optional(let value):
-                        if let value = value, !value.isEmpty {
-                            return "(\(requirement)|\(value))?"
-                        }
-
+                        if let value = value, !value.isEmpty { return "(\(requirement)|\(value))?" }
                         return "(\(requirement))?"
                     case .forced(let value):
+                        if value.isEmpty { return "(\(requirement))?" }
                         return "(\(requirement)|\(value))?"
                     }
                 }
@@ -29,12 +27,10 @@ extension Route {
             } else if let defaultValue = defaultValue {
                 switch defaultValue {
                 case .optional(let value):
-                    if let value = value, !value.isEmpty {
-                        return "(\(value))?"
-                    }
-
+                    if let value = value, !value.isEmpty { return "(\(value))?" }
                     return "(.*)"
                 case .forced(let value):
+                    if value.isEmpty { return "(.*)" }
                     return "(\(value))?"
                 }
             }

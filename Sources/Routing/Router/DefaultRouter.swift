@@ -103,7 +103,6 @@ public class DefaultRouter: Router {
             for parameter in parameters {
                 if var routeParameter = routeParameters.first(where: { $0.name == parameter.name }) {
                     routeParameter.value = parameter.value
-                    routeParameter.defaultValue = parameter.defaultValue
                     routeParameters.update(with: routeParameter)
                 }
             }
@@ -115,7 +114,9 @@ public class DefaultRouter: Router {
                 )
                 guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
 
-                if let defaultValue = parameter.defaultValue {
+                if let value = parameter.value, !value.isEmpty {
+                    path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                } else if let defaultValue = parameter.defaultValue {
                     switch defaultValue {
                     case .optional(let value):
                         if let value = value, !value.isEmpty {
@@ -127,11 +128,7 @@ public class DefaultRouter: Router {
                         path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
                     }
                 } else {
-                    if let value = parameter.value, !value.isEmpty {
-                        path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
-                    } else {
-                        return nil
-                    }
+                    return nil
                 }
             }
         }

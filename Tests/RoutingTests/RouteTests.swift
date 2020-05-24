@@ -10,7 +10,8 @@ final class RouteTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(route.method, .GET)
-        XCTAssertEqual(route.path, "")
+        XCTAssertEqual(route.path, "/")
+        XCTAssertEqual(route.pattern, route.path)
         XCTAssertNil(route.name)
         XCTAssertNil(route.parameters)
         XCTAssertNotNil(route.requestHandler)
@@ -27,6 +28,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.pattern, path)
         XCTAssertEqual(route.name, name)
         XCTAssertNil(route.parameters)
         XCTAssertNotNil(route.requestHandler)
@@ -46,7 +48,8 @@ final class RouteTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(route.method, method)
-        XCTAssertEqual(route.path, "")
+        XCTAssertEqual(route.path, "/")
+        XCTAssertEqual(route.pattern, route.path)
         XCTAssertEqual(route.name, name)
         XCTAssertNil(route.parameters)
         XCTAssertNotNil(route.requestHandler)
@@ -78,6 +81,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, String(path.dropLast()))
+        XCTAssertEqual(route.pattern, route.path)
         XCTAssertNil(route.name)
         XCTAssertNil(route.parameters)
         XCTAssertNotNil(route.requestHandler)
@@ -100,6 +104,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.pattern, path)
         XCTAssertNil(route.name)
         XCTAssertNil(route.parameters)
         XCTAssertNotNil(route.requestHandler)
@@ -114,6 +119,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.pattern, "/blog/(.+)")
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page")))
@@ -129,6 +135,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.pattern, "/blog(/.+)?")
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .optional())))
@@ -144,6 +151,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.pattern, "/blog(/.+|1)?")
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .optional("1"))))
@@ -169,6 +177,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.pattern, "/blog(/.+|1)?")
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .forced("1"))))
@@ -184,6 +193,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.pattern, "/blog/(\\d+)")
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")))
@@ -199,6 +209,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.pattern, "/blog(/\\d+)?")
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(
@@ -216,6 +227,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.pattern, "/blog(/\\d+|1)?")
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(
@@ -245,6 +257,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.pattern, "/blog(/\\d+|1)?")
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(
@@ -272,6 +285,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.pattern, "/blog(/\\d+)?/posts")
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")))
@@ -287,6 +301,7 @@ final class RouteTests: XCTestCase {
         // Assert
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
+        XCTAssertEqual(route.pattern, "/blog/(\\d+)/posts/(\\d+)")
         XCTAssertNil(route.name)
         XCTAssertEqual(route.parameters?.count, 2)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")))

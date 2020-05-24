@@ -17,7 +17,8 @@ final class DefaultRouterTests: XCTestCase {
             Route(method: .GET, path: "/blog/{page<\\d+>!1}", name: "blog_page") { request in Response() }!,
             Route(method: .GET, path: "/categories/{id<\\d+>?1}", name: "category_get") { request in Response() }!,
             Route(method: .HEAD, path: "/blog/{page<\\d+>}/posts/{id<\\d+>}", name: "blog_page_post_get") { request in Response() }!,
-            Route(method: .GET, path: "/categories/{name}/posts/{id<\\d+>?1}", name: "category_post_get") { request in Response() }!
+            Route(method: .GET, path: "/categories/{name}/posts/{id<\\d+>?1}", name: "category_post_get") { request in Response() }!,
+            Route(method: .GET, path: "/tags/{name?}", name: "tag_get") { request in Response() }!
         ])
         router = DefaultRouter(routeCollection: routeCollection)
     }
@@ -246,6 +247,30 @@ final class DefaultRouterTests: XCTestCase {
 
         // Act
         url = router.generateURLForRoute(named: "post_delete")
+
+        // Assert
+        XCTAssertNil(url)
+
+        // Act
+        url = router.generateURLForRoute(named: "category_get")
+
+        // Assert
+        XCTAssertEqual(url?.path, "/categories/1")
+
+        // Act
+        url = router.generateURLForRoute(named: "blog_page")
+
+        // Assert
+        XCTAssertEqual(url?.path, "/blog/1")
+
+        // Act
+        url = router.generateURLForRoute(named: "tag_get")
+
+        // Assert
+        XCTAssertEqual(url?.path, "/tags")
+
+        // Act
+        url = router.generateURLForRoute(named: "not_existing_name")
 
         // Assert
         XCTAssertNil(url)

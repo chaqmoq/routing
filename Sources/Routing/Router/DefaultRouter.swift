@@ -129,9 +129,9 @@ public class DefaultRouter: Router {
                 } else {
                     if let value = parameter.value, !value.isEmpty {
                         path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                    } else {
+                        return nil
                     }
-
-                    return nil
                 }
             }
         }

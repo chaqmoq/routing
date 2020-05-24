@@ -213,4 +213,27 @@ final class DefaultRouterTests: XCTestCase {
         // Assert
         XCTAssertNil(route)
     }
+
+    func testResolveRouteNamed() {
+        // Arrange
+        let name = "index"
+
+        // Act
+        var route = router.resolveRoute(named: name)
+
+        // Assert
+        XCTAssertEqual(route?.name, name)
+
+        // Act
+        route = router.resolveRoute(named: "")
+
+        // Assert
+        XCTAssertNil(route)
+
+        // Act
+        route = router.resolveRoute(named: "not_existing_name")
+
+        // Assert
+        XCTAssertNil(route)
+    }
 }

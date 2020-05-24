@@ -80,11 +80,7 @@ public class DefaultRouter: Router {
                             path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
                         }
                     case .forced(let value):
-                        if value.isEmpty {
-                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
-                        } else {
-                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
-                        }
+                        path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
                     }
                 } else {
                     return nil
@@ -122,11 +118,7 @@ public class DefaultRouter: Router {
                             path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
                         }
                     case .forced(let value):
-                        if value.isEmpty {
-                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
-                        } else {
-                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
-                        }
+                        path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
                     }
                 } else {
                     if let value = parameter.value, !value.isEmpty {

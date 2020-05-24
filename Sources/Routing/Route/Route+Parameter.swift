@@ -18,7 +18,6 @@ extension Route {
                         if let value = value, !value.isEmpty { return "(\(requirement)|\(value))?" }
                         return "(\(requirement))?"
                     case .forced(let value):
-                        if value.isEmpty { return "(\(requirement))?" }
                         return "(\(requirement)|\(value))?"
                     }
                 }
@@ -30,7 +29,6 @@ extension Route {
                     if let value = value, !value.isEmpty { return "(\(value))?" }
                     return "(.*)"
                 case .forced(let value):
-                    if value.isEmpty { return "(.*)" }
                     return "(\(value))?"
                 }
             }

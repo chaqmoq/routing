@@ -67,8 +67,6 @@ public class DefaultRouter: Router {
         let range = NSRange(location: 0, length: path.utf8.count)
 
         if let parameters = route.parameters {
-            if parameters.contains(where: { $0.defaultValue == nil }) { return nil }
-
             for parameter in parameters {
                 let pattern = Route.parameterPattern.replacingOccurrences(of: "\\w+", with: parameter.name)
                 guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
@@ -82,8 +80,14 @@ public class DefaultRouter: Router {
                             path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
                         }
                     case .forced(let value):
-                        path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                        if value.isEmpty {
+                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
+                        } else {
+                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                        }
                     }
+                } else {
+                    return nil
                 }
             }
         }
@@ -92,21 +96,48 @@ public class DefaultRouter: Router {
     }
 
     public func generateURLForRoute(named name: String, parameters: Set<Route.Parameter>) -> URL? {
-        if let route = resolveRoute(named: name) {
-            var path = route.path
-            let range = NSRange(location: 0, length: path.utf8.count)
+        guard let route = resolveRoute(named: name) else { return nil }
+        var path = route.path
+        let range = NSRange(location: 0, length: path.utf8.count)
 
+        if var routeParameters = route.parameters {
             for parameter in parameters {
-                let pattern = Route.parameterPattern.replacingOccurrences(of: "\\w+", with: parameter.name)
-
-                if let regex = try? NSRegularExpression(pattern: pattern), let value = parameter.value {
-                    path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                if var routeParameter = routeParameters.first(where: { $0.name == parameter.name }) {
+                    routeParameter.value = parameter.value
+                    routeParameter.defaultValue = parameter.defaultValue
+                    routeParameters.update(with: routeParameter)
                 }
             }
 
-            return URL(string: path)
+            for parameter in routeParameters {
+                let pattern = Route.parameterPattern.replacingOccurrences(of: "\\w+", with: parameter.name)
+                guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
+
+                if let defaultValue = parameter.defaultValue {
+                    switch defaultValue {
+                    case .optional(let value):
+                        if let value = value, !value.isEmpty {
+                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                        } else {
+                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
+                        }
+                    case .forced(let value):
+                        if value.isEmpty {
+                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
+                        } else {
+                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                        }
+                    }
+                } else {
+                    if let value = parameter.value, !value.isEmpty {
+                        path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                    }
+
+                    return nil
+                }
+            }
         }
 
-        return nil
+        return URL(string: path)
     }
 }

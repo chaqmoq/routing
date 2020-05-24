@@ -68,7 +68,10 @@ public class DefaultRouter: Router {
 
         if let parameters = route.parameters {
             for parameter in parameters {
-                let pattern = Route.parameterPattern.replacingOccurrences(of: "\\w+", with: parameter.name)
+                let pattern = Route.parameterPattern.replacingOccurrences(
+                    of: Route.parameterNamePattern,
+                    with: parameter.name
+                )
                 guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
 
                 if let defaultValue = parameter.defaultValue {
@@ -106,7 +109,10 @@ public class DefaultRouter: Router {
             }
 
             for parameter in routeParameters {
-                let pattern = Route.parameterPattern.replacingOccurrences(of: "\\w+", with: parameter.name)
+                let pattern = Route.parameterPattern.replacingOccurrences(
+                    of: Route.parameterNamePattern,
+                    with: parameter.name
+                )
                 guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
 
                 if let defaultValue = parameter.defaultValue {

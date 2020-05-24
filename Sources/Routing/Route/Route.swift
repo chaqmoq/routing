@@ -7,7 +7,10 @@ public struct Route {
     public typealias RequestHandler = (Request) -> Any
 
     static let textPattern = "[a-zA-Z0-9_~.-]+"
-    static let parameterPattern = "(\\{\\w+(<[^\\/{}<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+"
+    static let parameterNamePattern = "\\w+"
+    static let parameterPattern = """
+    (\\{\(parameterNamePattern)(<[^\\/{}<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+
+    """
     static let pathPattern = "\(textPattern)|\(parameterPattern)"
     static let pathComponentSeparator: Character = "/"
 

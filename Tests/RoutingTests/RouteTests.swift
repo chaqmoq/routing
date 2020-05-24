@@ -253,7 +253,7 @@ final class RouteTests: XCTestCase {
         XCTAssertNotNil(route.requestHandler)
     }
 
-    func testPathHasDuplicateParameters() {
+    func testPathWithDuplicateParameters() {
         // Arrange
         let method: Request.Method = .GET
         let path = "/blog/{page<\\d+>}/posts/{page<\\d+>}"

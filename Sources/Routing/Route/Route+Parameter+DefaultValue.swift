@@ -6,7 +6,7 @@ extension Route.Parameter {
         public var description: String {
             switch self {
             case .optional(let value):
-                if let value = value {
+                if let value = value, !value.isEmpty {
                     return "\(Route.Parameter.optionalSymbol)\(value)"
                 }
 

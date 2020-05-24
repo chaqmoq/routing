@@ -55,20 +55,39 @@ public class DefaultRouter: Router {
         if name.isEmpty { return nil }
 
         for (_, routes) in routeCollection {
-            if let route = routes.first(where: { $0.name == name }) {
-                return route
-            }
+            if let route = routes.first(where: { $0.name == name }) { return route }
         }
 
         return nil
     }
 
     public func generateURLForRoute(named name: String) -> URL? {
-        if let route = resolveRoute(named: name) {
-            return URL(string: route.path)
+        guard let route = resolveRoute(named: name) else { return nil }
+        var path = route.path
+        let range = NSRange(location: 0, length: path.utf8.count)
+
+        if let parameters = route.parameters {
+            if parameters.contains(where: { $0.defaultValue == nil }) { return nil }
+
+            for parameter in parameters {
+                let pattern = Route.parameterPattern.replacingOccurrences(of: "\\w+", with: parameter.name)
+
+                if let regex = try? NSRegularExpression(pattern: pattern), let defaultValue = parameter.defaultValue {
+                    switch defaultValue {
+                    case .optional(let value):
+                        if let value = value, !value.isEmpty {
+                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                        } else {
+                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
+                        }
+                    case .forced(let value):
+                        path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                    }
+                }
+            }
         }
 
-        return nil
+        return URL(string: path)
     }
 
     public func generateURLForRoute(named name: String, parameters: Set<Route.Parameter>) -> URL? {

@@ -237,14 +237,17 @@ final class DefaultRouterTests: XCTestCase {
         XCTAssertNil(route)
     }
 
-    func testGenerateURLForRoute() {
-        // Arrange
-        let name = "post_list"
-
+    func testGenerateURLForRouteNamed() {
         // Act
-        let url = router.generateURLForRoute(named: name)
+        var url = router.generateURLForRoute(named: "post_list")
 
         // Assert
         XCTAssertEqual(url?.path, "/posts")
+
+        // Act
+        url = router.generateURLForRoute(named: "post_delete")
+
+        // Assert
+        XCTAssertNil(url)
     }
 }

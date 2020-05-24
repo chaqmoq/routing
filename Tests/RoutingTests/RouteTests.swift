@@ -263,7 +263,7 @@ final class RouteTests: XCTestCase {
         XCTAssertNil(route)
     }
 
-    func testPathWithMultipleParameters() {
+    func testPathWithMultipleRequiredParameters() {
         // Arrange
         let method: Request.Method = .GET
         let path = "/blog/{page<\\d+>}/posts/{id<\\d+>}"

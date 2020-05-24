@@ -275,4 +275,48 @@ final class DefaultRouterTests: XCTestCase {
         // Assert
         XCTAssertNil(url)
     }
+
+    func testGenerateURLForRouteNamedWithParameters() {
+        // Act
+        var url = router.generateURLForRoute(named: "post_list", with: [])
+
+        // Assert
+        XCTAssertEqual(url?.path, "/posts")
+
+        // Act
+        url = router.generateURLForRoute(named: "post_delete", with: [Route.Parameter(name: "id", value: "1")])
+
+        // Assert
+        XCTAssertEqual(url?.path, "/posts/1")
+
+        // Act
+        url = router.generateURLForRoute(named: "category_get", with: [Route.Parameter(name: "id", value: "1")])
+
+        // Assert
+        XCTAssertEqual(url?.path, "/categories/1")
+
+        // Act
+        url = router.generateURLForRoute(named: "category_get", with: [])
+
+        // Assert
+        XCTAssertEqual(url?.path, "/categories/1")
+
+        // Act
+        url = router.generateURLForRoute(named: "blog_page", with: [Route.Parameter(name: "id", value: "1")])
+
+        // Assert
+        XCTAssertEqual(url?.path, "/blog/1")
+
+        // Act
+        url = router.generateURLForRoute(named: "tag_get", with: [])
+
+        // Assert
+        XCTAssertEqual(url?.path, "/tags")
+
+        // Act
+        url = router.generateURLForRoute(named: "not_existing_name", with: [])
+
+        // Assert
+        XCTAssertNil(url)
+    }
 }

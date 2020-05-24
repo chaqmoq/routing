@@ -71,8 +71,9 @@ public class DefaultRouter: Router {
 
             for parameter in parameters {
                 let pattern = Route.parameterPattern.replacingOccurrences(of: "\\w+", with: parameter.name)
+                guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
 
-                if let regex = try? NSRegularExpression(pattern: pattern), let defaultValue = parameter.defaultValue {
+                if let defaultValue = parameter.defaultValue {
                     switch defaultValue {
                     case .optional(let value):
                         if let value = value, !value.isEmpty {

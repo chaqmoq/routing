@@ -22,27 +22,19 @@ public struct RouteCollection: Equatable {
     }
 
     public mutating func insert(_ collection: RouteCollection) {
-        for (_, routes) in collection {
-            insert(routes)
-        }
+        for (_, routes) in collection { insert(routes) }
     }
 
     public mutating func insert(_ routes: Set<Route>) {
-        for route in routes {
-            insert(route)
-        }
+        for route in routes { insert(route) }
     }
 
     public mutating func insert(_ route: Route) {
-        if !routes.contains(where: { $0.value.contains(route) }) {
-            self[route.method].insert(route)
-        }
+        if !routes.contains(where: { $0.value.contains(route) }) { self[route.method].insert(route) }
     }
 
     public mutating func remove(_ routes: Set<Route>) {
-        for route in routes {
-            remove(route)
-        }
+        for route in routes { remove(route) }
     }
 
     public mutating func remove(_ route: Route) {

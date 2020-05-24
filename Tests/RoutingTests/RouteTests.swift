@@ -263,6 +263,21 @@ final class RouteTests: XCTestCase {
         XCTAssertNil(route)
     }
 
+    func testPathWithOneOptionalParameterAndOneStaticPathComponent() {
+        // Arrange
+        let method: Request.Method = .GET
+        let path = "/blog/{page<\\d+>?}/posts"
+        let route = Route(method: method, path: path) { request in Response() }!
+
+        // Assert
+        XCTAssertEqual(route.method, method)
+        XCTAssertEqual(route.path, path)
+        XCTAssertNil(route.name)
+        XCTAssertEqual(route.parameters?.count, 1)
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")))
+        XCTAssertNotNil(route.requestHandler)
+    }
+
     func testPathWithMultipleRequiredParameters() {
         // Arrange
         let method: Request.Method = .GET

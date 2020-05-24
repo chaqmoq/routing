@@ -98,8 +98,7 @@ extension Route {
                             let startRange = pathComponentPart.range(of: String(requirementEnclosingSymbols.0))
                             let endRange = pathComponentPart.range(of: String(requirementEnclosingSymbols.1))
 
-                            if let startIndex = startRange?.upperBound,
-                                let endIndex = endRange?.lowerBound {
+                            if let startIndex = startRange?.upperBound, let endIndex = endRange?.lowerBound {
                                 let pattern = String(pathComponentPart[startIndex..<endIndex])
                                 if (try? NSRegularExpression(pattern: pattern)) == nil { return false }
                             }

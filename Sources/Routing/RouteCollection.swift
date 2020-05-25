@@ -4,6 +4,10 @@ import struct HTTP.Request
 
 public struct RouteCollection: Equatable {
     public typealias DictionaryType = [Request.Method: Set<Route>]
+
+    static let pathPrefixPattern = "^[a-zA-Z0-9_~.-/]+$"
+    static let namePrefixPattern = "^[a-zA-Z0-9_.-]+$"
+
     private var routes: DictionaryType
 
     public init(_ collection: RouteCollection) {
@@ -44,9 +48,10 @@ public struct RouteCollection: Equatable {
     @discardableResult
     public mutating func add(pathPrefix: String) -> Bool {
         let separator = String(Route.pathComponentSeparator)
+        let pathPrefixPattern = RouteCollection.pathPrefixPattern
         guard pathPrefix.starts(with: separator),
             !pathPrefix.contains(separator + separator),
-            let regex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_~.-/]+$") else { return false }
+            let regex = try? NSRegularExpression(pattern: pathPrefixPattern) else { return false }
         let range = NSRange(location: 0, length: pathPrefix.utf8.count)
         guard regex.firstMatch(in: pathPrefix, range: range) != nil else { return false }
 
@@ -66,7 +71,8 @@ public struct RouteCollection: Equatable {
 
     @discardableResult
     public mutating func add(namePrefix: String) -> Bool {
-        guard let regex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_.-]+$") else { return false }
+        let namePrefixPattern = RouteCollection.namePrefixPattern
+        guard let regex = try? NSRegularExpression(pattern: namePrefixPattern) else { return false }
         let range = NSRange(location: 0, length: namePrefix.utf8.count)
         guard regex.firstMatch(in: namePrefix, range: range) != nil else { return false }
 
@@ -89,11 +95,13 @@ public struct RouteCollection: Equatable {
         let separator = String(Route.pathComponentSeparator)
         let pathPrefixRange = NSRange(location: 0, length: pathPrefix.utf8.count)
         let namePrefixRange = NSRange(location: 0, length: namePrefix.utf8.count)
+        let pathPrefixPattern = RouteCollection.pathPrefixPattern
+        let namePrefixPattern = RouteCollection.namePrefixPattern
         guard pathPrefix.starts(with: separator),
             !pathPrefix.contains(separator + separator),
-            let pathPrefixRegex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_~.-/]+$"),
+            let pathPrefixRegex = try? NSRegularExpression(pattern: pathPrefixPattern),
             pathPrefixRegex.firstMatch(in: pathPrefix, range: pathPrefixRange) != nil,
-            let namePrefixRegex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_.-]+$"),
+            let namePrefixRegex = try? NSRegularExpression(pattern: namePrefixPattern),
             namePrefixRegex.firstMatch(in: namePrefix, range: namePrefixRange) != nil else { return false }
 
         routes = routes.mapValues { routes in

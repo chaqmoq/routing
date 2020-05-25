@@ -47,10 +47,13 @@ public struct RouteCollection: Equatable {
 
     @discardableResult
     public mutating func add(pathPrefix: String) -> Bool {
-        let separator = String(Route.pathComponentSeparator)
+        let separator = Route.pathComponentSeparator
         let pathPrefixPattern = RouteCollection.pathPrefixPattern
-        guard pathPrefix.starts(with: separator),
-            !pathPrefix.contains(separator + separator),
+        let pathPrefix = pathPrefix != String(separator) && pathPrefix.last == separator
+            ? String(pathPrefix.dropLast())
+            : pathPrefix
+        guard pathPrefix.starts(with: String(separator)),
+            !pathPrefix.contains(String(separator) + String(separator)),
             let regex = try? NSRegularExpression(pattern: pathPrefixPattern) else { return false }
         let range = NSRange(location: 0, length: pathPrefix.utf8.count)
         guard regex.firstMatch(in: pathPrefix, range: range) != nil else { return false }
@@ -92,13 +95,16 @@ public struct RouteCollection: Equatable {
 
     @discardableResult
     public mutating func add(pathPrefix: String, namePrefix: String) -> Bool {
-        let separator = String(Route.pathComponentSeparator)
+        let separator = Route.pathComponentSeparator
+        let pathPrefix = pathPrefix != String(separator) && pathPrefix.last == separator
+            ? String(pathPrefix.dropLast())
+            : pathPrefix
         let pathPrefixRange = NSRange(location: 0, length: pathPrefix.utf8.count)
         let namePrefixRange = NSRange(location: 0, length: namePrefix.utf8.count)
         let pathPrefixPattern = RouteCollection.pathPrefixPattern
         let namePrefixPattern = RouteCollection.namePrefixPattern
-        guard pathPrefix.starts(with: separator),
-            !pathPrefix.contains(separator + separator),
+        guard pathPrefix.starts(with: String(separator)),
+            !pathPrefix.contains(String(separator) + String(separator)),
             let pathPrefixRegex = try? NSRegularExpression(pattern: pathPrefixPattern),
             pathPrefixRegex.firstMatch(in: pathPrefix, range: pathPrefixRange) != nil,
             let namePrefixRegex = try? NSRegularExpression(pattern: namePrefixPattern),

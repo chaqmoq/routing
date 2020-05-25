@@ -94,4 +94,21 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertTrue(routeCollection[.GET].contains(where: { $0.path == "/admin/blog" && $0.name == "blog_index" }))
         XCTAssertTrue(routeCollection[.GET].contains(where: { $0.path == "/admin/blog/sign-in" && $0.name == nil }))
     }
+
+    func testAddNamePrefix() {
+        // Arrange
+        var routeCollection = RouteCollection([
+            Route(method: .GET, path: "/", name: "index") { request in Response() }!,
+            Route(method: .GET, path: "/blog", name: "blog_index") { request in Response() }!,
+            Route(method: .GET, path: "/blog/sign-in") { request in Response() }!
+        ])
+
+        // Assert
+        XCTAssertFalse(routeCollection.add(namePrefix: "admin%"))
+        XCTAssertTrue(routeCollection.add(namePrefix: "admin_"))
+        XCTAssertEqual(routeCollection[.GET].count, 3)
+        XCTAssertTrue(routeCollection[.GET].contains(where: { $0.path == "/" && $0.name == "admin_index" }))
+        XCTAssertTrue(routeCollection[.GET].contains(where: { $0.path == "/blog" && $0.name == "admin_blog_index" }))
+        XCTAssertTrue(routeCollection[.GET].contains(where: { $0.path == "/blog/sign-in" && $0.name == "admin_" }))
+    }
 }

@@ -77,4 +77,21 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertEqual(routeCollection[.GET].count, 1)
         XCTAssertEqual(routeCollection[.GET].first?.path, "/")
     }
+
+    func testAddPathPrefix() {
+        // Arrange
+        var routeCollection = RouteCollection([
+            Route(method: .GET, path: "/", name: "index") { request in Response() }!,
+            Route(method: .GET, path: "/blog", name: "blog_index") { request in Response() }!,
+            Route(method: .GET, path: "/blog/sign-in") { request in Response() }!
+        ])
+
+        // Assert
+        XCTAssertFalse(routeCollection.add(pathPrefix: "admin"))
+        XCTAssertTrue(routeCollection.add(pathPrefix: "/admin"))
+        XCTAssertEqual(routeCollection[.GET].count, 3)
+        XCTAssertTrue(routeCollection[.GET].contains(where: { $0.path == "/admin" && $0.name == "index" }))
+        XCTAssertTrue(routeCollection[.GET].contains(where: { $0.path == "/admin/blog" && $0.name == "blog_index" }))
+        XCTAssertTrue(routeCollection[.GET].contains(where: { $0.path == "/admin/blog/sign-in" && $0.name == nil }))
+    }
 }

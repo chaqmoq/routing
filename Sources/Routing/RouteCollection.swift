@@ -41,61 +41,30 @@ public struct RouteCollection: Equatable {
         self[route.method].remove(route)
     }
 
-    public mutating func addPathPrefix(_ pathPrefix: String, namePrefix: String = "") {
-        var isPathPrefixValid = false
+    @discardableResult
+    public mutating func add(pathPrefix: String, namePrefix: String) -> Bool {
         let separator = String(Route.pathComponentSeparator)
-
-        if pathPrefix.starts(with: separator) && !pathPrefix.contains(separator + separator) {
-            let pathPrefixRange = NSRange(location: 0, length: pathPrefix.utf8.count)
-
-            if let pathPrefixRegex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_~.-/]+$"),
-                pathPrefixRegex.firstMatch(in: pathPrefix, range: pathPrefixRange) != nil {
-                isPathPrefixValid = true
-            }
-        }
-
-        var isNamePrefixValid = false
+        let pathPrefixRange = NSRange(location: 0, length: pathPrefix.utf8.count)
         let namePrefixRange = NSRange(location: 0, length: namePrefix.utf8.count)
+        guard pathPrefix.starts(with: separator),
+            !pathPrefix.contains(separator + separator),
+            let pathPrefixRegex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_~.-/]+$"),
+            pathPrefixRegex.firstMatch(in: pathPrefix, range: pathPrefixRange) != nil,
+            let namePrefixRegex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_.-]+$"),
+            namePrefixRegex.firstMatch(in: namePrefix, range: namePrefixRange) != nil else { return false }
 
-        if let namePrefixRegex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_.-]+$"),
-            namePrefixRegex.firstMatch(in: namePrefix, range: namePrefixRange) != nil {
-            isNamePrefixValid = true
+        routes = routes.mapValues { routes in
+            Set<Route>(routes.map({ route in
+                Route(
+                    method: route.method,
+                    path: pathPrefix + route.path,
+                    name: namePrefix + (route.name ?? ""),
+                    requestHandler: route.requestHandler
+                )!
+            }))
         }
 
-        if isPathPrefixValid && isNamePrefixValid {
-            routes = routes.mapValues { routes in
-                Set<Route>(routes.map({ route in
-                    Route(
-                        method: route.method,
-                        path: pathPrefix + route.path,
-                        name: namePrefix + (route.name ?? ""),
-                        requestHandler: route.requestHandler
-                    )!
-                }))
-            }
-        } else if isPathPrefixValid {
-            routes = routes.mapValues { routes in
-                Set<Route>(routes.map({ route in
-                    Route(
-                        method: route.method,
-                        path: pathPrefix + route.path,
-                        name: route.name,
-                        requestHandler: route.requestHandler
-                    )!
-                }))
-            }
-        } else if isNamePrefixValid {
-            routes = routes.mapValues { routes in
-                Set<Route>(routes.map({ route in
-                    Route(
-                        method: route.method,
-                        path: route.path,
-                        name: namePrefix + (route.name ?? ""),
-                        requestHandler: route.requestHandler
-                    )!
-                }))
-            }
-        }
+        return true
     }
 }
 

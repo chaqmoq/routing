@@ -42,6 +42,29 @@ public struct RouteCollection: Equatable {
     }
 
     @discardableResult
+    public mutating func add(pathPrefix: String) -> Bool {
+        let separator = String(Route.pathComponentSeparator)
+        guard pathPrefix.starts(with: separator),
+            !pathPrefix.contains(separator + separator),
+            let regex = try? NSRegularExpression(pattern: "^[a-zA-Z0-9_~.-/]+$") else { return false }
+        let range = NSRange(location: 0, length: pathPrefix.utf8.count)
+        guard regex.firstMatch(in: pathPrefix, range: range) != nil else { return false }
+
+        routes = routes.mapValues { routes in
+            Set<Route>(routes.map({ route in
+                Route(
+                    method: route.method,
+                    path: pathPrefix + route.path,
+                    name: route.name,
+                    requestHandler: route.requestHandler
+                )!
+            }))
+        }
+
+        return true
+    }
+
+    @discardableResult
     public mutating func add(pathPrefix: String, namePrefix: String) -> Bool {
         let separator = String(Route.pathComponentSeparator)
         let pathPrefixRange = NSRange(location: 0, length: pathPrefix.utf8.count)

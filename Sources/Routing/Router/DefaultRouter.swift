@@ -1,7 +1,5 @@
-import struct Foundation.NSRange
-import class Foundation.NSRegularExpression
-import struct Foundation.URL
-import struct Foundation.URLComponents
+import Foundation
+import struct HTTP.ParameterBag
 import struct HTTP.Request
 
 public class DefaultRouter: Router {
@@ -130,5 +128,19 @@ public class DefaultRouter: Router {
         }
 
         return URL(string: path)
+    }
+
+    public func generateURLForRoute(named name: String, query: ParameterBag<String, String>) -> URL? {
+        guard let url = generateURLForRoute(named: name),
+            var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
+        let queryItems = query.map { key, value in URLQueryItem(name: key, value: value) }
+
+        if urlComponents.queryItems == nil {
+            urlComponents.queryItems = queryItems
+        } else {
+            urlComponents.queryItems?.append(contentsOf: queryItems)
+        }
+
+        return urlComponents.url
     }
 }

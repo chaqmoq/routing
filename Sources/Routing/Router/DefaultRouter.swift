@@ -120,6 +120,8 @@ public class DefaultRouter: Router {
             }
         }
 
+        path = Route.normalize(path: path)
+
         if let query = query {
             guard var urlComponents = URLComponents(string: path) else { return nil }
             let queryItems = query.map { key, value in URLQueryItem(name: key, value: value) }

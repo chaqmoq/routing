@@ -34,8 +34,7 @@ public struct Route {
         self.requestHandler = requestHandler
 
         if isValid(path: path) {
-            let separator = Route.pathComponentSeparator
-            self.path = path != String(separator) && path.last == separator ? String(path.dropLast()) : path
+            self.path = Route.normalize(path: path)
             pattern = mapPathToPattern()
             guard pattern == "" || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
         } else {
@@ -125,6 +124,14 @@ extension Route {
         }
 
         return true
+    }
+
+    static func normalize(path: String) -> String {
+        let separator = Route.pathComponentSeparator
+        var path = path
+        path = path != String(separator) && path.last == separator ? String(path.dropLast()) : path
+
+        return path
     }
 
     func mapPathToPattern() -> String {

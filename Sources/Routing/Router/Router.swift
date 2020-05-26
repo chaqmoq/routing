@@ -11,4 +11,9 @@ public protocol Router {
     func generateURLForRoute(named name: String) -> URL?
     func generateURLForRoute(named name: String, parameters: Set<Route.Parameter>) -> URL?
     func generateURLForRoute(named name: String, query: ParameterBag<String, String>) -> URL?
+    func generateURLForRoute(
+        named name: String,
+        parameters: Set<Route.Parameter>,
+        query: ParameterBag<String, String>
+    ) -> URL?
 }

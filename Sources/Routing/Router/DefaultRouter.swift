@@ -56,61 +56,54 @@ public class DefaultRouter: Router {
     }
 
     public func generateURLForRoute(named name: String) -> URL? {
-        guard let route = resolveRoute(named: name) else { return nil }
-        var path = route.path
-        let range = NSRange(location: 0, length: path.utf8.count)
-
-        if let parameters = route.parameters {
-            for parameter in parameters {
-                let pattern = Route.parameterPattern.replacingOccurrences(
-                    of: Route.parameterNamePattern,
-                    with: parameter.name
-                )
-                guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
-
-                if let defaultValue = parameter.defaultValue {
-                    switch defaultValue {
-                    case .optional(let value):
-                        if let value = value, !value.isEmpty {
-                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
-                        } else {
-                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
-                        }
-                    case .forced(let value):
-                        path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
-                    }
-                } else {
-                    return nil
-                }
-            }
-        }
-
-        return URL(string: path)
+        return _generateURLForRoute(named: name)
     }
 
     public func generateURLForRoute(named name: String, parameters: Set<Route.Parameter>) -> URL? {
+        return _generateURLForRoute(named: name, parameters: parameters)
+    }
+
+    public func generateURLForRoute(named name: String, query: ParameterBag<String, String>) -> URL? {
+        return _generateURLForRoute(named: name, query: query)
+    }
+
+    public func generateURLForRoute(
+        named name: String,
+        parameters: Set<Route.Parameter>,
+        query: ParameterBag<String, String>
+    ) -> URL? {
+        return _generateURLForRoute(named: name, parameters: parameters, query: query)
+    }
+
+    private func _generateURLForRoute(
+        named name: String,
+        parameters: Set<Route.Parameter>? = nil,
+        query: ParameterBag<String, String>? = nil
+    ) -> URL? {
         guard let route = resolveRoute(named: name) else { return nil }
         var path = route.path
         let range = NSRange(location: 0, length: path.utf8.count)
 
         if var routeParameters = route.parameters {
-            for parameter in parameters {
-                if var routeParameter = routeParameters.first(where: { $0.name == parameter.name }) {
-                    routeParameter.value = parameter.value
-                    routeParameters.update(with: routeParameter)
+            if let parameters = parameters {
+                for parameter in parameters {
+                    if var routeParameter = routeParameters.first(where: { $0.name == parameter.name }) {
+                        routeParameter.value = parameter.value
+                        routeParameters.update(with: routeParameter)
+                    }
                 }
             }
 
-            for parameter in routeParameters {
+            for routeParameter in routeParameters {
                 let pattern = Route.parameterPattern.replacingOccurrences(
                     of: Route.parameterNamePattern,
-                    with: parameter.name
+                    with: routeParameter.name
                 )
                 guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
 
-                if let value = parameter.value, !value.isEmpty {
+                if let value = routeParameter.value, !value.isEmpty {
                     path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
-                } else if let defaultValue = parameter.defaultValue {
+                } else if let defaultValue = routeParameter.defaultValue {
                     switch defaultValue {
                     case .optional(let value):
                         if let value = value, !value.isEmpty {
@@ -127,20 +120,19 @@ public class DefaultRouter: Router {
             }
         }
 
-        return URL(string: path)
-    }
+        if let query = query {
+            guard var urlComponents = URLComponents(string: path) else { return nil }
+            let queryItems = query.map { key, value in URLQueryItem(name: key, value: value) }
 
-    public func generateURLForRoute(named name: String, query: ParameterBag<String, String>) -> URL? {
-        guard let url = generateURLForRoute(named: name),
-            var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
-        let queryItems = query.map { key, value in URLQueryItem(name: key, value: value) }
+            if urlComponents.queryItems == nil {
+                urlComponents.queryItems = queryItems
+            } else {
+                urlComponents.queryItems?.append(contentsOf: queryItems)
+            }
 
-        if urlComponents.queryItems == nil {
-            urlComponents.queryItems = queryItems
-        } else {
-            urlComponents.queryItems?.append(contentsOf: queryItems)
+            return urlComponents.url
         }
 
-        return urlComponents.url
+        return URL(string: path)
     }
 }

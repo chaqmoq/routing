@@ -238,12 +238,30 @@ final class DefaultRouterTests: XCTestCase {
         XCTAssertNil(route)
     }
 
-    func testGenerateURLForRouteNamed() {
+    func testGenerateURLForRoute() {
         // Act
         var url = router.generateURLForRoute(named: "post_list")
 
         // Assert
-        XCTAssertEqual(url?.path, "/posts")
+        XCTAssertEqual(url, URL(string: "/posts"))
+
+        // Act
+        url = router.generateURLForRoute(named: "post_list", parameters: ["id": "1"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/posts"))
+
+        // Act
+        url = router.generateURLForRoute(named: "post_list", query: ["filter": "latest"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/posts?filter=latest"))
+
+        // Act
+        url = router.generateURLForRoute(named: "post_list", parameters: ["id": "1"], query: ["filter": "latest"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/posts?filter=latest"))
 
         // Act
         url = router.generateURLForRoute(named: "post_delete")
@@ -252,69 +270,97 @@ final class DefaultRouterTests: XCTestCase {
         XCTAssertNil(url)
 
         // Act
+        url = router.generateURLForRoute(named: "post_delete", parameters: ["id": "1"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/posts/1"))
+
+        // Act
+        url = router.generateURLForRoute(named: "post_delete", query: ["filter": "latest"])
+
+        // Assert
+        XCTAssertNil(url)
+
+        // Act
+        url = router.generateURLForRoute(named: "post_delete", parameters: ["id": "1"], query: ["filter": "latest"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/posts/1?filter=latest"))
+
+        // Act
         url = router.generateURLForRoute(named: "category_get")
 
         // Assert
-        XCTAssertEqual(url?.path, "/categories/1")
+        XCTAssertEqual(url, URL(string: "/categories/1"))
+
+        // Act
+        url = router.generateURLForRoute(named: "category_get", parameters: ["id": "2"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/categories/2"))
+
+        // Act
+        url = router.generateURLForRoute(named: "category_get", query: ["filter": "latest"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/categories/1?filter=latest"))
+
+        // Act
+        url = router.generateURLForRoute(named: "category_get", parameters: ["id": "2"], query: ["filter": "latest"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/categories/2?filter=latest"))
 
         // Act
         url = router.generateURLForRoute(named: "blog_page")
 
         // Assert
-        XCTAssertEqual(url?.path, "/blog/1")
+        XCTAssertEqual(url, URL(string: "/blog/1"))
+
+        // Act
+        url = router.generateURLForRoute(named: "blog_page", parameters: ["page": "2"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/blog/2"))
+
+        // Act
+        url = router.generateURLForRoute(named: "blog_page", query: ["filter": "latest"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/blog/1?filter=latest"))
+
+        // Act
+        url = router.generateURLForRoute(named: "blog_page", parameters: ["page": "2"], query: ["filter": "latest"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/blog/2?filter=latest"))
 
         // Act
         url = router.generateURLForRoute(named: "tag_get")
 
         // Assert
-        XCTAssertEqual(url?.path, "/tags")
+        XCTAssertEqual(url, URL(string: "/tags"))
+
+        // Act
+        url = router.generateURLForRoute(named: "tag_get", parameters: ["name": "swift"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/tags/swift"))
+
+        // Act
+        url = router.generateURLForRoute(named: "tag_get", query: ["filter": "latest"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/tags?filter=latest"))
+
+        // Act
+        url = router.generateURLForRoute(named: "tag_get", parameters: ["name": "swift"], query: ["filter": "latest"])
+
+        // Assert
+        XCTAssertEqual(url, URL(string: "/tags/swift?filter=latest"))
 
         // Act
         url = router.generateURLForRoute(named: "not_existing_name")
-
-        // Assert
-        XCTAssertNil(url)
-    }
-
-    func testGenerateURLForRouteNamedWithParameters() {
-        // Act
-        var url = router.generateURLForRoute(named: "post_list", parameters: .init())
-
-        // Assert
-        XCTAssertEqual(url?.path, "/posts")
-
-        // Act
-        url = router.generateURLForRoute(named: "post_delete", parameters: ["id": "1"])
-
-        // Assert
-        XCTAssertEqual(url?.path, "/posts/1")
-
-        // Act
-        url = router.generateURLForRoute(named: "category_get", parameters: ["id": "1"])
-
-        // Assert
-        XCTAssertEqual(url?.path, "/categories/1")
-
-        // Act
-        url = router.generateURLForRoute(named: "category_get", parameters: .init())
-
-        // Assert
-        XCTAssertEqual(url?.path, "/categories/1")
-
-        // Act
-        url = router.generateURLForRoute(named: "blog_page", parameters: ["id": "1"])
-
-        // Assert
-        XCTAssertEqual(url?.path, "/blog/1")
-
-        // Act
-        url = router.generateURLForRoute(named: "tag_get", parameters: .init())
-
-        // Assert
-        XCTAssertEqual(url?.path, "/tags")
-
-        // Act
-        url = router.generateURLForRoute(named: "not_existing_name", parameters: .init())
 
         // Assert
         XCTAssertNil(url)

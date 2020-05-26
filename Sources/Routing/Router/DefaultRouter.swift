@@ -90,7 +90,7 @@ public class DefaultRouter: Router {
         return URL(string: path)
     }
 
-    public func generateURLForRoute(named name: String, with parameters: Set<Route.Parameter>) -> URL? {
+    public func generateURLForRoute(named name: String, parameters: Set<Route.Parameter>) -> URL? {
         guard let route = resolveRoute(named: name) else { return nil }
         var path = route.path
         let range = NSRange(location: 0, length: path.utf8.count)

@@ -49,9 +49,7 @@ public struct RouteCollection: Equatable {
     public mutating func add(pathPrefix: String) -> Bool {
         let separator = Route.pathComponentSeparator
         let pathPrefixPattern = RouteCollection.pathPrefixPattern
-        let pathPrefix = pathPrefix != String(separator) && pathPrefix.last == separator
-            ? String(pathPrefix.dropLast())
-            : pathPrefix
+        let pathPrefix = Route.normalize(path: pathPrefix)
         guard pathPrefix.starts(with: String(separator)),
             !pathPrefix.contains(String(separator) + String(separator)),
             let regex = try? NSRegularExpression(pattern: pathPrefixPattern) else { return false }
@@ -95,10 +93,8 @@ public struct RouteCollection: Equatable {
 
     @discardableResult
     public mutating func add(pathPrefix: String, namePrefix: String) -> Bool {
+        let pathPrefix = Route.normalize(path: pathPrefix)
         let separator = Route.pathComponentSeparator
-        let pathPrefix = pathPrefix != String(separator) && pathPrefix.last == separator
-            ? String(pathPrefix.dropLast())
-            : pathPrefix
         let pathPrefixRange = NSRange(location: 0, length: pathPrefix.utf8.count)
         let namePrefixRange = NSRange(location: 0, length: namePrefix.utf8.count)
         let pathPrefixPattern = RouteCollection.pathPrefixPattern

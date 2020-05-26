@@ -125,12 +125,7 @@ public class DefaultRouter: Router {
         if let query = query {
             guard var urlComponents = URLComponents(string: path) else { return nil }
             let queryItems = query.map { key, value in URLQueryItem(name: key, value: value) }
-
-            if urlComponents.queryItems == nil {
-                urlComponents.queryItems = queryItems
-            } else {
-                urlComponents.queryItems?.append(contentsOf: queryItems)
-            }
+            urlComponents.queryItems = queryItems
 
             return urlComponents.url
         }

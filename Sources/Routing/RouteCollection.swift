@@ -11,12 +11,12 @@ public struct RouteCollection: Equatable {
     private var routes: DictionaryType
 
     public init(_ collection: RouteCollection) {
-        self.routes = [:]
+        self.routes = .init()
         insert(collection)
     }
 
     public init(_ routes: Set<Route> = []) {
-        self.routes = [:]
+        self.routes = .init()
         insert(routes)
     }
 

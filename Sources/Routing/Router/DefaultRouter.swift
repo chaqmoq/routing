@@ -59,7 +59,7 @@ public class DefaultRouter: Router {
         return _generateURLForRoute(named: name)
     }
 
-    public func generateURLForRoute(named name: String, parameters: Set<Route.Parameter>) -> URL? {
+    public func generateURLForRoute(named name: String, parameters: ParameterBag<String, String>) -> URL? {
         return _generateURLForRoute(named: name, parameters: parameters)
     }
 
@@ -69,7 +69,7 @@ public class DefaultRouter: Router {
 
     public func generateURLForRoute(
         named name: String,
-        parameters: Set<Route.Parameter>,
+        parameters: ParameterBag<String, String>,
         query: ParameterBag<String, String>
     ) -> URL? {
         return _generateURLForRoute(named: name, parameters: parameters, query: query)
@@ -77,7 +77,7 @@ public class DefaultRouter: Router {
 
     private func _generateURLForRoute(
         named name: String,
-        parameters: Set<Route.Parameter>? = nil,
+        parameters: ParameterBag<String, String>? = nil,
         query: ParameterBag<String, String>? = nil
     ) -> URL? {
         guard let route = resolveRoute(named: name) else { return nil }
@@ -86,9 +86,9 @@ public class DefaultRouter: Router {
 
         if var routeParameters = route.parameters {
             if let parameters = parameters {
-                for parameter in parameters {
-                    if var routeParameter = routeParameters.first(where: { $0.name == parameter.name }) {
-                        routeParameter.value = parameter.value
+                for (key, value) in parameters {
+                    if var routeParameter = routeParameters.first(where: { $0.name == key }) {
+                        routeParameter.value = value
                         routeParameters.update(with: routeParameter)
                     }
                 }

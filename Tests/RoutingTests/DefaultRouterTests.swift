@@ -278,43 +278,43 @@ final class DefaultRouterTests: XCTestCase {
 
     func testGenerateURLForRouteNamedWithParameters() {
         // Act
-        var url = router.generateURLForRoute(named: "post_list", parameters: [])
+        var url = router.generateURLForRoute(named: "post_list", parameters: .init())
 
         // Assert
         XCTAssertEqual(url?.path, "/posts")
 
         // Act
-        url = router.generateURLForRoute(named: "post_delete", parameters: [Route.Parameter(name: "id", value: "1")])
+        url = router.generateURLForRoute(named: "post_delete", parameters: ["id": "1"])
 
         // Assert
         XCTAssertEqual(url?.path, "/posts/1")
 
         // Act
-        url = router.generateURLForRoute(named: "category_get", parameters: [Route.Parameter(name: "id", value: "1")])
+        url = router.generateURLForRoute(named: "category_get", parameters: ["id": "1"])
 
         // Assert
         XCTAssertEqual(url?.path, "/categories/1")
 
         // Act
-        url = router.generateURLForRoute(named: "category_get", parameters: [])
+        url = router.generateURLForRoute(named: "category_get", parameters: .init())
 
         // Assert
         XCTAssertEqual(url?.path, "/categories/1")
 
         // Act
-        url = router.generateURLForRoute(named: "blog_page", parameters: [Route.Parameter(name: "id", value: "1")])
+        url = router.generateURLForRoute(named: "blog_page", parameters: ["id": "1"])
 
         // Assert
         XCTAssertEqual(url?.path, "/blog/1")
 
         // Act
-        url = router.generateURLForRoute(named: "tag_get", parameters: [])
+        url = router.generateURLForRoute(named: "tag_get", parameters: .init())
 
         // Assert
         XCTAssertEqual(url?.path, "/tags")
 
         // Act
-        url = router.generateURLForRoute(named: "not_existing_name", parameters: [])
+        url = router.generateURLForRoute(named: "not_existing_name", parameters: .init())
 
         // Assert
         XCTAssertNil(url)

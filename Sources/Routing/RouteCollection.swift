@@ -15,7 +15,7 @@ public struct RouteCollection: Equatable {
     }
 
     public init(_ collection: RouteCollection) {
-        self.routes = .init()
+        routes = .init()
         insert(collection)
     }
 

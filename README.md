@@ -17,3 +17,26 @@ let package = Package(
     ]
 )
 ```
+
+## Usage
+
+```swift
+import Routing
+
+let routeCollection = RouteCollection([
+    Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
+    Route(method: .GET, path: "/posts/{id<\\d+>}", name: "post_detail") { request in Response() }!,
+    Route(method: .POST, path: "/posts", name: "post_create") { request in Response() }!,
+    Route(method: .PUT, path: "/posts", name: "post_update") { request in Response() }!,
+    Route(method: .DELETE, path: "/posts/{id<\\d+>}", name: "post_delete") { request in Response() }!
+])
+let router = DefaultRouter(routeCollection: routeCollection)
+
+// Prints "post_list"
+let route = router.resolveRouteBy(method: .GET, uri: "/posts")
+print(route!.name)
+
+// Prints "/posts/1"
+let url = router.generateURLForRoute(named: "post_delete", parameters: ["id": "1"])
+print(url!.absoluteString)
+```

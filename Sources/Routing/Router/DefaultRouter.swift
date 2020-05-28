@@ -50,7 +50,42 @@ public class DefaultRouter: Router {
 
     public func resolveRoute(named name: String) -> Route? {
         if name.isEmpty { return nil }
-        for (_, routes) in routeCollection { if let route = routes.first(where: { $0.name == name }) { return route }}
+
+        for (_, routes) in routeCollection {
+            if let route = routes.first(where: { $0.name == name }) {
+                if let parameters = route.parameters, parameters.contains(where: { $0.defaultValue == nil }) {
+                    return nil
+                }
+
+                return route
+            }
+        }
+
+        return nil
+    }
+
+    public func resolveRoute(named name: String, parameters: ParameterBag<String, String>) -> Route? {
+        if name.isEmpty { return nil }
+
+        for (_, routes) in routeCollection {
+            if var route = routes.first(where: { $0.name == name }) {
+                if let routeParameters = route.parameters {
+                    for routeParameter in routeParameters {
+                        var routeParameter = routeParameter
+
+                        if let value = parameters[routeParameter.name] {
+                            routeParameter.value = value
+                            route.updateParameter(routeParameter)
+                        } else if routeParameter.defaultValue == nil {
+                            return nil
+                        }
+                    }
+                }
+
+                return route
+            }
+        }
+
         return nil
     }
 
@@ -79,20 +114,19 @@ public class DefaultRouter: Router {
         parameters: ParameterBag<String, String>? = nil,
         query: ParameterBag<String, String>? = nil
     ) -> URL? {
-        guard let route = resolveRoute(named: name) else { return nil }
+        var resolvedRoute: Route?
+
+        if let parameters = parameters {
+            resolvedRoute = resolveRoute(named: name, parameters: parameters)
+        } else {
+            resolvedRoute = resolveRoute(named: name)
+        }
+
+        guard let route = resolvedRoute else { return nil }
         var path = route.path
         let range = NSRange(location: 0, length: path.utf8.count)
 
-        if var routeParameters = route.parameters {
-            if let parameters = parameters {
-                for (key, value) in parameters {
-                    if var routeParameter = routeParameters.first(where: { $0.name == key }) {
-                        routeParameter.value = value
-                        routeParameters.update(with: routeParameter)
-                    }
-                }
-            }
-
+        if let routeParameters = route.parameters {
             for routeParameter in routeParameters {
                 let pattern = Route.parameterPattern.replacingOccurrences(
                     of: Route.parameterNamePattern,

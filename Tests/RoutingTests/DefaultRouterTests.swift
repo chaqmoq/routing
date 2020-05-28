@@ -216,14 +216,11 @@ final class DefaultRouterTests: XCTestCase {
     }
 
     func testResolveRouteNamed() {
-        // Arrange
-        let name = "index"
-
         // Act
-        var route = router.resolveRoute(named: name)
+        var route = router.resolveRoute(named: "index")
 
         // Assert
-        XCTAssertEqual(route?.name, name)
+        XCTAssertEqual(route?.name, "index")
 
         // Act
         route = router.resolveRoute(named: "")
@@ -233,6 +230,45 @@ final class DefaultRouterTests: XCTestCase {
 
         // Act
         route = router.resolveRoute(named: "not_existing_name")
+
+        // Assert
+        XCTAssertNil(route)
+
+        // Act
+        route = router.resolveRoute(named: "post_delete", parameters: ["id": "1"])
+
+        // Assert
+        XCTAssertEqual(route?.name, "post_delete")
+
+        // Act
+        route = router.resolveRoute(named: "post_delete", parameters: .init())
+
+        // Assert
+        XCTAssertNil(route)
+
+        // Act
+        route = router.resolveRoute(named: "", parameters: .init())
+
+        // Assert
+        XCTAssertNil(route)
+
+        // Act
+        route = router.resolveRoute(named: "not_existing_name", parameters: .init())
+
+        // Assert
+        XCTAssertNil(route)
+
+        // Arrange
+        router.routeCollection = .init()
+
+        // Act
+        route = router.resolveRoute(named: "any_name")
+
+        // Assert
+        XCTAssertNil(route)
+
+        // Act
+        route = router.resolveRoute(named: "any_name", parameters: .init())
 
         // Assert
         XCTAssertNil(route)

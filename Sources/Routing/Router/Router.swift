@@ -7,6 +7,101 @@ public protocol Router {
 }
 
 extension Router {
+    @discardableResult
+    public mutating func delete(
+        _ path: String = "/",
+        name: String? = nil,
+        handler: @escaping Route.RequestHandler
+    ) -> Route? {
+        request(methods: [.DELETE], path: path, name: name, handler: handler).first
+    }
+
+    @discardableResult
+    public mutating func get(
+        _ path: String = "/",
+        name: String? = nil,
+        handler: @escaping Route.RequestHandler
+    ) -> Route? {
+        request(methods: [.GET], path: path, name: name, handler: handler).first
+    }
+
+    @discardableResult
+    public mutating func head(
+        _ path: String = "/",
+        name: String? = nil,
+        handler: @escaping Route.RequestHandler
+    ) -> Route? {
+        request(methods: [.HEAD], path: path, name: name, handler: handler).first
+    }
+
+    @discardableResult
+    public mutating func options(
+        _ path: String = "/",
+        name: String? = nil,
+        handler: @escaping Route.RequestHandler
+    ) -> Route? {
+        request(methods: [.OPTIONS], path: path, name: name, handler: handler).first
+    }
+
+    @discardableResult
+    public mutating func patch(
+        _ path: String = "/",
+        name: String? = nil,
+        handler: @escaping Route.RequestHandler
+    ) -> Route? {
+        request(methods: [.PATCH], path: path, name: name, handler: handler).first
+    }
+
+    @discardableResult
+    public mutating func post(
+        _ path: String = "/",
+        name: String? = nil,
+        handler: @escaping Route.RequestHandler
+    ) -> Route? {
+        request(methods: [.POST], path: path, name: name, handler: handler).first
+    }
+
+    @discardableResult
+    public mutating func put(
+        _ path: String = "/",
+        name: String? = nil,
+        handler: @escaping Route.RequestHandler
+    ) -> Route? {
+        request(methods: [.PUT], path: path, name: name, handler: handler).first
+    }
+
+    @discardableResult
+    public mutating func request(
+        methods: Set<Request.Method>? = nil,
+        path: String = "/",
+        name: String? = nil,
+        handler: @escaping Route.RequestHandler
+    ) -> Set<Route> {
+        let methods = methods ?? Set(Request.Method.allCases)
+        var routes: Set<Route> = []
+
+        for method in methods {
+            if let route = Route(method: method, path: path, name: name, requestHandler: handler) {
+                self.routes.insert(route)
+                routes.insert(route)
+            }
+        }
+
+        return routes
+    }
+
+    public mutating func group(
+        _ path: String = "/",
+        name: String? = nil,
+        handler: @escaping (inout RouteCollection) -> Void
+    ) {
+        var routes = RouteCollection(path: path, name: name)
+        handler(&routes)
+        self.routes.insert(routes)
+    }
+}
+
+extension Router {
     public func resolveRouteBy(method: Request.Method, uri: String) -> Route? {
         let uri = Route.normalize(path: uri)
         guard let path = URLComponents(string: uri)?.path else { return nil }

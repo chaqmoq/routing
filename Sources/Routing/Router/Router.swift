@@ -2,13 +2,13 @@ import Foundation
 import struct HTTP.ParameterBag
 import struct HTTP.Request
 
-public protocol Router {
+public protocol Router: class {
     var routes: RouteCollection { get set }
 }
 
 extension Router {
     @discardableResult
-    public mutating func delete(
+    public func delete(
         _ path: String = "/",
         name: String? = nil,
         handler: @escaping Route.RequestHandler
@@ -17,7 +17,7 @@ extension Router {
     }
 
     @discardableResult
-    public mutating func get(
+    public func get(
         _ path: String = "/",
         name: String? = nil,
         handler: @escaping Route.RequestHandler
@@ -26,7 +26,7 @@ extension Router {
     }
 
     @discardableResult
-    public mutating func head(
+    public func head(
         _ path: String = "/",
         name: String? = nil,
         handler: @escaping Route.RequestHandler
@@ -35,7 +35,7 @@ extension Router {
     }
 
     @discardableResult
-    public mutating func options(
+    public func options(
         _ path: String = "/",
         name: String? = nil,
         handler: @escaping Route.RequestHandler
@@ -44,7 +44,7 @@ extension Router {
     }
 
     @discardableResult
-    public mutating func patch(
+    public func patch(
         _ path: String = "/",
         name: String? = nil,
         handler: @escaping Route.RequestHandler
@@ -53,7 +53,7 @@ extension Router {
     }
 
     @discardableResult
-    public mutating func post(
+    public func post(
         _ path: String = "/",
         name: String? = nil,
         handler: @escaping Route.RequestHandler
@@ -62,7 +62,7 @@ extension Router {
     }
 
     @discardableResult
-    public mutating func put(
+    public func put(
         _ path: String = "/",
         name: String? = nil,
         handler: @escaping Route.RequestHandler
@@ -71,7 +71,7 @@ extension Router {
     }
 
     @discardableResult
-    public mutating func request(
+    public func request(
         methods: Set<Request.Method>? = nil,
         path: String = "/",
         name: String? = nil,
@@ -90,7 +90,7 @@ extension Router {
         return routes
     }
 
-    public mutating func group(
+    public func group(
         _ path: String = "/",
         name: String? = nil,
         handler: @escaping (Router) -> Void

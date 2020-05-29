@@ -93,10 +93,11 @@ extension Router {
     public mutating func group(
         _ path: String = "/",
         name: String? = nil,
-        handler: @escaping (inout RouteCollection) -> Void
+        handler: @escaping (Router) -> Void
     ) {
-        var routes = RouteCollection(path: path, name: name)
-        handler(&routes)
+        let routes = self.routes
+        self.routes = .init(path: path, name: name)
+        handler(self)
         self.routes.insert(routes)
     }
 }

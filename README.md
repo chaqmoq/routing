@@ -23,14 +23,14 @@ let package = Package(
 ```swift
 import Routing
 
-let routeCollection = RouteCollection([
+let routes = RouteCollection([
     Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
     Route(method: .GET, path: "/posts/{id<\\d+>}", name: "post_detail") { request in Response() }!,
     Route(method: .POST, path: "/posts", name: "post_create") { request in Response() }!,
     Route(method: .PUT, path: "/posts", name: "post_update") { request in Response() }!,
     Route(method: .DELETE, path: "/posts/{id<\\d+>}", name: "post_delete") { request in Response() }!
 ])
-let router = DefaultRouter(routeCollection: routeCollection)
+let router = DefaultRouter(routes: routes)
 
 // Prints "post_list"
 var route = router.resolveRouteBy(method: .GET, uri: "/posts")

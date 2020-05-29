@@ -3,18 +3,18 @@ import struct HTTP.ParameterBag
 import struct HTTP.Request
 
 public class DefaultRouter: Router {
-    public var routeCollection: RouteCollection
+    public var routes: RouteCollection
 
-    public init(routeCollection: RouteCollection = .init()) {
-        self.routeCollection = routeCollection
+    public init(routes: RouteCollection = .init()) {
+        self.routes = routes
     }
 
     public func resolveRouteBy(method: Request.Method, uri: String) -> Route? {
         let uri = Route.normalize(path: uri)
         guard let path = URLComponents(string: uri)?.path else { return nil }
-        let routes = routeCollection[method]
+        let methodRoutes = routes[method]
 
-        for route in routes {
+        for route in methodRoutes {
             if let routeRegex = try? NSRegularExpression(pattern: "^\(route.pattern)$") {
                 let pathRange = NSRange(location: 0, length: path.utf8.count)
 
@@ -51,8 +51,8 @@ public class DefaultRouter: Router {
     public func resolveRoute(named name: String) -> Route? {
         if name.isEmpty { return nil }
 
-        for (_, routes) in routeCollection {
-            if let route = routes.first(where: { $0.name == name }) {
+        for (_, methodRoutes) in routes {
+            if let route = methodRoutes.first(where: { $0.name == name }) {
                 if let parameters = route.parameters, parameters.contains(where: { $0.defaultValue == nil }) {
                     return nil
                 }
@@ -67,8 +67,8 @@ public class DefaultRouter: Router {
     public func resolveRoute(named name: String, parameters: ParameterBag<String, String>) -> Route? {
         if name.isEmpty { return nil }
 
-        for (_, routes) in routeCollection {
-            if var route = routes.first(where: { $0.name == name }) {
+        for (_, methodRoutes) in routes {
+            if var route = methodRoutes.first(where: { $0.name == name }) {
                 if let routeParameters = route.parameters {
                     for routeParameter in routeParameters {
                         var routeParameter = routeParameter

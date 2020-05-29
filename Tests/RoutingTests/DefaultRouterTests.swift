@@ -10,7 +10,7 @@ final class DefaultRouterTests: XCTestCase {
         super.setUp()
 
         // Arrange
-        let routeCollection = RouteCollection([
+        let routes = RouteCollection([
             Route(method: .OPTIONS, path: "/", name: "index") { request in Response() }!,
             Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
             Route(method: .DELETE, path: "/posts/{id<\\d+>}", name: "post_delete") { request in Response() }!,
@@ -20,7 +20,7 @@ final class DefaultRouterTests: XCTestCase {
             Route(method: .GET, path: "/categories/{name}/posts/{id<\\d+>?1}", name: "category_post_get") { request in Response() }!,
             Route(method: .GET, path: "/tags/{name?}", name: "tag_get") { request in Response() }!
         ])
-        router = DefaultRouter(routeCollection: routeCollection)
+        router = DefaultRouter(routes: routes)
     }
 
     func testResolveRouteWithEmptyPath() {
@@ -259,7 +259,7 @@ final class DefaultRouterTests: XCTestCase {
         XCTAssertNil(route)
 
         // Arrange
-        router.routeCollection = .init()
+        router.routes = .init()
 
         // Act
         route = router.resolveRoute(named: "any_name")

@@ -8,19 +8,27 @@ public struct RouteCollection: Equatable {
     static let pathPrefixPattern = "^[a-zA-Z0-9_~.-/]+$"
     static let namePrefixPattern = "^[a-zA-Z0-9_.-]+$"
 
+    public let pathPrefix: String?
+    public let namePrefix: String?
     private var routes: DictionaryType
 
-    public init() {
+    public init(pathPrefix: String? = nil, namePrefix: String? = nil) {
         routes = .init()
+        self.pathPrefix = pathPrefix
+        self.namePrefix = namePrefix
     }
 
-    public init(_ routes: RouteCollection) {
+    public init(_ routes: RouteCollection, pathPrefix: String? = nil, namePrefix: String? = nil) {
         self.routes = .init()
+        self.pathPrefix = pathPrefix
+        self.namePrefix = namePrefix
         insert(routes)
     }
 
-    public init(_ routes: Set<Route>) {
+    public init(_ routes: Set<Route>, pathPrefix: String? = nil, namePrefix: String? = nil) {
         self.routes = .init()
+        self.pathPrefix = pathPrefix
+        self.namePrefix = namePrefix
         insert(routes)
     }
 
@@ -39,7 +47,59 @@ public struct RouteCollection: Equatable {
 
     @discardableResult
     public mutating func insert(_ route: Route) -> Bool {
-        if !routes.contains(where: { $0.value.contains(route) }) { return self[route.method].insert(route).0 }
+        var route = route
+
+        if let pathPrefix = pathPrefix, let namePrefix = namePrefix {
+            let pathPrefix = Route.normalize(path: pathPrefix)
+            let separator = Route.pathComponentSeparator
+            let pathPrefixRange = NSRange(location: 0, length: pathPrefix.utf8.count)
+            let namePrefixRange = NSRange(location: 0, length: namePrefix.utf8.count)
+            let pathPrefixPattern = RouteCollection.pathPrefixPattern
+            let namePrefixPattern = RouteCollection.namePrefixPattern
+            guard pathPrefix.starts(with: String(separator)),
+                !pathPrefix.contains(String(separator) + String(separator)),
+                let pathPrefixRegex = try? NSRegularExpression(pattern: pathPrefixPattern),
+                pathPrefixRegex.firstMatch(in: pathPrefix, range: pathPrefixRange) != nil,
+                let namePrefixRegex = try? NSRegularExpression(pattern: namePrefixPattern),
+                namePrefixRegex.firstMatch(in: namePrefix, range: namePrefixRange) != nil else { return false }
+            route = Route(
+                method: route.method,
+                path: pathPrefix + route.path,
+                name: namePrefix + (route.name ?? ""),
+                requestHandler: route.requestHandler
+            )!
+        } else if let pathPrefix = pathPrefix {
+            let separator = Route.pathComponentSeparator
+            let pathPrefixPattern = RouteCollection.pathPrefixPattern
+            let pathPrefix = Route.normalize(path: pathPrefix)
+            guard pathPrefix.starts(with: String(separator)),
+                !pathPrefix.contains(String(separator) + String(separator)),
+                let regex = try? NSRegularExpression(pattern: pathPrefixPattern) else { return false }
+            let range = NSRange(location: 0, length: pathPrefix.utf8.count)
+            guard regex.firstMatch(in: pathPrefix, range: range) != nil else { return false }
+            route = Route(
+                method: route.method,
+                path: pathPrefix + route.path,
+                name: route.name,
+                requestHandler: route.requestHandler
+            )!
+        } else if let namePrefix = namePrefix {
+            let namePrefixPattern = RouteCollection.namePrefixPattern
+            guard let regex = try? NSRegularExpression(pattern: namePrefixPattern) else { return false }
+            let range = NSRange(location: 0, length: namePrefix.utf8.count)
+            guard regex.firstMatch(in: namePrefix, range: range) != nil else { return false }
+            route = Route(
+                method: route.method,
+                path: route.path,
+                name: namePrefix + (route.name ?? ""),
+                requestHandler: route.requestHandler
+            )!
+        }
+
+        if !routes.contains(where: { $0.value.contains(route) }) {
+            return self[route.method].insert(route).0
+        }
+
         return false
     }
 
@@ -50,81 +110,6 @@ public struct RouteCollection: Equatable {
     @discardableResult
     public mutating func remove(_ route: Route) -> Bool {
         self[route.method].remove(route) != nil
-    }
-
-    @discardableResult
-    public mutating func add(pathPrefix: String) -> Bool {
-        let separator = Route.pathComponentSeparator
-        let pathPrefixPattern = RouteCollection.pathPrefixPattern
-        let pathPrefix = Route.normalize(path: pathPrefix)
-        guard pathPrefix.starts(with: String(separator)),
-            !pathPrefix.contains(String(separator) + String(separator)),
-            let regex = try? NSRegularExpression(pattern: pathPrefixPattern) else { return false }
-        let range = NSRange(location: 0, length: pathPrefix.utf8.count)
-        guard regex.firstMatch(in: pathPrefix, range: range) != nil else { return false }
-
-        routes = routes.mapValues { routes in
-            Set<Route>(routes.map({ route in
-                Route(
-                    method: route.method,
-                    path: pathPrefix + route.path,
-                    name: route.name,
-                    requestHandler: route.requestHandler
-                )!
-            }))
-        }
-
-        return true
-    }
-
-    @discardableResult
-    public mutating func add(namePrefix: String) -> Bool {
-        let namePrefixPattern = RouteCollection.namePrefixPattern
-        guard let regex = try? NSRegularExpression(pattern: namePrefixPattern) else { return false }
-        let range = NSRange(location: 0, length: namePrefix.utf8.count)
-        guard regex.firstMatch(in: namePrefix, range: range) != nil else { return false }
-
-        routes = routes.mapValues { routes in
-            Set<Route>(routes.map({ route in
-                Route(
-                    method: route.method,
-                    path: route.path,
-                    name: namePrefix + (route.name ?? ""),
-                    requestHandler: route.requestHandler
-                )!
-            }))
-        }
-
-        return true
-    }
-
-    @discardableResult
-    public mutating func add(pathPrefix: String, namePrefix: String) -> Bool {
-        let pathPrefix = Route.normalize(path: pathPrefix)
-        let separator = Route.pathComponentSeparator
-        let pathPrefixRange = NSRange(location: 0, length: pathPrefix.utf8.count)
-        let namePrefixRange = NSRange(location: 0, length: namePrefix.utf8.count)
-        let pathPrefixPattern = RouteCollection.pathPrefixPattern
-        let namePrefixPattern = RouteCollection.namePrefixPattern
-        guard pathPrefix.starts(with: String(separator)),
-            !pathPrefix.contains(String(separator) + String(separator)),
-            let pathPrefixRegex = try? NSRegularExpression(pattern: pathPrefixPattern),
-            pathPrefixRegex.firstMatch(in: pathPrefix, range: pathPrefixRange) != nil,
-            let namePrefixRegex = try? NSRegularExpression(pattern: namePrefixPattern),
-            namePrefixRegex.firstMatch(in: namePrefix, range: namePrefixRange) != nil else { return false }
-
-        routes = routes.mapValues { routes in
-            Set<Route>(routes.map({ route in
-                Route(
-                    method: route.method,
-                    path: pathPrefix + route.path,
-                    name: namePrefix + (route.name ?? ""),
-                    requestHandler: route.requestHandler
-                )!
-            }))
-        }
-
-        return true
     }
 }
 

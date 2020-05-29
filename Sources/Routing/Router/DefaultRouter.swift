@@ -8,7 +8,9 @@ public class DefaultRouter: Router {
     public init(routes: RouteCollection = .init()) {
         self.routes = routes
     }
+}
 
+extension DefaultRouter {
     public func resolveRouteBy(method: Request.Method, uri: String) -> Route? {
         let uri = Route.normalize(path: uri)
         guard let path = URLComponents(string: uri)?.path else { return nil }
@@ -88,7 +90,9 @@ public class DefaultRouter: Router {
 
         return nil
     }
+}
 
+extension DefaultRouter {
     public func generateURLForRoute(named name: String) -> URL? {
         return _generateURLForRoute(named: name)
     }

@@ -52,13 +52,15 @@ public struct RouteCollection: Equatable {
         if let pathPrefix = pathPrefix, let namePrefix = namePrefix {
             let pathPrefix = Route.normalize(path: pathPrefix)
             let separator = Route.pathComponentSeparator
+            guard pathPrefix != String(separator),
+                namePrefix != "",
+                pathPrefix.starts(with: String(separator)),
+                !pathPrefix.contains(String(separator) + String(separator)) else { return false }
             let pathPrefixRange = NSRange(location: 0, length: pathPrefix.utf8.count)
             let namePrefixRange = NSRange(location: 0, length: namePrefix.utf8.count)
             let pathPrefixPattern = RouteCollection.pathPrefixPattern
             let namePrefixPattern = RouteCollection.namePrefixPattern
-            guard pathPrefix.starts(with: String(separator)),
-                !pathPrefix.contains(String(separator) + String(separator)),
-                let pathPrefixRegex = try? NSRegularExpression(pattern: pathPrefixPattern),
+            guard let pathPrefixRegex = try? NSRegularExpression(pattern: pathPrefixPattern),
                 pathPrefixRegex.firstMatch(in: pathPrefix, range: pathPrefixRange) != nil,
                 let namePrefixRegex = try? NSRegularExpression(pattern: namePrefixPattern),
                 namePrefixRegex.firstMatch(in: namePrefix, range: namePrefixRange) != nil else { return false }
@@ -70,11 +72,12 @@ public struct RouteCollection: Equatable {
             )!
         } else if let pathPrefix = pathPrefix {
             let separator = Route.pathComponentSeparator
+            guard pathPrefix != String(separator),
+                pathPrefix.starts(with: String(separator)),
+                !pathPrefix.contains(String(separator) + String(separator)) else { return false }
             let pathPrefixPattern = RouteCollection.pathPrefixPattern
             let pathPrefix = Route.normalize(path: pathPrefix)
-            guard pathPrefix.starts(with: String(separator)),
-                !pathPrefix.contains(String(separator) + String(separator)),
-                let regex = try? NSRegularExpression(pattern: pathPrefixPattern) else { return false }
+            guard let regex = try? NSRegularExpression(pattern: pathPrefixPattern) else { return false }
             let range = NSRange(location: 0, length: pathPrefix.utf8.count)
             guard regex.firstMatch(in: pathPrefix, range: range) != nil else { return false }
             route = Route(
@@ -84,6 +87,7 @@ public struct RouteCollection: Equatable {
                 requestHandler: route.requestHandler
             )!
         } else if let namePrefix = namePrefix {
+            guard namePrefix != "" else { return false }
             let namePrefixPattern = RouteCollection.namePrefixPattern
             guard let regex = try? NSRegularExpression(pattern: namePrefixPattern) else { return false }
             let range = NSRange(location: 0, length: namePrefix.utf8.count)

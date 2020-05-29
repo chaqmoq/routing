@@ -45,8 +45,9 @@ public struct RouteCollection: Equatable {
         for route in routes { remove(route) }
     }
 
-    public mutating func remove(_ route: Route) {
-        self[route.method].remove(route)
+    @discardableResult
+    public mutating func remove(_ route: Route) -> Bool {
+        self[route.method].remove(route) != nil
     }
 
     @discardableResult

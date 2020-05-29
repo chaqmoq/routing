@@ -14,9 +14,9 @@ public struct RouteCollection: Equatable {
         routes = .init()
     }
 
-    public init(_ collection: RouteCollection) {
-        routes = .init()
-        insert(collection)
+    public init(_ routes: RouteCollection) {
+        self.routes = .init()
+        insert(routes)
     }
 
     public init(_ routes: Set<Route>) {
@@ -29,8 +29,8 @@ public struct RouteCollection: Equatable {
         set { routes[method] = newValue }
     }
 
-    public mutating func insert(_ collection: RouteCollection) {
-        for (_, routes) in collection { insert(routes) }
+    public mutating func insert(_ routes: RouteCollection) {
+        for (_, methodRoutes) in routes { insert(methodRoutes) }
     }
 
     public mutating func insert(_ routes: Set<Route>) {

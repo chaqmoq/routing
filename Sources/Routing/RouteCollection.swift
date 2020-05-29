@@ -5,30 +5,30 @@ import struct HTTP.Request
 public struct RouteCollection: Equatable {
     public typealias DictionaryType = [Request.Method: Set<Route>]
 
-    static let pathPrefixPattern = "^[a-zA-Z0-9_~.-/]+$"
-    static let namePrefixPattern = "^[a-zA-Z0-9_.-]+$"
+    static let pathPattern = "^[a-zA-Z0-9_~.-/]+$"
+    static let namePattern = "^[a-zA-Z0-9_.-]+$"
 
-    public let pathPrefix: String?
-    public let namePrefix: String?
+    public let path: String?
+    public let name: String?
     private var routes: DictionaryType
 
-    public init(pathPrefix: String? = nil, namePrefix: String? = nil) {
+    public init(path: String? = nil, name: String? = nil) {
         routes = .init()
-        self.pathPrefix = pathPrefix
-        self.namePrefix = namePrefix
+        self.path = path
+        self.name = name
     }
 
-    public init(_ routes: RouteCollection, pathPrefix: String? = nil, namePrefix: String? = nil) {
+    public init(_ routes: RouteCollection, path: String? = nil, name: String? = nil) {
         self.routes = .init()
-        self.pathPrefix = pathPrefix
-        self.namePrefix = namePrefix
+        self.path = path
+        self.name = name
         insert(routes)
     }
 
-    public init(_ routes: Set<Route>, pathPrefix: String? = nil, namePrefix: String? = nil) {
+    public init(_ routes: Set<Route>, path: String? = nil, name: String? = nil) {
         self.routes = .init()
-        self.pathPrefix = pathPrefix
-        self.namePrefix = namePrefix
+        self.path = path
+        self.name = name
         insert(routes)
     }
 
@@ -49,53 +49,53 @@ public struct RouteCollection: Equatable {
     public mutating func insert(_ route: Route) -> Bool {
         var route = route
 
-        if let pathPrefix = pathPrefix, let namePrefix = namePrefix {
-            let pathPrefix = Route.normalize(path: pathPrefix)
+        if let path = path, let name = name {
+            let path = Route.normalize(path: path)
             let separator = Route.pathComponentSeparator
-            guard pathPrefix != String(separator),
-                namePrefix != "",
-                pathPrefix.starts(with: String(separator)),
-                !pathPrefix.contains(String(separator) + String(separator)) else { return false }
-            let pathPrefixRange = NSRange(location: 0, length: pathPrefix.utf8.count)
-            let namePrefixRange = NSRange(location: 0, length: namePrefix.utf8.count)
-            let pathPrefixPattern = RouteCollection.pathPrefixPattern
-            let namePrefixPattern = RouteCollection.namePrefixPattern
-            guard let pathPrefixRegex = try? NSRegularExpression(pattern: pathPrefixPattern),
-                pathPrefixRegex.firstMatch(in: pathPrefix, range: pathPrefixRange) != nil,
-                let namePrefixRegex = try? NSRegularExpression(pattern: namePrefixPattern),
-                namePrefixRegex.firstMatch(in: namePrefix, range: namePrefixRange) != nil else { return false }
+            guard path != String(separator),
+                name != "",
+                path.starts(with: String(separator)),
+                !path.contains(String(separator) + String(separator)) else { return false }
+            let pathRange = NSRange(location: 0, length: path.utf8.count)
+            let nameRange = NSRange(location: 0, length: name.utf8.count)
+            let pathPattern = RouteCollection.pathPattern
+            let namePattern = RouteCollection.namePattern
+            guard let pathRegex = try? NSRegularExpression(pattern: pathPattern),
+                pathRegex.firstMatch(in: path, range: pathRange) != nil,
+                let nameRegex = try? NSRegularExpression(pattern: namePattern),
+                nameRegex.firstMatch(in: name, range: nameRange) != nil else { return false }
             route = Route(
                 method: route.method,
-                path: pathPrefix + route.path,
-                name: namePrefix + (route.name ?? ""),
+                path: path + route.path,
+                name: name + (route.name ?? ""),
                 requestHandler: route.requestHandler
             )!
-        } else if let pathPrefix = pathPrefix {
+        } else if let path = path {
             let separator = Route.pathComponentSeparator
-            guard pathPrefix != String(separator),
-                pathPrefix.starts(with: String(separator)),
-                !pathPrefix.contains(String(separator) + String(separator)) else { return false }
-            let pathPrefixPattern = RouteCollection.pathPrefixPattern
-            let pathPrefix = Route.normalize(path: pathPrefix)
-            guard let regex = try? NSRegularExpression(pattern: pathPrefixPattern) else { return false }
-            let range = NSRange(location: 0, length: pathPrefix.utf8.count)
-            guard regex.firstMatch(in: pathPrefix, range: range) != nil else { return false }
+            guard path != String(separator),
+                path.starts(with: String(separator)),
+                !path.contains(String(separator) + String(separator)) else { return false }
+            let pathPattern = RouteCollection.pathPattern
+            let path = Route.normalize(path: path)
+            guard let regex = try? NSRegularExpression(pattern: pathPattern) else { return false }
+            let range = NSRange(location: 0, length: path.utf8.count)
+            guard regex.firstMatch(in: path, range: range) != nil else { return false }
             route = Route(
                 method: route.method,
-                path: pathPrefix + route.path,
+                path: path + route.path,
                 name: route.name,
                 requestHandler: route.requestHandler
             )!
-        } else if let namePrefix = namePrefix {
-            guard namePrefix != "" else { return false }
-            let namePrefixPattern = RouteCollection.namePrefixPattern
-            guard let regex = try? NSRegularExpression(pattern: namePrefixPattern) else { return false }
-            let range = NSRange(location: 0, length: namePrefix.utf8.count)
-            guard regex.firstMatch(in: namePrefix, range: range) != nil else { return false }
+        } else if let name = name {
+            guard name != "" else { return false }
+            let namePattern = RouteCollection.namePattern
+            guard let regex = try? NSRegularExpression(pattern: namePattern) else { return false }
+            let range = NSRange(location: 0, length: name.utf8.count)
+            guard regex.firstMatch(in: name, range: range) != nil else { return false }
             route = Route(
                 method: route.method,
                 path: route.path,
-                name: namePrefix + (route.name ?? ""),
+                name: name + (route.name ?? ""),
                 requestHandler: route.requestHandler
             )!
         }

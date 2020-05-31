@@ -60,7 +60,7 @@ public class RouteCollection {
                 nameRegex.firstMatch(in: name, range: nameRange) != nil else { return nil }
             route = Route(
                 method: route.method,
-                path: path + route.path,
+                path: Route.normalize(path: path + route.path),
                 name: name + (route.name ?? ""),
                 requestHandler: route.requestHandler
             )!
@@ -75,7 +75,7 @@ public class RouteCollection {
             guard regex.firstMatch(in: path, range: range) != nil else { return nil }
             route = Route(
                 method: route.method,
-                path: path + route.path,
+                path: Route.normalize(path: path + route.path),
                 name: route.name,
                 requestHandler: route.requestHandler
             )!

@@ -48,9 +48,7 @@ public class RouteCollection {
         if let path = path, !path.isEmpty, let name = name, !name.isEmpty {
             let path = Route.normalize(path: path)
             let separator = Route.pathComponentSeparator
-            guard path != String(separator),
-                name != "",
-                path.starts(with: String(separator)),
+            guard path.starts(with: String(separator)),
                 !path.contains(String(separator) + String(separator)) else { return nil }
             let pathRange = NSRange(location: 0, length: path.utf8.count)
             let nameRange = NSRange(location: 0, length: name.utf8.count)
@@ -68,8 +66,7 @@ public class RouteCollection {
             )!
         } else if let path = path, !path.isEmpty {
             let separator = Route.pathComponentSeparator
-            guard path != String(separator),
-                path.starts(with: String(separator)),
+            guard path.starts(with: String(separator)),
                 !path.contains(String(separator) + String(separator)) else { return nil }
             let pathPattern = RouteCollection.pathPattern
             let path = Route.normalize(path: path)
@@ -83,7 +80,6 @@ public class RouteCollection {
                 requestHandler: route.requestHandler
             )!
         } else if let name = name, !name.isEmpty {
-            guard name != "" else { return nil }
             let namePattern = RouteCollection.namePattern
             guard let regex = try? NSRegularExpression(pattern: namePattern) else { return nil }
             let range = NSRange(location: 0, length: name.utf8.count)

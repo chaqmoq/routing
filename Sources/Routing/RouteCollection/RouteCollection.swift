@@ -20,7 +20,7 @@ public class RouteCollection {
 
     public init(_ routes: RouteCollection, path: String? = nil, name: String? = nil) {
         self.routes = .init()
-        self.path = (routes.path ?? "") + (path ?? "")
+        self.path = Route.normalize(path: (routes.path ?? "") + (path ?? ""))
         self.name = (routes.name ?? "") + (name ?? "")
         for (_, methodRoutes) in routes { insert(methodRoutes) }
     }

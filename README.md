@@ -30,7 +30,7 @@ let routes = RouteCollection([
     Route(method: .PUT, path: "/posts", name: "post_update") { request in Response() }!,
     Route(method: .DELETE, path: "/posts/{id<\\d+>}", name: "post_delete") { request in Response() }!
 ])
-let router = DefaultRouter(routes: routes)
+let router = Router(routes: routes)
 
 // Prints "post_list"
 var route = router.resolveRouteBy(method: .GET, uri: "/posts")

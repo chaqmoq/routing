@@ -3,7 +3,7 @@ import struct HTTP.Request
 import struct HTTP.Response
 @testable import Routing
 
-final class DefaultRouterTests: XCTestCase {
+final class RouterTests: XCTestCase {
     var router: Router!
 
     override func setUp() {
@@ -20,7 +20,8 @@ final class DefaultRouterTests: XCTestCase {
             Route(method: .GET, path: "/categories/{name}/posts/{id<\\d+>?1}", name: "category_post_get") { request in Response() }!,
             Route(method: .GET, path: "/tags/{name?}", name: "tag_get") { request in Response() }!
         ])
-        router = DefaultRouter(routes: routes)
+        let builder = RouteCollectionBuilder(routes: routes)
+        router = Router(builder: builder)
     }
 
     func testResolveRouteWithEmptyPath() {
@@ -259,7 +260,7 @@ final class DefaultRouterTests: XCTestCase {
         XCTAssertNil(route)
 
         // Arrange
-        router.routes = .init()
+        router.builder.routes = .init()
 
         // Act
         route = router.resolveRoute(named: "any_name")

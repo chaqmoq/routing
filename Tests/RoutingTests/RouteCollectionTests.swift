@@ -24,13 +24,12 @@ final class RouteCollectionTests: XCTestCase {
         let routes2 = RouteCollection(routes1)
 
         // Assert
-        XCTAssertEqual(routes1, routes2)
         XCTAssertEqual(routes2.count, 2)
     }
 
     func testInitWithRoutes() {
         // Arrange
-        var routes = RouteCollection([
+        let routes = RouteCollection([
             Route(method: .GET) { request in Response() }!,
             Route(method: .GET, path: "/blog") { request in Response() }!,
             Route(method: .POST) { request in Response() }!,
@@ -65,7 +64,7 @@ final class RouteCollectionTests: XCTestCase {
 
     func testInsertRouteWithSameName() {
         // Arrange
-        var routes = RouteCollection([
+        let routes = RouteCollection([
             Route(method: .GET, path: "/", name: "blog") { request in Response() }!
         ])
 

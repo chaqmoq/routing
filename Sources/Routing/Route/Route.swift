@@ -128,7 +128,7 @@ extension Route {
 
     static func normalize(path: String) -> String {
         let separator = Route.pathComponentSeparator
-        var path = path
+        var path = path.replacingOccurrences(of: String(separator) + String(separator), with: String(separator))
         path = path != String(separator) && path.last == separator ? String(path.dropLast()) : path
 
         return path

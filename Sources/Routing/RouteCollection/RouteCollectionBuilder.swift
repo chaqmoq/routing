@@ -2,9 +2,9 @@ import struct HTTP.Request
 
 public class RouteCollectionBuilder {
     public var routes: RouteCollection
-    private var current: RouteCollection?
+    private weak var root: RouteCollectionBuilder?
 
-    public init(routes: RouteCollection = .init()) {
+    public init(_ routes: RouteCollection = .init()) {
         self.routes = routes
     }
 
@@ -83,14 +83,14 @@ public class RouteCollectionBuilder {
 
         for method in methods {
             if let route = Route(method: method, path: path, name: name, requestHandler: handler) {
-                if let current = current {
-                    if let route = current.insert(route) {
-                        self.routes.insert(route)
+                if let route = self.routes.insert(route) {
+                    if let root = root {
+                        if let route = root.routes.insert(route) {
+                            routes.insert(route)
+                        }
+                    } else {
                         routes.insert(route)
                     }
-                } else {
-                    self.routes.insert(route)
-                    routes.insert(route)
                 }
             }
         }
@@ -103,12 +103,9 @@ public class RouteCollectionBuilder {
         name: String? = nil,
         handler: @escaping (RouteCollectionBuilder) -> Void
     ) {
-        if let current = current {
-            self.current = RouteCollection(current, path: path, name: name)
-        } else {
-            current = RouteCollection(path: path, name: name)
-        }
-
-        handler(self)
+        if root == nil { root = self }
+        let builder = RouteCollectionBuilder(RouteCollection(routes, path: path, name: name))
+        builder.root = root
+        handler(builder)
     }
 }

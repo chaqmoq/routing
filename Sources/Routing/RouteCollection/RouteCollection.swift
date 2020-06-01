@@ -12,7 +12,7 @@ public class RouteCollection {
     public let name: String?
     private var routes: DictionaryType
 
-    public lazy var builder: RouteCollectionBuilder = .init(self)
+    public private(set) lazy var builder: RouteCollectionBuilder = .init(self)
 
     public init(path: String? = nil, name: String? = nil) {
         routes = .init()

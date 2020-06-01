@@ -3,10 +3,10 @@ import struct HTTP.ParameterBag
 import struct HTTP.Request
 
 public class Router {
-    public let builder: RouteCollectionBuilder
+    public var routes: RouteCollection
 
-    public init(builder: RouteCollectionBuilder = .init()) {
-        self.builder = builder
+    public init(routes: RouteCollection) {
+        self.routes = routes
     }
 }
 
@@ -14,7 +14,7 @@ extension Router {
     public func resolveRouteBy(method: Request.Method, uri: String) -> Route? {
         let uri = Route.normalize(path: uri)
         guard let path = URLComponents(string: uri)?.path else { return nil }
-        let methodRoutes = builder.routes[method]
+        let methodRoutes = routes[method]
 
         for route in methodRoutes {
             if let routeRegex = try? NSRegularExpression(pattern: "^\(route.pattern)$") {
@@ -53,7 +53,7 @@ extension Router {
     public func resolveRoute(named name: String) -> Route? {
         if name.isEmpty { return nil }
 
-        for (_, methodRoutes) in builder.routes {
+        for (_, methodRoutes) in routes {
             if let route = methodRoutes.first(where: { $0.name == name }) {
                 if let parameters = route.parameters, parameters.contains(where: { $0.defaultValue == nil }) {
                     return nil
@@ -69,7 +69,7 @@ extension Router {
     public func resolveRoute(named name: String, parameters: ParameterBag<String, String>) -> Route? {
         if name.isEmpty { return nil }
 
-        for (_, methodRoutes) in builder.routes {
+        for (_, methodRoutes) in routes {
             if var route = methodRoutes.first(where: { $0.name == name }) {
                 if let routeParameters = route.parameters {
                     for routeParameter in routeParameters {

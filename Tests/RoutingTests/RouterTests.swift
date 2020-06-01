@@ -20,8 +20,7 @@ final class RouterTests: XCTestCase {
             Route(method: .GET, path: "/categories/{name}/posts/{id<\\d+>?1}", name: "category_post_get") { request in Response() }!,
             Route(method: .GET, path: "/tags/{name?}", name: "tag_get") { request in Response() }!
         ])
-        let builder = RouteCollectionBuilder(routes)
-        router = Router(builder: builder)
+        router = Router(routes: routes)
     }
 
     func testResolveRouteWithEmptyPath() {
@@ -260,7 +259,7 @@ final class RouterTests: XCTestCase {
         XCTAssertNil(route)
 
         // Arrange
-        router.builder.routes = .init()
+        router.routes = .init()
 
         // Act
         route = router.resolveRoute(named: "any_name")

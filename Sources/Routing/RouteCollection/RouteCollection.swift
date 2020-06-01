@@ -14,7 +14,7 @@ public class RouteCollection {
 
     public init(path: String? = nil, name: String? = nil) {
         routes = .init()
-        self.path = path
+        self.path = Route.normalize(path: path ?? "")
         self.name = name
     }
 
@@ -27,7 +27,7 @@ public class RouteCollection {
 
     public init(_ routes: Set<Route>, path: String? = nil, name: String? = nil) {
         self.routes = .init()
-        self.path = path
+        self.path = Route.normalize(path: path ?? "")
         self.name = name
         insert(routes)
     }

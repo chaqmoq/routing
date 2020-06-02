@@ -82,6 +82,25 @@ final class RouteCollectionBuilderTests: XCTestCase {
         XCTAssertTrue(builder.routes[.PUT].contains(where: { $0.path == route?.path && $0.name == route?.name }))
     }
 
+    func testRequestWithMultipleMethods() {
+        // Arrange
+        let path = "/posts/{id<\\d+>}"
+
+        // Act
+        let routes = builder.request(path, methods: [.DELETE, .GET]) { request in Response() }
+
+        // Assert
+        XCTAssertEqual(routes.count, 2)
+        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .DELETE }))
+        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .GET }))
+
+        XCTAssertEqual(builder.routes.count, 2)
+        XCTAssertEqual(builder.routes[.DELETE].count, 1)
+        XCTAssertEqual(builder.routes[.GET].count, 1)
+        XCTAssertTrue(builder.routes[.DELETE].contains(where: { $0.path == path && $0.method == .DELETE }))
+        XCTAssertTrue(builder.routes[.GET].contains(where: { $0.path == path && $0.method == .GET }))
+    }
+
     func testGroupRoutes() {
         // Act
         builder.group(name: "front_") { front in

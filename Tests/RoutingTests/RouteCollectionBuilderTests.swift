@@ -3,10 +3,16 @@ import struct HTTP.Response
 @testable import Routing
 
 final class RouteCollectionBuilderTests: XCTestCase {
-    func testRoutes() {
-        // Arrange
-        let builder = RouteCollectionBuilder()
+    var builder: RouteCollectionBuilder!
 
+    override func setUp() {
+        super.setUp()
+
+        // Arrange
+        builder = RouteCollectionBuilder()
+    }
+
+    func testGroupRoutes() {
         // Act
         builder.group(name: "front_") { front in
             front.group(name: "blog_") { blog in

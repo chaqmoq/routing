@@ -32,6 +32,16 @@ final class RouteCollectionBuilderTests: XCTestCase {
         XCTAssertTrue(builder.routes[.GET].contains(where: { $0.path == route?.path && $0.name == route?.name }))
     }
 
+    func testHead() {
+        // Act
+        let route = builder.head("/posts", name: "post_head") { request in Response() }
+
+        // Assert
+        XCTAssertEqual(builder.routes.count, 1)
+        XCTAssertEqual(builder.routes[.HEAD].count, 1)
+        XCTAssertTrue(builder.routes[.HEAD].contains(where: { $0.path == route?.path && $0.name == route?.name }))
+    }
+
     func testGroupRoutes() {
         // Act
         builder.group(name: "front_") { front in

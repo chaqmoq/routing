@@ -14,7 +14,7 @@ public class RouteCollectionBuilder {
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
-        makeRequest(methods: [.DELETE], path: path, name: name, handler: handler).first
+        makeRequest(path, methods: [.DELETE], name: name, handler: handler).first
     }
 
     @discardableResult
@@ -23,7 +23,7 @@ public class RouteCollectionBuilder {
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
-        makeRequest(methods: [.GET], path: path, name: name, handler: handler).first
+        makeRequest(path, methods: [.GET], name: name, handler: handler).first
     }
 
     @discardableResult
@@ -32,7 +32,7 @@ public class RouteCollectionBuilder {
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
-        makeRequest(methods: [.HEAD], path: path, name: name, handler: handler).first
+        makeRequest(path, methods: [.HEAD], name: name, handler: handler).first
     }
 
     @discardableResult
@@ -41,7 +41,7 @@ public class RouteCollectionBuilder {
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
-        makeRequest(methods: [.OPTIONS], path: path, name: name, handler: handler).first
+        makeRequest(path, methods: [.OPTIONS], name: name, handler: handler).first
     }
 
     @discardableResult
@@ -50,7 +50,7 @@ public class RouteCollectionBuilder {
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
-        makeRequest(methods: [.PATCH], path: path, name: name, handler: handler).first
+        makeRequest(path, methods: [.PATCH], name: name, handler: handler).first
     }
 
     @discardableResult
@@ -59,7 +59,7 @@ public class RouteCollectionBuilder {
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
-        makeRequest(methods: [.POST], path: path, name: name, handler: handler).first
+        makeRequest(path, methods: [.POST], name: name, handler: handler).first
     }
 
     @discardableResult
@@ -68,22 +68,22 @@ public class RouteCollectionBuilder {
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
-        makeRequest(methods: [.PUT], path: path, name: name, handler: handler).first
+        makeRequest(path, methods: [.PUT], name: name, handler: handler).first
     }
 
     @discardableResult
     public func request(
+        _ path: String = "/",
         methods: Set<Request.Method>? = nil,
-        path: String = "/",
         handler: @escaping Route.RequestHandler
     ) -> Set<Route> {
-        makeRequest(methods: methods, path: path, handler: handler)
+        makeRequest(path, methods: methods, handler: handler)
     }
 
     @discardableResult
     private func makeRequest(
+        _ path: String = "/",
         methods: Set<Request.Method>? = nil,
-        path: String = "/",
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Set<Route> {

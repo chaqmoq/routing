@@ -12,6 +12,16 @@ final class RouteCollectionBuilderTests: XCTestCase {
         builder = RouteCollectionBuilder()
     }
 
+    func testDelete() {
+        // Act
+        let route = builder.delete("/posts/{id<\\d+>}", name: "post_delete") { request in Response() }
+
+        // Assert
+        XCTAssertEqual(builder.routes.count, 1)
+        XCTAssertEqual(builder.routes[.DELETE].count, 1)
+        XCTAssertTrue(builder.routes[.DELETE].contains(where: { $0.path == route?.path && $0.name == route?.name }))
+    }
+
     func testGroupRoutes() {
         // Act
         builder.group(name: "front_") { front in

@@ -107,14 +107,19 @@ public class RouteCollectionBuilder {
         return routes
     }
 
+    public func grouped(_ path: String = "/", name: String? = nil) -> RouteCollectionBuilder {
+        if root == nil { root = self }
+        let builder = RouteCollectionBuilder(RouteCollection(routes, path: path, name: name))
+        builder.root = root
+
+        return builder
+    }
+
     public func group(
         _ path: String = "/",
         name: String? = nil,
         handler: @escaping (RouteCollectionBuilder) -> Void
     ) {
-        if root == nil { root = self }
-        let builder = RouteCollectionBuilder(RouteCollection(routes, path: path, name: name))
-        builder.root = root
-        handler(builder)
+        handler(grouped(path, name: name))
     }
 }

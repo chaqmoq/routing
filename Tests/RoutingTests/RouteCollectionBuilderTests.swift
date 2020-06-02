@@ -101,6 +101,40 @@ final class RouteCollectionBuilderTests: XCTestCase {
         XCTAssertTrue(builder.routes[.GET].contains(where: { $0.path == path && $0.method == .GET }))
     }
 
+    func testRequestDefaultMethods() {
+        // Arrange
+        let path = "/posts/{id<\\d+>}"
+
+        // Act
+        let routes = builder.request(path) { request in Response() }
+
+        // Assert
+        XCTAssertEqual(routes.count, 7)
+        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .DELETE }))
+        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .GET }))
+        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .HEAD }))
+        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .OPTIONS }))
+        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .PATCH }))
+        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .POST }))
+        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .PUT }))
+
+        XCTAssertEqual(builder.routes.count, 7)
+        XCTAssertEqual(builder.routes[.DELETE].count, 1)
+        XCTAssertEqual(builder.routes[.GET].count, 1)
+        XCTAssertEqual(builder.routes[.HEAD].count, 1)
+        XCTAssertEqual(builder.routes[.OPTIONS].count, 1)
+        XCTAssertEqual(builder.routes[.PATCH].count, 1)
+        XCTAssertEqual(builder.routes[.POST].count, 1)
+        XCTAssertEqual(builder.routes[.PUT].count, 1)
+        XCTAssertTrue(builder.routes[.DELETE].contains(where: { $0.path == path && $0.method == .DELETE }))
+        XCTAssertTrue(builder.routes[.GET].contains(where: { $0.path == path && $0.method == .GET }))
+        XCTAssertTrue(builder.routes[.HEAD].contains(where: { $0.path == path && $0.method == .HEAD }))
+        XCTAssertTrue(builder.routes[.OPTIONS].contains(where: { $0.path == path && $0.method == .OPTIONS }))
+        XCTAssertTrue(builder.routes[.PATCH].contains(where: { $0.path == path && $0.method == .PATCH }))
+        XCTAssertTrue(builder.routes[.POST].contains(where: { $0.path == path && $0.method == .POST }))
+        XCTAssertTrue(builder.routes[.PUT].contains(where: { $0.path == path && $0.method == .PUT }))
+    }
+
     func testGroupRoutes() {
         // Act
         builder.group(name: "front_") { front in

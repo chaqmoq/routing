@@ -36,7 +36,8 @@ public struct Route {
         if isValid(path: path) {
             self.path = Route.normalize(path: path)
             pattern = mapPathToPattern()
-            guard pattern == "" || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
+            let separator = String(Route.pathComponentSeparator)
+            guard pattern == separator || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
         } else {
             return nil
         }
@@ -74,7 +75,7 @@ extension Route: CustomStringConvertible {
 extension Route {
     mutating func isValid(path: String) -> Bool {
         let separator = String(Route.pathComponentSeparator)
-        if path == "" || path == separator { return true }
+        if path == separator { return true }
         if !path.starts(with: separator) || path.contains(separator + separator) { return false }
         guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return false }
         let pathComponents = path.components(separatedBy: separator).filter({ $0 != "" })

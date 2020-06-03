@@ -28,14 +28,13 @@ public struct Route {
         requestHandler: @escaping RequestHandler
     ) {
         self.method = method
-        self.path = path
-        pattern = path
+        self.path = Route.normalize(path: path)
+        pattern = self.path
         self.name = name
         self.requestHandler = requestHandler
-        let (isValid, parameters) = Route.isValid(path: path)
+        let (isValid, parameters) = Route.isValid(path:  self.path)
 
         if isValid {
-            self.path = Route.normalize(path: path)
             self.parameters = parameters
             pattern = Route.generatePattern(from: self.path, parameters: parameters)
             let separator = String(Route.pathComponentSeparator)
@@ -43,40 +42,6 @@ public struct Route {
         } else {
             return nil
         }
-    }
-}
-
-extension Route {
-    public mutating func updateParameter(_ parameter: Parameter) {
-        parameters?.update(with: parameter)
-    }
-}
-
-extension Route: Hashable {
-    public static func ==(lhs: Route, rhs: Route) -> Bool {
-        if let name = lhs.name, !name.isEmpty {
-            return name == rhs.name
-        }
-
-        return lhs.method == rhs.method && lhs.pattern == rhs.pattern
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        if let name = name, !name.isEmpty {
-            hasher.combine(name)
-        } else {
-            hasher.combine(method)
-            hasher.combine(pattern)
-        }
-    }
-}
-
-extension Route: CustomStringConvertible {
-    public var description: String {
-        var description = "method=\(method.rawValue)\npath=\(path)"
-        if let name = name { description.append("\nname=\(name)") }
-
-        return description
     }
 }
 
@@ -133,13 +98,15 @@ extension Route {
     }
 
     public static func normalize(path: String) -> String {
-        if path.isEmpty { return path }
         let separator = String(Route.pathComponentSeparator)
         let doubleSeparator = separator + separator
-        var path = path.replacingOccurrences(of: doubleSeparator, with: separator)
-        path = path != separator && path.last == separator.last ? String(path.dropLast()) : path
 
-        return path
+        return !path.isEmpty &&
+            path != separator &&
+            path.last == separator.last &&
+            !path.hasSuffix(doubleSeparator)
+            ? String(path.dropLast())
+            : path
     }
 
     public static func generatePattern(from path: String, parameters: Set<Parameter>? = nil) -> String {
@@ -217,5 +184,37 @@ extension Route {
         }
 
         return nil
+    }
+
+    public mutating func updateParameter(_ parameter: Parameter) {
+        parameters?.update(with: parameter)
+    }
+}
+
+extension Route: Hashable {
+    public static func ==(lhs: Route, rhs: Route) -> Bool {
+        if let name = lhs.name, !name.isEmpty {
+            return name == rhs.name
+        }
+
+        return lhs.method == rhs.method && lhs.pattern == rhs.pattern
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        if let name = name, !name.isEmpty {
+            hasher.combine(name)
+        } else {
+            hasher.combine(method)
+            hasher.combine(pattern)
+        }
+    }
+}
+
+extension Route: CustomStringConvertible {
+    public var description: String {
+        var description = "method=\(method.rawValue)\npath=\(path)"
+        if let name = name { description.append("\nname=\(name)") }
+
+        return description
     }
 }

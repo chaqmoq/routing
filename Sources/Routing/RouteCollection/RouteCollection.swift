@@ -5,123 +5,115 @@ import struct HTTP.Request
 public class RouteCollection {
     public typealias DictionaryType = [Request.Method: Set<Route>]
 
-    public let path: String?
+    public let path: String
     public let name: String?
     private var routes: DictionaryType
 
     public private(set) lazy var builder: RouteCollectionBuilder = .init(self)
 
-    public init() {
-        routes = .init()
-        path = nil
-        name = nil
+    public convenience init() {
+        self.init(name: nil)!
     }
 
-    public init(_ routes: RouteCollection) {
-        self.routes = .init()
-        self.path = nil
-        self.name = nil
-        for (_, methodRoutes) in routes { insert(methodRoutes) }
-    }
-
-    public init(_ routes: Set<Route>) {
-        self.routes = .init()
-        self.path = nil
-        self.name = nil
+    public convenience init(_ routes: RouteCollection) {
+        self.init(name: nil)!
         insert(routes)
     }
 
-    public init(path: String? = nil, name: String) {
+    public convenience init(_ routes: Set<Route>) {
+        self.init(name: nil)!
+        insert(routes)
+    }
+
+    public init?(path: String = String(Route.pathComponentSeparator), name: String? = nil) {
         routes = .init()
-        self.path = Route.normalize(path: path ?? "")
         self.name = name
+
+        if path.isEmpty {
+            self.path = String(Route.pathComponentSeparator)
+        } else {
+            self.path = Route.normalize(path: path)
+            let (isValid, _) = Route.isValid(path: self.path)
+            if !isValid { return nil }
+        }
     }
 
-    public init?(path: String, name: String? = nil) {
-        routes = .init()
-        self.path = Route.normalize(path: path)
-        self.name = nil
-        let (isValid, _) = Route.isValid(path: path)
-        if !isValid { return nil }
-    }
-
-    public init?(_ routes: RouteCollection, path: String? = nil, name: String? = nil) {
+    public init?(
+        _ routes: RouteCollection,
+        path: String = String(Route.pathComponentSeparator),
+        name: String? = nil
+    ) {
         self.routes = .init()
-        self.path = Route.normalize(path: (routes.path ?? "") + (path ?? ""))
         self.name = (routes.name ?? "") + (name ?? "")
-        let (isValid, _) = Route.isValid(path: path ?? "")
-        if !isValid { return nil }
-        for (_, methodRoutes) in routes { insert(methodRoutes) }
-    }
 
-    public init?(_ routes: Set<Route>, path: String? = nil, name: String? = nil) {
-        self.routes = .init()
-        self.path = Route.normalize(path: path ?? "")
-        self.name = name
-        let (isValid, _) = Route.isValid(path: path ?? "")
+        if routes.path.isEmpty {
+            if path.isEmpty {
+                self.path = String(Route.pathComponentSeparator)
+            } else {
+                self.path = Route.normalize(path: path)
+            }
+        } else {
+            if path.isEmpty {
+                self.path = routes.path
+            } else {
+                if routes.path == String(Route.pathComponentSeparator) {
+                    self.path = Route.normalize(path: path)
+                } else {
+                    self.path = routes.path + Route.normalize(path: path)
+                }
+            }
+        }
+
+        let (isValid, _) = Route.isValid(path: self.path)
         if !isValid { return nil }
         insert(routes)
     }
 
+    public convenience init?(
+        _ routes: Set<Route>,
+        path: String = String(Route.pathComponentSeparator),
+        name: String? = nil
+    ) {
+        self.init(path: path, name: name)
+        insert(routes)
+    }
+}
+
+extension RouteCollection {
     public subscript(method: Request.Method) -> Set<Route> {
         get { routes[method] ?? .init() }
         set { routes[method] = newValue }
     }
 
-    public func insert(_ routes: Set<Route>) {
+    private func insert(_ routes: Set<Route>) {
         for route in routes { insert(route) }
+    }
+
+    public func insert(_ routes: RouteCollection) {
+        for (_, methodRoutes) in routes { insert(methodRoutes) }
     }
 
     @discardableResult
     public func insert(_ route: Route) -> Route? {
-        var route = route
-        let separator = Route.pathComponentSeparator
+        let separator = String(Route.pathComponentSeparator)
+        let path: String
 
-        if path == String(separator) {
-            route = Route(
-                method: route.method,
-                path: route.path,
-                name: (name ?? "") + (route.name ?? ""),
-                requestHandler: route.requestHandler
-            )!
-        } else if let path = path, !path.isEmpty, let name = name, !name.isEmpty {
-            let path = Route.normalize(path: path)
-            let separator = Route.pathComponentSeparator
-            guard path.starts(with: String(separator)),
-                !path.contains(String(separator) + String(separator)) else { return nil }
-            let pathRange = NSRange(location: 0, length: path.utf8.count)
+        if self.path == separator {
+            path = route.path
+        } else {
+            let pathRange = NSRange(location: 0, length: self.path.utf8.count)
             let pathPattern = Route.pathPattern
             guard let pathRegex = try? NSRegularExpression(pattern: pathPattern),
-                pathRegex.firstMatch(in: path, range: pathRange) != nil else { return nil }
-            route = Route(
-                method: route.method,
-                path: Route.normalize(path: path + route.path),
-                name: name + (route.name ?? ""),
-                requestHandler: route.requestHandler
-            )!
-        } else if let path = path, !path.isEmpty {
-            let separator = Route.pathComponentSeparator
-            guard path.starts(with: String(separator)),
-                !path.contains(String(separator) + String(separator)) else { return nil }
-            let pathPattern = Route.pathPattern
-            let path = Route.normalize(path: path)
-            guard let regex = try? NSRegularExpression(pattern: pathPattern) else { return nil }
-            let range = NSRange(location: 0, length: path.utf8.count)
-            guard regex.firstMatch(in: path, range: range) != nil else { return nil }
-            route = Route(
-                method: route.method,
-                path: Route.normalize(path: path + route.path),
-                name: route.name,
-                requestHandler: route.requestHandler
-            )!
-        } else if let name = name, !name.isEmpty {
-            route = Route(
-                method: route.method,
-                path: route.path,
-                name: name + (route.name ?? ""),
-                requestHandler: route.requestHandler
-            )!
+                pathRegex.firstMatch(in: self.path, range: pathRange) != nil else { return nil }
+            path = self.path + route.path
         }
+
+        let route = Route(
+            method: route.method,
+            path: path,
+            name: (name ?? "") + (route.name ?? ""),
+            requestHandler: route.requestHandler
+        )!
 
         if !routes.contains(where: { $0.value.contains(route) }) && self[route.method].insert(route).0 {
             return route
@@ -135,8 +127,8 @@ public class RouteCollection {
     }
 
     @discardableResult
-    public func remove(_ route: Route) -> Bool {
-        self[route.method].remove(route) != nil
+    public func remove(_ route: Route) -> Route? {
+        self[route.method].remove(route)
     }
 }
 

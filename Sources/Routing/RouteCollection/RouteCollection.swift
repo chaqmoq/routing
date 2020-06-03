@@ -5,8 +5,8 @@ import struct HTTP.Request
 public class RouteCollection {
     public typealias DictionaryType = [Request.Method: Set<Route>]
 
-    public let path: String
-    public let name: String?
+    public private(set) var path: String
+    public private(set) var name: String?
     private var routes: DictionaryType
 
     public private(set) lazy var builder: RouteCollectionBuilder = .init(self)
@@ -16,8 +16,7 @@ public class RouteCollection {
     }
 
     public convenience init(_ routes: RouteCollection) {
-        self.init(name: nil)!
-        insert(routes)
+        self.init(routes, name: nil)!
     }
 
     public convenience init(_ routes: Set<Route>) {
@@ -44,29 +43,48 @@ public class RouteCollection {
         name: String? = nil
     ) {
         self.routes = .init()
-        self.name = (routes.name ?? "") + (name ?? "")
+        var path = path
+        var name = name
+        self.path = path
+        self.name = name
 
         if routes.path.isEmpty {
             if path.isEmpty {
-                self.path = String(Route.pathComponentSeparator)
+                path = String(Route.pathComponentSeparator)
             } else {
-                self.path = Route.normalize(path: path)
+                path = Route.normalize(path: path)
             }
         } else {
             if path.isEmpty {
-                self.path = routes.path
+                path = routes.path
             } else {
                 if routes.path == String(Route.pathComponentSeparator) {
-                    self.path = Route.normalize(path: path)
+                    path = Route.normalize(path: path)
                 } else {
-                    self.path = routes.path + Route.normalize(path: path)
+                    path = Route.normalize(path: routes.path + Route.normalize(path: path))
                 }
             }
         }
 
-        let (isValid, _) = Route.isValid(path: self.path)
+        if let parentName = routes.name {
+            if let childName = name {
+                name = parentName + childName
+            } else {
+                name = parentName
+            }
+        } else {
+            if let childName = name {
+                name = childName
+            } else {
+                name = nil
+            }
+        }
+
+        let (isValid, _) = Route.isValid(path: path)
         if !isValid { return nil }
         insert(routes)
+        self.path = path
+        self.name = name
     }
 
     public convenience init?(

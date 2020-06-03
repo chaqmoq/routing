@@ -10,7 +10,7 @@ public struct Route {
     static let textPattern = "[a-zA-Z0-9_~.-]+"
     static let parameterNamePattern = "\\w+"
     static let parameterPattern = """
-    (\\{\(parameterNamePattern)(<[^\\/{}<>]+>)?(\\?([a-zA-Z0-9_~.-]+)?|![a-zA-Z0-9_~.-]+)?\\})+
+    (\\{\(parameterNamePattern)(<[^\\/{}<>]+>)?(\\?(\(textPattern))?|!\(textPattern))?\\})+
     """
     static let pathPattern = "\(textPattern)|\(parameterPattern)"
 
@@ -37,7 +37,7 @@ public struct Route {
         if isValid {
             self.path = Route.normalize(path: path)
             self.parameters = parameters
-            pattern = Route.mapToPattern(path: self.path, parameters: parameters)
+            pattern = Route.generatePattern(from: self.path, parameters: parameters)
             let separator = String(Route.pathComponentSeparator)
             guard pattern == separator || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
         } else {
@@ -134,14 +134,15 @@ extension Route {
 
     public static func normalize(path: String) -> String {
         if path.isEmpty { return path }
-        let separator = Route.pathComponentSeparator
-        var path = path.replacingOccurrences(of: String(separator) + String(separator), with: String(separator))
-        path = path != String(separator) && path.last == separator ? String(path.dropLast()) : path
+        let separator = String(Route.pathComponentSeparator)
+        let doubleSeparator = separator + separator
+        var path = path.replacingOccurrences(of: doubleSeparator, with: separator)
+        path = path != separator && path.last == separator.last ? String(path.dropLast()) : path
 
         return path
     }
 
-    public static func mapToPattern(path: String, parameters: Set<Parameter>? = nil) -> String {
+    public static func generatePattern(from path: String, parameters: Set<Parameter>? = nil) -> String {
         var pattern = path
 
         if let parameters = parameters {

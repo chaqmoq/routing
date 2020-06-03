@@ -96,21 +96,9 @@ extension RouteCollection {
     @discardableResult
     public func insert(_ route: Route) -> Route? {
         let separator = String(Route.pathComponentSeparator)
-        let path: String
-
-        if self.path == separator {
-            path = route.path
-        } else {
-            let pathRange = NSRange(location: 0, length: self.path.utf8.count)
-            let pathPattern = Route.pathPattern
-            guard let pathRegex = try? NSRegularExpression(pattern: pathPattern),
-                pathRegex.firstMatch(in: self.path, range: pathRange) != nil else { return nil }
-            path = self.path + route.path
-        }
-
         let route = Route(
             method: route.method,
-            path: path,
+            path: self.path == separator ? route.path : self.path + route.path,
             name: (name ?? "") + (route.name ?? ""),
             requestHandler: route.requestHandler
         )!

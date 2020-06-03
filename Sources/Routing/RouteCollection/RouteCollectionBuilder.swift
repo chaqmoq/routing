@@ -10,7 +10,7 @@ public class RouteCollectionBuilder {
 
     @discardableResult
     public func delete(
-        _ path: String = "/",
+        _ path: String = String(Route.pathComponentSeparator),
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
@@ -19,7 +19,7 @@ public class RouteCollectionBuilder {
 
     @discardableResult
     public func get(
-        _ path: String = "/",
+        _ path: String = String(Route.pathComponentSeparator),
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
@@ -28,7 +28,7 @@ public class RouteCollectionBuilder {
 
     @discardableResult
     public func head(
-        _ path: String = "/",
+        _ path: String = String(Route.pathComponentSeparator),
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
@@ -37,7 +37,7 @@ public class RouteCollectionBuilder {
 
     @discardableResult
     public func options(
-        _ path: String = "/",
+        _ path: String = String(Route.pathComponentSeparator),
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
@@ -46,7 +46,7 @@ public class RouteCollectionBuilder {
 
     @discardableResult
     public func patch(
-        _ path: String = "/",
+        _ path: String = String(Route.pathComponentSeparator),
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
@@ -55,7 +55,7 @@ public class RouteCollectionBuilder {
 
     @discardableResult
     public func post(
-        _ path: String = "/",
+        _ path: String = String(Route.pathComponentSeparator),
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
@@ -64,7 +64,7 @@ public class RouteCollectionBuilder {
 
     @discardableResult
     public func put(
-        _ path: String = "/",
+        _ path: String = String(Route.pathComponentSeparator),
         name: String? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Route? {
@@ -73,7 +73,7 @@ public class RouteCollectionBuilder {
 
     @discardableResult
     public func request(
-        _ path: String = "/",
+        _ path: String = String(Route.pathComponentSeparator),
         methods: Set<Request.Method>? = nil,
         handler: @escaping Route.RequestHandler
     ) -> Set<Route> {
@@ -82,7 +82,7 @@ public class RouteCollectionBuilder {
 
     @discardableResult
     private func makeRequest(
-        _ path: String = "/",
+        _ path: String = String(Route.pathComponentSeparator),
         methods: Set<Request.Method>? = nil,
         name: String? = nil,
         handler: @escaping Route.RequestHandler
@@ -107,7 +107,10 @@ public class RouteCollectionBuilder {
         return routes
     }
 
-    public func grouped(_ path: String = "/", name: String? = nil) -> RouteCollectionBuilder? {
+    public func grouped(
+        _ path: String = String(Route.pathComponentSeparator),
+        name: String? = nil
+    ) -> RouteCollectionBuilder? {
         guard let routes = RouteCollection(routes, path: path, name: name) else { return nil }
         if root == nil { root = self }
         let builder = RouteCollectionBuilder(routes)
@@ -117,7 +120,7 @@ public class RouteCollectionBuilder {
     }
 
     public func group(
-        _ path: String = "/",
+        _ path: String = String(Route.pathComponentSeparator),
         name: String? = nil,
         handler: @escaping (RouteCollectionBuilder) -> Void
     ) {

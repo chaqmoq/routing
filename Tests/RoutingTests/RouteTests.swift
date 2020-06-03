@@ -10,7 +10,7 @@ final class RouteTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(route.method, .GET)
-        XCTAssertEqual(route.path, "/")
+        XCTAssertEqual(route.path, String(Route.pathComponentSeparator))
         XCTAssertEqual(route.pattern, route.path)
         XCTAssertNil(route.name)
         XCTAssertNil(route.parameters)
@@ -48,7 +48,7 @@ final class RouteTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(route.method, method)
-        XCTAssertEqual(route.path, "/")
+        XCTAssertEqual(route.path, String(Route.pathComponentSeparator))
         XCTAssertEqual(route.pattern, route.path)
         XCTAssertEqual(route.name, name)
         XCTAssertNil(route.parameters)

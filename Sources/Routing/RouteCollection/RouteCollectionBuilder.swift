@@ -107,9 +107,10 @@ public class RouteCollectionBuilder {
         return routes
     }
 
-    public func grouped(_ path: String = "/", name: String? = nil) -> RouteCollectionBuilder {
+    public func grouped(_ path: String = "/", name: String? = nil) -> RouteCollectionBuilder? {
+        guard let routes = RouteCollection(routes, path: path, name: name) else { return nil }
         if root == nil { root = self }
-        let builder = RouteCollectionBuilder(RouteCollection(routes, path: path, name: name))
+        let builder = RouteCollectionBuilder(routes)
         builder.root = root
 
         return builder
@@ -120,6 +121,6 @@ public class RouteCollectionBuilder {
         name: String? = nil,
         handler: @escaping (RouteCollectionBuilder) -> Void
     ) {
-        handler(grouped(path, name: name))
+        if let builder = grouped(path, name: name) { handler(builder) }
     }
 }

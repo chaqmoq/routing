@@ -5,32 +5,61 @@ import struct HTTP.Request
 public class RouteCollection {
     public typealias DictionaryType = [Request.Method: Set<Route>]
 
-    static let pathPattern = "^[a-zA-Z0-9_~.-/]+$"
-    static let namePattern = "^[a-zA-Z0-9_.-]+$"
-
     public let path: String?
     public let name: String?
     private var routes: DictionaryType
 
     public private(set) lazy var builder: RouteCollectionBuilder = .init(self)
 
-    public init(path: String? = nil, name: String? = nil) {
+    public init() {
+        routes = .init()
+        path = nil
+        name = nil
+    }
+
+    public init(_ routes: RouteCollection) {
+        self.routes = .init()
+        self.path = nil
+        self.name = nil
+        for (_, methodRoutes) in routes { insert(methodRoutes) }
+    }
+
+    public init(_ routes: Set<Route>) {
+        self.routes = .init()
+        self.path = nil
+        self.name = nil
+        insert(routes)
+    }
+
+    public init(path: String? = nil, name: String) {
         routes = .init()
         self.path = Route.normalize(path: path ?? "")
         self.name = name
     }
 
-    public init(_ routes: RouteCollection, path: String? = nil, name: String? = nil) {
+    public init?(path: String, name: String? = nil) {
+        routes = .init()
+        self.path = Route.normalize(path: path)
+        self.name = nil
+        let (isValid, _) = Route.isValid(path: path)
+        if !isValid { return nil }
+    }
+
+    public init?(_ routes: RouteCollection, path: String? = nil, name: String? = nil) {
         self.routes = .init()
         self.path = Route.normalize(path: (routes.path ?? "") + (path ?? ""))
         self.name = (routes.name ?? "") + (name ?? "")
+        let (isValid, _) = Route.isValid(path: path ?? "")
+        if !isValid { return nil }
         for (_, methodRoutes) in routes { insert(methodRoutes) }
     }
 
-    public init(_ routes: Set<Route>, path: String? = nil, name: String? = nil) {
+    public init?(_ routes: Set<Route>, path: String? = nil, name: String? = nil) {
         self.routes = .init()
         self.path = Route.normalize(path: path ?? "")
         self.name = name
+        let (isValid, _) = Route.isValid(path: path ?? "")
+        if !isValid { return nil }
         insert(routes)
     }
 
@@ -46,20 +75,24 @@ public class RouteCollection {
     @discardableResult
     public func insert(_ route: Route) -> Route? {
         var route = route
+        let separator = Route.pathComponentSeparator
 
-        if let path = path, !path.isEmpty, let name = name, !name.isEmpty {
+        if path == String(separator) {
+            route = Route(
+                method: route.method,
+                path: route.path,
+                name: (name ?? "") + (route.name ?? ""),
+                requestHandler: route.requestHandler
+            )!
+        } else if let path = path, !path.isEmpty, let name = name, !name.isEmpty {
             let path = Route.normalize(path: path)
             let separator = Route.pathComponentSeparator
             guard path.starts(with: String(separator)),
                 !path.contains(String(separator) + String(separator)) else { return nil }
             let pathRange = NSRange(location: 0, length: path.utf8.count)
-            let nameRange = NSRange(location: 0, length: name.utf8.count)
-            let pathPattern = RouteCollection.pathPattern
-            let namePattern = RouteCollection.namePattern
+            let pathPattern = Route.pathPattern
             guard let pathRegex = try? NSRegularExpression(pattern: pathPattern),
-                pathRegex.firstMatch(in: path, range: pathRange) != nil,
-                let nameRegex = try? NSRegularExpression(pattern: namePattern),
-                nameRegex.firstMatch(in: name, range: nameRange) != nil else { return nil }
+                pathRegex.firstMatch(in: path, range: pathRange) != nil else { return nil }
             route = Route(
                 method: route.method,
                 path: Route.normalize(path: path + route.path),
@@ -70,7 +103,7 @@ public class RouteCollection {
             let separator = Route.pathComponentSeparator
             guard path.starts(with: String(separator)),
                 !path.contains(String(separator) + String(separator)) else { return nil }
-            let pathPattern = RouteCollection.pathPattern
+            let pathPattern = Route.pathPattern
             let path = Route.normalize(path: path)
             guard let regex = try? NSRegularExpression(pattern: pathPattern) else { return nil }
             let range = NSRange(location: 0, length: path.utf8.count)
@@ -82,10 +115,6 @@ public class RouteCollection {
                 requestHandler: route.requestHandler
             )!
         } else if let name = name, !name.isEmpty {
-            let namePattern = RouteCollection.namePattern
-            guard let regex = try? NSRegularExpression(pattern: namePattern) else { return nil }
-            let range = NSRange(location: 0, length: name.utf8.count)
-            guard regex.firstMatch(in: name, range: range) != nil else { return nil }
             route = Route(
                 method: route.method,
                 path: route.path,

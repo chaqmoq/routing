@@ -32,15 +32,23 @@ public struct Route {
         pattern = path
         self.name = name
         self.requestHandler = requestHandler
+        let (isValid, parameters) = Route.isValid(path: path)
 
-        if isValid(path: path) {
+        if isValid {
             self.path = Route.normalize(path: path)
-            pattern = mapPathToPattern()
+            self.parameters = parameters
+            pattern = Route.mapToPattern(path: self.path, parameters: parameters)
             let separator = String(Route.pathComponentSeparator)
             guard pattern == separator || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
         } else {
             return nil
         }
+    }
+}
+
+extension Route {
+    public mutating func updateParameter(_ parameter: Parameter) {
+        parameters?.update(with: parameter)
     }
 }
 
@@ -73,19 +81,20 @@ extension Route: CustomStringConvertible {
 }
 
 extension Route {
-    mutating func isValid(path: String) -> Bool {
+    public static func isValid(path: String) -> (Bool, Set<Parameter>?) {
         let separator = String(Route.pathComponentSeparator)
-        if path == separator { return true }
-        if !path.starts(with: separator) || path.contains(separator + separator) { return false }
-        guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return false }
+        if path == separator { return (true, nil) }
+        if !path.starts(with: separator) || path.contains(separator + separator) { return (false, nil) }
+        guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return (false, nil) }
         let pathComponents = path.components(separatedBy: separator).filter({ $0 != "" })
+        var parameters: Set<Parameter> = .init()
 
         for pathComponent in pathComponents {
             let range = NSRange(location: 0, length: pathComponent.utf8.count)
             let matches = regex.matches(in: pathComponent, range: range)
 
             if matches.isEmpty {
-                return false
+                return (false, nil)
             } else {
                 var matchesString = ""
 
@@ -100,19 +109,15 @@ extension Route {
 
                             if let startIndex = startRange?.upperBound, let endIndex = endRange?.lowerBound {
                                 let pattern = String(pathComponentPart[startIndex..<endIndex])
-                                if (try? NSRegularExpression(pattern: pattern)) == nil { return false }
+                                if (try? NSRegularExpression(pattern: pattern)) == nil { return (false, nil) }
                             }
                         }
 
-                        if let parameter = extractParameter(from: pathComponentPart) {
-                            if let parameters = parameters {
-                                if parameters.contains(parameter) {
-                                    return false
-                                } else {
-                                    self.parameters?.insert(parameter)
-                                }
+                        if let parameter = Route.extractParameter(from: pathComponentPart) {
+                            if parameters.contains(parameter) {
+                                return (false, nil)
                             } else {
-                                parameters = [parameter]
+                                parameters.insert(parameter)
                             }
                         }
 
@@ -120,14 +125,14 @@ extension Route {
                     }
                 }
 
-                if matchesString != pathComponent { return false }
+                if matchesString != pathComponent { return (false, nil) }
             }
         }
 
-        return true
+        return (true, parameters.isEmpty ? nil : parameters)
     }
 
-    static func normalize(path: String) -> String {
+    public static func normalize(path: String) -> String {
         if path.isEmpty { return path }
         let separator = Route.pathComponentSeparator
         var path = path.replacingOccurrences(of: String(separator) + String(separator), with: String(separator))
@@ -136,7 +141,7 @@ extension Route {
         return path
     }
 
-    func mapPathToPattern() -> String {
+    public static func mapToPattern(path: String, parameters: Set<Parameter>? = nil) -> String {
         var pattern = path
 
         if let parameters = parameters {
@@ -164,7 +169,7 @@ extension Route {
         return pattern
     }
 
-    func extractParameter(from pathComponentPart: String) -> Parameter? {
+    public static func extractParameter(from pathComponentPart: String) -> Parameter? {
         if var nameStartIndex = pathComponentPart.firstIndex(of: Parameter.nameEnclosingSymbols.0),
             var nameEndIndex = pathComponentPart.firstIndex(of: Parameter.nameEnclosingSymbols.1) {
             nameStartIndex = pathComponentPart.index(after: nameStartIndex)
@@ -211,9 +216,5 @@ extension Route {
         }
 
         return nil
-    }
-
-    mutating func updateParameter(_ parameter: Parameter) {
-        parameters?.update(with: parameter)
     }
 }

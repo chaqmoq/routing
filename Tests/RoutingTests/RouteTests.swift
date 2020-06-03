@@ -12,7 +12,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, .GET)
         XCTAssertEqual(route.path, String(Route.pathComponentSeparator))
         XCTAssertEqual(route.pattern, route.path)
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertNil(route.parameters)
         XCTAssertNotNil(route.requestHandler)
     }
@@ -82,7 +82,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, String(path.dropLast()))
         XCTAssertEqual(route.pattern, route.path)
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertNil(route.parameters)
         XCTAssertNotNil(route.requestHandler)
     }
@@ -105,7 +105,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.pattern, path)
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertNil(route.parameters)
         XCTAssertNotNil(route.requestHandler)
     }
@@ -120,7 +120,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.pattern, "/blog/(.+)")
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page")))
         XCTAssertNotNil(route.requestHandler)
@@ -136,7 +136,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.pattern, "/blog(/.+)?")
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .optional())))
         XCTAssertNotNil(route.requestHandler)
@@ -152,7 +152,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.pattern, "/blog(/.+|1)?")
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .optional("1"))))
         XCTAssertNotNil(route.requestHandler)
@@ -178,7 +178,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.pattern, "/blog(/.+|1)?")
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .forced("1"))))
         XCTAssertNotNil(route.requestHandler)
@@ -194,7 +194,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.pattern, "/blog/(\\d+)")
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")))
         XCTAssertNotNil(route.requestHandler)
@@ -210,7 +210,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.pattern, "/blog(/\\d+)?")
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(
             route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .optional()))
@@ -228,7 +228,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.pattern, "/blog(/\\d+|1)?")
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(
             route.parameters!.contains(
@@ -258,7 +258,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.pattern, "/blog(/\\d+|1)?")
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(
             route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .forced("1")))
@@ -286,7 +286,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.pattern, "/blog(/\\d+)?/posts")
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")))
         XCTAssertNotNil(route.requestHandler)
@@ -302,33 +302,18 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.method, method)
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.pattern, "/blog/(\\d+)/posts/(\\d+)")
-        XCTAssertNil(route.name)
+        XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 2)
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")))
         XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "id", requirement: "\\d+")))
         XCTAssertNotNil(route.requestHandler)
     }
 
-    func testHashable() {
-        // Arrange
-        let route = Route(method: .GET) { request in Response() }!
-
-        // Act
-        let dictionary: [Route: String] = [route: ""]
-
-        // Assert
-        XCTAssertEqual(dictionary.keys.count, 1)
-        XCTAssertTrue(dictionary.keys.contains(route))
-    }
-
     func testDescription() {
         // Arrange
         let route = Route(method: .GET, name: "post_get") { request in Response() }!
         var string = "method=\(route.method.rawValue)\npath=\(route.path)"
-
-        if let name = route.name {
-            string.append("\nname=\(name)")
-        }
+        if !route.name.isEmpty { string.append("\nname=\(route.name)") }
 
         // Assert
         XCTAssertEqual("\(route)", string)

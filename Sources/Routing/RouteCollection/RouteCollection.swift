@@ -3,28 +3,28 @@ import class Foundation.NSRegularExpression
 import struct HTTP.Request
 
 public class RouteCollection {
-    public typealias DictionaryType = [Request.Method: Set<Route>]
+    public typealias DictionaryType = [Request.Method: [Route]]
 
     public private(set) var path: String
-    public private(set) var name: String?
+    public private(set) var name: String
     private var routes: DictionaryType
 
     public private(set) lazy var builder: RouteCollectionBuilder = .init(self)
 
     public convenience init() {
-        self.init(name: nil)!
+        self.init()!
     }
 
     public convenience init(_ routes: RouteCollection) {
-        self.init(routes, name: nil)!
+        self.init(routes)!
     }
 
-    public convenience init(_ routes: Set<Route>) {
-        self.init(name: nil)!
+    public convenience init(_ routes: [Route]) {
+        self.init()!
         insert(routes)
     }
 
-    public init?(path: String = String(Route.pathComponentSeparator), name: String? = nil) {
+    public init?(path: String = String(Route.pathComponentSeparator), name: String = "") {
         routes = .init()
         self.name = name
 
@@ -40,7 +40,7 @@ public class RouteCollection {
     public init?(
         _ routes: RouteCollection,
         path: String = String(Route.pathComponentSeparator),
-        name: String? = nil
+        name: String = ""
     ) {
         self.routes = .init()
         var path = path
@@ -66,19 +66,7 @@ public class RouteCollection {
             }
         }
 
-        if let parentName = routes.name {
-            if let childName = name {
-                name = parentName + childName
-            } else {
-                name = parentName
-            }
-        } else {
-            if let childName = name {
-                name = childName
-            } else {
-                name = nil
-            }
-        }
+        name = routes.name + name
 
         let (isValid, _) = Route.isValid(path: path)
         if !isValid { return nil }
@@ -88,9 +76,9 @@ public class RouteCollection {
     }
 
     public convenience init?(
-        _ routes: Set<Route>,
+        _ routes: [Route],
         path: String = String(Route.pathComponentSeparator),
-        name: String? = nil
+        name: String = ""
     ) {
         self.init(path: path, name: name)
         insert(routes)
@@ -98,12 +86,12 @@ public class RouteCollection {
 }
 
 extension RouteCollection {
-    public subscript(method: Request.Method) -> Set<Route> {
+    public subscript(method: Request.Method) -> [Route] {
         get { routes[method] ?? .init() }
         set { routes[method] = newValue }
     }
 
-    private func insert(_ routes: Set<Route>) {
+    private func insert(_ routes: [Route]) {
         for route in routes { insert(route) }
     }
 
@@ -117,24 +105,29 @@ extension RouteCollection {
         let route = Route(
             method: route.method,
             path: self.path == separator ? route.path : self.path + route.path,
-            name: (name ?? "") + (route.name ?? ""),
+            name: name + route.name,
             requestHandler: route.requestHandler
         )!
 
-        if !routes.contains(where: { $0.value.contains(route) }) && self[route.method].insert(route).0 {
+        if !self[route.method].contains(route) {
+            self[route.method].append(route)
             return route
         }
 
         return nil
     }
 
-    public func remove(_ routes: Set<Route>) {
+    public func remove(_ routes: [Route]) {
         for route in routes { remove(route) }
     }
 
     @discardableResult
     public func remove(_ route: Route) -> Route? {
-        self[route.method].remove(route)
+        if let index = self[route.method].firstIndex(of: route) {
+            self[route.method].remove(at: index)
+        }
+
+        return nil
     }
 }
 

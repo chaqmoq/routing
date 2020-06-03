@@ -17,14 +17,14 @@ public struct Route {
     public var method: Request.Method
     public private(set) var path: String
     public private(set) var pattern: String
-    public var name: String?
+    public var name: String
     public private(set) var parameters: Set<Parameter>?
     public var requestHandler: RequestHandler
 
     public init?(
         method: Request.Method,
         path: String = String(pathComponentSeparator),
-        name: String? = nil,
+        name: String = "",
         requestHandler: @escaping RequestHandler
     ) {
         self.method = method
@@ -191,29 +191,16 @@ extension Route {
     }
 }
 
-extension Route: Hashable {
+extension Route: Equatable {
     public static func ==(lhs: Route, rhs: Route) -> Bool {
-        if let name = lhs.name, !name.isEmpty {
-            return name == rhs.name
-        }
-
-        return lhs.method == rhs.method && lhs.pattern == rhs.pattern
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        if let name = name, !name.isEmpty {
-            hasher.combine(name)
-        } else {
-            hasher.combine(method)
-            hasher.combine(pattern)
-        }
+        lhs.name == rhs.name || (lhs.method == rhs.method && lhs.pattern == rhs.pattern)
     }
 }
 
 extension Route: CustomStringConvertible {
     public var description: String {
         var description = "method=\(method.rawValue)\npath=\(path)"
-        if let name = name { description.append("\nname=\(name)") }
+        if !name.isEmpty { description.append("\nname=\(name)") }
 
         return description
     }

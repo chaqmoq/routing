@@ -11,7 +11,7 @@ public class RouteCollectionBuilder {
     @discardableResult
     public func delete(
         _ path: String = String(Route.pathComponentSeparator),
-        name: String? = nil,
+        name: String = "",
         handler: @escaping Route.RequestHandler
     ) -> Route? {
         makeRequest(path, methods: [.DELETE], name: name, handler: handler).first
@@ -20,7 +20,7 @@ public class RouteCollectionBuilder {
     @discardableResult
     public func get(
         _ path: String = String(Route.pathComponentSeparator),
-        name: String? = nil,
+        name: String = "",
         handler: @escaping Route.RequestHandler
     ) -> Route? {
         makeRequest(path, methods: [.GET], name: name, handler: handler).first
@@ -29,7 +29,7 @@ public class RouteCollectionBuilder {
     @discardableResult
     public func head(
         _ path: String = String(Route.pathComponentSeparator),
-        name: String? = nil,
+        name: String = "",
         handler: @escaping Route.RequestHandler
     ) -> Route? {
         makeRequest(path, methods: [.HEAD], name: name, handler: handler).first
@@ -38,7 +38,7 @@ public class RouteCollectionBuilder {
     @discardableResult
     public func options(
         _ path: String = String(Route.pathComponentSeparator),
-        name: String? = nil,
+        name: String = "",
         handler: @escaping Route.RequestHandler
     ) -> Route? {
         makeRequest(path, methods: [.OPTIONS], name: name, handler: handler).first
@@ -47,7 +47,7 @@ public class RouteCollectionBuilder {
     @discardableResult
     public func patch(
         _ path: String = String(Route.pathComponentSeparator),
-        name: String? = nil,
+        name: String = "",
         handler: @escaping Route.RequestHandler
     ) -> Route? {
         makeRequest(path, methods: [.PATCH], name: name, handler: handler).first
@@ -56,7 +56,7 @@ public class RouteCollectionBuilder {
     @discardableResult
     public func post(
         _ path: String = String(Route.pathComponentSeparator),
-        name: String? = nil,
+        name: String = "",
         handler: @escaping Route.RequestHandler
     ) -> Route? {
         makeRequest(path, methods: [.POST], name: name, handler: handler).first
@@ -65,7 +65,7 @@ public class RouteCollectionBuilder {
     @discardableResult
     public func put(
         _ path: String = String(Route.pathComponentSeparator),
-        name: String? = nil,
+        name: String = "",
         handler: @escaping Route.RequestHandler
     ) -> Route? {
         makeRequest(path, methods: [.PUT], name: name, handler: handler).first
@@ -76,7 +76,7 @@ public class RouteCollectionBuilder {
         _ path: String = String(Route.pathComponentSeparator),
         methods: Set<Request.Method>? = nil,
         handler: @escaping Route.RequestHandler
-    ) -> Set<Route> {
+    ) -> [Route] {
         makeRequest(path, methods: methods, handler: handler)
     }
 
@@ -84,21 +84,21 @@ public class RouteCollectionBuilder {
     private func makeRequest(
         _ path: String = String(Route.pathComponentSeparator),
         methods: Set<Request.Method>? = nil,
-        name: String? = nil,
+        name: String = "",
         handler: @escaping Route.RequestHandler
-    ) -> Set<Route> {
+    ) -> [Route] {
         let methods = methods ?? Set(Request.Method.allCases)
-        var routes: Set<Route> = []
+        var routes: [Route] = []
 
         for method in methods {
             if let route = Route(method: method, path: path, name: name, requestHandler: handler) {
                 if let route = self.routes.insert(route) {
                     if let root = root {
                         if let route = root.routes.insert(route) {
-                            routes.insert(route)
+                            routes.append(route)
                         }
                     } else {
-                        routes.insert(route)
+                        routes.append(route)
                     }
                 }
             }
@@ -109,7 +109,7 @@ public class RouteCollectionBuilder {
 
     public func grouped(
         _ path: String = String(Route.pathComponentSeparator),
-        name: String? = nil
+        name: String = ""
     ) -> RouteCollectionBuilder? {
         guard let routes = RouteCollection(routes, path: path, name: name) else { return nil }
         if root == nil { root = self }
@@ -121,7 +121,7 @@ public class RouteCollectionBuilder {
 
     public func group(
         _ path: String = String(Route.pathComponentSeparator),
-        name: String? = nil,
+        name: String = "",
         handler: @escaping (RouteCollectionBuilder) -> Void
     ) {
         if let builder = grouped(path, name: name) { handler(builder) }

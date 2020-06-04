@@ -43,6 +43,16 @@ extension Route {
 }
 
 extension Route {
+    public static let pathComponentSeparator: Character = "/"
+    static let textPattern = "[a-zA-Z0-9_~.-]+"
+    static let parameterNamePattern = "\\w+"
+    static let parameterPattern = """
+    (\\{\(parameterNamePattern)(<[^\\/{}<>]+>)?(\\?(\(textPattern))?|!\(textPattern))?\\})+
+    """
+    static let pathPattern = "\(textPattern)|\(parameterPattern)"
+}
+
+extension Route {
     @discardableResult
     public mutating func insertParameter(_ parameter: Parameter) -> (Bool, Parameter) {
         mutableParameters?.insert(parameter) ?? (false, parameter)
@@ -52,16 +62,6 @@ extension Route {
     public mutating func updateParameter(_ parameter: Parameter) -> Parameter? {
         mutableParameters?.update(with: parameter)
     }
-}
-
-extension Route {
-    public static let pathComponentSeparator: Character = "/"
-    static let textPattern = "[a-zA-Z0-9_~.-]+"
-    static let parameterNamePattern = "\\w+"
-    static let parameterPattern = """
-    (\\{\(parameterNamePattern)(<[^\\/{}<>]+>)?(\\?(\(textPattern))?|!\(textPattern))?\\})+
-    """
-    static let pathPattern = "\(textPattern)|\(parameterPattern)"
 }
 
 extension Route: Equatable {

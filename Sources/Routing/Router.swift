@@ -143,10 +143,11 @@ extension Router {
                 } else if let defaultValue = routeParameter.defaultValue {
                     switch defaultValue {
                     case .optional(let value):
-                        if let value = value, !value.isEmpty {
-                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
-                        } else {
+                        if value.isEmpty {
                             path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
+
+                        } else {
+                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
                         }
                     case .forced(let value):
                         path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)

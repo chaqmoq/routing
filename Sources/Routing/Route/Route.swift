@@ -59,6 +59,32 @@ extension Route {
     }
 
     @discardableResult
+    public mutating func updateParameter(
+        _ parameter: Parameter,
+        value: String?,
+        defaultValue: String
+    ) -> Parameter? {
+        guard var parameter = mutableParameters?.first(where: { $0 == parameter }) else { return nil }
+
+        if let parameterDefaultValue = parameter.defaultValue {
+            parameter.value = value
+
+            switch parameterDefaultValue {
+            case .optional:
+                parameter.defaultValue = .optional(defaultValue)
+            case .forced:
+                parameter.defaultValue = .forced(defaultValue)
+            }
+        } else {
+            if value != nil {
+                parameter.value = value
+            }
+        }
+
+        return mutableParameters?.update(with: parameter)
+    }
+
+    @discardableResult
     public mutating func updateParameter(_ parameter: Parameter, value: String?) -> Parameter? {
         guard var parameter = mutableParameters?.first(where: { $0 == parameter }) else { return nil }
 

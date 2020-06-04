@@ -59,23 +59,28 @@ extension Route {
         value: String?,
         defaultValue: String
     ) -> Parameter? {
-        guard var parameter = mutableParameters?.first(where: { $0 == parameter }) else { return nil }
+        guard var parameter = findParameterBy(name: parameter.name) else { return nil }
 
         if let parameterDefaultValue = parameter.defaultValue {
+            let oldParameter = parameter
             parameter.value = value
 
             switch parameterDefaultValue {
             case .optional:
                 parameter.defaultValue = .optional(defaultValue)
+                return replaceParameter(oldParameter, with: parameter)
             case .forced:
-                parameter.defaultValue = .forced(defaultValue)
+                if defaultValue.isEmpty {
+                    return replaceParameter(with: parameter)
+                } else {
+                    parameter.defaultValue = .forced(defaultValue)
+                    return replaceParameter(oldParameter, with: parameter)
+                }
             }
-
-            return mutableParameters?.update(with: parameter)
         } else {
             if value != nil {
                 parameter.value = value
-                return mutableParameters?.update(with: parameter)
+                return replaceParameter(with: parameter)
             }
         }
 
@@ -84,16 +89,16 @@ extension Route {
 
     @discardableResult
     public mutating func updateParameter(_ parameter: Parameter, value: String?) -> Parameter? {
-        guard var parameter = mutableParameters?.first(where: { $0 == parameter }) else { return nil }
+        guard var parameter = findParameterBy(name: parameter.name) else { return nil }
 
         if parameter.defaultValue == nil {
             if value != nil {
                 parameter.value = value
-                return mutableParameters?.update(with: parameter)
+                return replaceParameter(with: parameter)
             }
         } else {
             parameter.value = value
-            return mutableParameters?.update(with: parameter)
+            return replaceParameter(with: parameter)
         }
 
         return parameter
@@ -101,20 +106,40 @@ extension Route {
 
     @discardableResult
     public mutating func updateParameter(_ parameter: Parameter, defaultValue: String) -> Parameter? {
-        guard var parameter = mutableParameters?.first(where: { $0 == parameter }) else { return nil }
+        guard var parameter = findParameterBy(name: parameter.name) else { return nil }
 
         if let parameterDefaultValue = parameter.defaultValue {
+            let oldParameter = parameter
+
             switch parameterDefaultValue {
             case .optional:
                 parameter.defaultValue = .optional(defaultValue)
+                return replaceParameter(oldParameter, with: parameter)
             case .forced:
-                parameter.defaultValue = .forced(defaultValue)
+                if !defaultValue.isEmpty {
+                    parameter.defaultValue = .forced(defaultValue)
+                    return replaceParameter(oldParameter, with: parameter)
+                }
             }
-
-            return mutableParameters?.update(with: parameter)
         }
 
         return parameter
+    }
+
+    private func findParameterBy(name: String) -> Parameter? {
+        mutableParameters?.first(where: { $0.name == name })
+    }
+
+    private mutating func replaceParameter(
+        _ oldParameter: Parameter? = nil,
+        with newParameter: Parameter
+    ) -> Parameter? {
+        if let oldParameter = oldParameter {
+            path = path.replacingOccurrences(of: "\(oldParameter)", with: "\(newParameter)")
+            pattern = Route.generatePattern(from: path, parameters: mutableParameters)
+        }
+
+        return mutableParameters?.update(with: newParameter)
     }
 }
 

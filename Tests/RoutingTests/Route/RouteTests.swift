@@ -288,7 +288,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.pattern, "/blog(/\\d+)?/posts")
         XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")))
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .optional())))
         XCTAssertNotNil(route.requestHandler)
     }
 

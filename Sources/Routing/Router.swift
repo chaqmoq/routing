@@ -138,22 +138,27 @@ extension Router {
                 )
                 guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
 
-                if let value = routeParameter.value, !value.isEmpty {
-                    path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
-                } else if let defaultValue = routeParameter.defaultValue {
-                    switch defaultValue {
-                    case .optional(let value):
-                        if value.isEmpty {
-                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
-
-                        } else {
+                if let defaultValue = routeParameter.defaultValue {
+                    if let value = parameters?[routeParameter.name] {
+                        path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                    } else {
+                        switch defaultValue {
+                        case .optional(let value):
+                            if value.isEmpty {
+                                path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
+                            } else {
+                                path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                            }
+                        case .forced(let value):
                             path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
                         }
-                    case .forced(let value):
-                        path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
                     }
                 } else {
-                    return nil
+                    if let value = parameters?[routeParameter.name] {
+                        path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                    } else {
+                        return nil
+                    }
                 }
             }
         }

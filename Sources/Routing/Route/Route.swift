@@ -75,13 +75,16 @@ extension Route {
             case .forced:
                 parameter.defaultValue = .forced(defaultValue)
             }
+
+            return mutableParameters?.update(with: parameter)
         } else {
             if value != nil {
                 parameter.value = value
+                return mutableParameters?.update(with: parameter)
             }
         }
 
-        return mutableParameters?.update(with: parameter)
+        return parameter
     }
 
     @discardableResult
@@ -91,12 +94,14 @@ extension Route {
         if parameter.defaultValue == nil {
             if value != nil {
                 parameter.value = value
+                return mutableParameters?.update(with: parameter)
             }
         } else {
             parameter.value = value
+            return mutableParameters?.update(with: parameter)
         }
 
-        return mutableParameters?.update(with: parameter)
+        return parameter
     }
 
     @discardableResult
@@ -110,9 +115,11 @@ extension Route {
             case .forced:
                 parameter.defaultValue = .forced(defaultValue)
             }
+
+            return mutableParameters?.update(with: parameter)
         }
 
-        return mutableParameters?.update(with: parameter)
+        return parameter
     }
 }
 

@@ -16,9 +16,9 @@ final class RouteCollectionTests: XCTestCase {
     func testInitWithAnotherRouteCollection() {
         // Arrange
         let routes1 = RouteCollection([
-            Route(method: .GET) { request in Response() }!,
+            Route(method: .GET) { request in Response() },
             Route(method: .GET, path: "/blog") { request in Response() }!,
-            Route(method: .POST) { request in Response() }!,
+            Route(method: .POST) { request in Response() },
             Route(method: .POST, path: "/blog") { request in Response() }!
         ])
 
@@ -31,9 +31,9 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertEqual(routes2[.POST].count, routes1[.POST].count)
         XCTAssertEqual(routes2.path, routes1.path)
         XCTAssertEqual(routes2.name, routes1.name)
-        XCTAssertTrue(routes2[.GET].contains(Route(method: .GET) { request in Response() }!))
+        XCTAssertTrue(routes2[.GET].contains(Route(method: .GET) { request in Response() }))
         XCTAssertTrue(routes2[.GET].contains(Route(method: .GET, path: "/blog") { request in Response() }!))
-        XCTAssertTrue(routes2[.POST].contains(Route(method: .POST) { request in Response() }!))
+        XCTAssertTrue(routes2[.POST].contains(Route(method: .POST) { request in Response() }))
         XCTAssertTrue(routes2[.POST].contains(Route(method: .POST, path: "/blog") { request in Response() }!))
     }
 
@@ -42,8 +42,8 @@ final class RouteCollectionTests: XCTestCase {
         let path = "/blog"
         let name = "blog_"
         let routes1 = RouteCollection([
-            Route(method: .GET) { request in Response() }!,
-            Route(method: .POST) { request in Response() }!
+            Route(method: .GET) { request in Response() },
+            Route(method: .POST) { request in Response() }
         ])
 
         // Act
@@ -60,8 +60,8 @@ final class RouteCollectionTests: XCTestCase {
         let path = "/blog"
         let name = "blog_"
         let routes1 = RouteCollection([
-            Route(method: .GET) { request in Response() }!,
-            Route(method: .POST) { request in Response() }!
+            Route(method: .GET) { request in Response() },
+            Route(method: .POST) { request in Response() }
         ], path: path, name: name)!
 
         // Act
@@ -84,17 +84,17 @@ final class RouteCollectionTests: XCTestCase {
     func testInitWithRoutes() {
         // Arrange
         let routes = RouteCollection([
-            Route(method: .GET) { request in Response() }!,
+            Route(method: .GET) { request in Response() },
             Route(method: .GET, path: "/blog") { request in Response() }!,
-            Route(method: .POST) { request in Response() }!,
+            Route(method: .POST) { request in Response() },
             Route(method: .POST, path: "/blog") { request in Response() }!
         ])
 
         // Assert
         XCTAssertEqual(routes.count, 2)
-        XCTAssertTrue(routes[.GET].contains(Route(method: .GET) { request in Response() }!))
+        XCTAssertTrue(routes[.GET].contains(Route(method: .GET) { request in Response() }))
         XCTAssertTrue(routes[.GET].contains(Route(method: .GET, path: "/blog") { request in Response() }!))
-        XCTAssertTrue(routes[.POST].contains(Route(method: .POST) { request in Response() }!))
+        XCTAssertTrue(routes[.POST].contains(Route(method: .POST) { request in Response() }))
         XCTAssertTrue(routes[.POST].contains(Route(method: .POST, path: "/blog") { request in Response() }!))
     }
 

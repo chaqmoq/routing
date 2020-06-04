@@ -6,7 +6,7 @@ import struct HTTP.Response
 final class RouteTests: XCTestCase {
     func testDefaultInit() {
         // Arrange
-        let route = Route(method: .GET) { request in Response() }!
+        let route = Route(method: .GET) { request in Response() }
 
         // Assert
         XCTAssertEqual(route.method, .GET)
@@ -39,7 +39,7 @@ final class RouteTests: XCTestCase {
         let method: Request.Method = .POST
         let name = "/post_create"
         let requestHandler: Route.RequestHandler = { request in Response(body: .init(string: "Hello World")) }
-        var route = Route(method: .GET) { request in Response() }!
+        var route = Route(method: .GET) { request in Response() }
 
         // Act
         route.method = method
@@ -311,7 +311,7 @@ final class RouteTests: XCTestCase {
 
     func testDescription() {
         // Arrange
-        let route = Route(method: .GET, name: "post_get") { request in Response() }!
+        let route = Route(method: .GET, name: "post_get") { request in Response() }
         var string = "method=\(route.method.rawValue)\npath=\(route.path)"
         if !route.name.isEmpty { string.append("\nname=\(route.name)") }
 

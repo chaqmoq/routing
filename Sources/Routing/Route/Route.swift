@@ -11,12 +11,15 @@ public struct Route {
     private var mutableParameters: Set<Parameter>?
     public var requestHandler: RequestHandler
 
-    public init?(
-        method: Request.Method,
-        path: String = String(pathComponentSeparator),
-        name: String = "",
-        requestHandler: @escaping RequestHandler
-    ) {
+    public init(method: Request.Method, name: String = "", requestHandler: @escaping RequestHandler) {
+        self.method = method
+        self.path = String(Route.pathComponentSeparator)
+        pattern = Route.generatePattern(from: self.path)
+        self.name = name
+        self.requestHandler = requestHandler
+    }
+
+    public init?(method: Request.Method, path: String, name: String = "", requestHandler: @escaping RequestHandler) {
         self.method = method
         self.path = Route.normalize(path: path)
         pattern = self.path

@@ -1,6 +1,5 @@
 import XCTest
-import struct HTTP.Response
-@testable import Routing
+@testable import struct Routing.Route
 
 final class RouteParameterDefaultValueTests: XCTestCase {
     func testOptional() {

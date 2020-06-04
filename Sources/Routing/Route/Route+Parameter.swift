@@ -1,40 +1,9 @@
 extension Route {
     public struct Parameter {
-        static let nameEnclosingSymbols: (Character, Character) = ("{", "}")
-        static let requirementEnclosingSymbols: (Character, Character) = ("<", ">")
-        static let optionalSymbol: Character = "?"
-        static let forcedSymbol: Character = "!"
-
         public var name: String
         public var value: String?
         public var requirement: String?
         public var defaultValue: DefaultValue?
-
-        public var pattern: String {
-            if let requirement = requirement {
-                if let defaultValue = defaultValue {
-                    switch defaultValue {
-                    case .optional(let value):
-                        if value.isEmpty { return "(\(requirement))?" }
-                        return "(\(requirement)|\(value))?"
-                    case .forced(let value):
-                        return "(\(requirement)|\(value))?"
-                    }
-                }
-
-                return "(\(requirement))"
-            } else if let defaultValue = defaultValue {
-                switch defaultValue {
-                case .optional(let value):
-                    if value.isEmpty { return "(.+)?" }
-                    return "(.+|\(value))?"
-                case .forced(let value):
-                    return "(.+|\(value))?"
-                }
-            }
-
-            return "(.+)"
-        }
 
         public init(
             name: String,
@@ -48,6 +17,41 @@ extension Route {
             self.defaultValue = defaultValue
         }
     }
+}
+
+extension Route.Parameter {
+    public var pattern: String {
+        if let requirement = requirement {
+            if let defaultValue = defaultValue {
+                switch defaultValue {
+                case .optional(let value):
+                    if value.isEmpty { return "(\(requirement))?" }
+                    return "(\(requirement)|\(value))?"
+                case .forced(let value):
+                    return "(\(requirement)|\(value))?"
+                }
+            }
+
+            return "(\(requirement))"
+        } else if let defaultValue = defaultValue {
+            switch defaultValue {
+            case .optional(let value):
+                if value.isEmpty { return "(.+)?" }
+                return "(.+|\(value))?"
+            case .forced(let value):
+                return "(.+|\(value))?"
+            }
+        }
+
+        return "(.+)"
+    }
+}
+
+extension Route.Parameter {
+    static let nameEnclosingSymbols: (Character, Character) = ("{", "}")
+    static let requirementEnclosingSymbols: (Character, Character) = ("<", ">")
+    static let optionalSymbol: Character = "?"
+    static let forcedSymbol: Character = "!"
 }
 
 extension Route.Parameter: Hashable {

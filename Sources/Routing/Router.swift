@@ -94,15 +94,15 @@ extension Router {
 
 extension Router {
     public func generateURLForRoute(named name: String) -> URL? {
-        return _generateURLForRoute(named: name)
+        _generateURLForRoute(named: name)
     }
 
     public func generateURLForRoute(named name: String, parameters: ParameterBag<String, String>) -> URL? {
-        return _generateURLForRoute(named: name, parameters: parameters)
+        _generateURLForRoute(named: name, parameters: parameters)
     }
 
     public func generateURLForRoute(named name: String, query: ParameterBag<String, String>) -> URL? {
-        return _generateURLForRoute(named: name, query: query)
+        _generateURLForRoute(named: name, query: query)
     }
 
     public func generateURLForRoute(
@@ -110,7 +110,7 @@ extension Router {
         parameters: ParameterBag<String, String>,
         query: ParameterBag<String, String>
     ) -> URL? {
-        return _generateURLForRoute(named: name, parameters: parameters, query: query)
+        _generateURLForRoute(named: name, parameters: parameters, query: query)
     }
 
     private func _generateURLForRoute(

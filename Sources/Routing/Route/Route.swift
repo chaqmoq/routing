@@ -54,11 +54,6 @@ extension Route {
 
 extension Route {
     @discardableResult
-    public mutating func insertParameter(_ parameter: Parameter) -> (Bool, Parameter) {
-        mutableParameters?.insert(parameter) ?? (false, parameter)
-    }
-
-    @discardableResult
     public mutating func updateParameter(
         _ parameter: Parameter,
         value: String?,

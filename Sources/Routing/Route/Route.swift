@@ -55,11 +55,11 @@ extension Route {
 extension Route {
     @discardableResult
     public mutating func updateParameter(
-        _ parameter: Parameter,
-        value: String?,
+        named name: String,
+        value: String,
         defaultValue: String
     ) -> Parameter? {
-        guard var parameter = findParameterBy(name: parameter.name) else { return nil }
+        guard var parameter = findParameterBy(name: name) else { return nil }
 
         if let parameterDefaultValue = parameter.defaultValue {
             let oldParameter = parameter
@@ -78,7 +78,7 @@ extension Route {
                 }
             }
         } else {
-            if value != nil {
+            if !value.isEmpty {
                 parameter.value = value
                 return replaceParameter(with: parameter)
             }
@@ -88,11 +88,11 @@ extension Route {
     }
 
     @discardableResult
-    public mutating func updateParameter(_ parameter: Parameter, value: String?) -> Parameter? {
-        guard var parameter = findParameterBy(name: parameter.name) else { return nil }
+    public mutating func updateParameter(named name: String, value: String) -> Parameter? {
+        guard var parameter = findParameterBy(name: name) else { return nil }
 
         if parameter.defaultValue == nil {
-            if value != nil {
+            if !value.isEmpty {
                 parameter.value = value
                 return replaceParameter(with: parameter)
             }
@@ -105,8 +105,8 @@ extension Route {
     }
 
     @discardableResult
-    public mutating func updateParameter(_ parameter: Parameter, defaultValue: String) -> Parameter? {
-        guard var parameter = findParameterBy(name: parameter.name) else { return nil }
+    public mutating func updateParameter(named name: String, defaultValue: String) -> Parameter? {
+        guard var parameter = findParameterBy(name: name) else { return nil }
 
         if let parameterDefaultValue = parameter.defaultValue {
             let oldParameter = parameter
@@ -127,7 +127,8 @@ extension Route {
     }
 
     private func findParameterBy(name: String) -> Parameter? {
-        mutableParameters?.first(where: { $0.name == name })
+        if name.isEmpty { return nil }
+        return mutableParameters?.first(where: { $0.name == name })
     }
 
     private mutating func replaceParameter(

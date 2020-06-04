@@ -1,13 +1,13 @@
 extension Route {
     public struct Parameter {
         public var name: String
-        public var value: String?
+        public var value: String
         public var requirement: String?
         public var defaultValue: DefaultValue?
 
         public init(
             name: String,
-            value: String? = nil,
+            value: String = "",
             requirement: String? = nil,
             defaultValue: DefaultValue? = nil
         ) {

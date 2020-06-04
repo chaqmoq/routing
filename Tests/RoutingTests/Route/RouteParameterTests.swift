@@ -11,7 +11,7 @@ final class RouteParameterTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(parameter.name, name)
-        XCTAssertNil(parameter.value)
+        XCTAssertTrue(parameter.value.isEmpty)
         XCTAssertNil(parameter.requirement)
         XCTAssertNil(parameter.defaultValue)
         XCTAssertEqual(parameter.pattern, "(.+)")
@@ -29,7 +29,7 @@ final class RouteParameterTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(parameter.name, name)
-        XCTAssertNil(parameter.value)
+        XCTAssertTrue(parameter.value.isEmpty)
         XCTAssertEqual(parameter.requirement, requirement)
         XCTAssertNil(parameter.defaultValue)
         XCTAssertEqual(parameter.pattern, "(\\d+)")
@@ -50,7 +50,7 @@ final class RouteParameterTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(parameter.name, name)
-        XCTAssertNil(parameter.value)
+        XCTAssertTrue(parameter.value.isEmpty)
         XCTAssertNil(parameter.requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
         XCTAssertEqual(parameter.pattern, "(.+)?")
@@ -67,7 +67,7 @@ final class RouteParameterTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(parameter.name, name)
-        XCTAssertNil(parameter.value)
+        XCTAssertTrue(parameter.value.isEmpty)
         XCTAssertNil(parameter.requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
         XCTAssertEqual(parameter.pattern, "(.+|1)?")
@@ -89,7 +89,7 @@ final class RouteParameterTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(parameter.name, name)
-        XCTAssertNil(parameter.value)
+        XCTAssertTrue(parameter.value.isEmpty)
         XCTAssertEqual(parameter.requirement, requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
         XCTAssertEqual(parameter.pattern, "(\\d+)?")
@@ -111,7 +111,7 @@ final class RouteParameterTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(parameter.name, name)
-        XCTAssertNil(parameter.value)
+        XCTAssertTrue(parameter.value.isEmpty)
         XCTAssertEqual(parameter.requirement, requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
         XCTAssertEqual(parameter.pattern, "(\\d+|1)?")
@@ -131,7 +131,7 @@ final class RouteParameterTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(parameter.name, name)
-        XCTAssertNil(parameter.value)
+        XCTAssertTrue(parameter.value.isEmpty)
         XCTAssertNil(parameter.requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
         XCTAssertEqual(parameter.pattern, "(.+|1)?")
@@ -150,7 +150,7 @@ final class RouteParameterTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(parameter.name, name)
-        XCTAssertNil(parameter.value)
+        XCTAssertTrue(parameter.value.isEmpty)
         XCTAssertEqual(parameter.requirement, requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
         XCTAssertEqual(parameter.pattern, "(\\d+|1)?")

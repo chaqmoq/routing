@@ -34,7 +34,7 @@ extension Router {
 
                                     if var parameter = parameters.first(where: { "\($0)" == route.path[nameRange] }) {
                                         parameter.value = String(path[valueRange])
-                                        resolvedRoute.updateParameter(parameter, value: parameter.value)
+                                        resolvedRoute.updateParameter(named: parameter.name, value: parameter.value)
                                         parameters.remove(parameter)
                                     }
                                 }
@@ -77,7 +77,7 @@ extension Router {
 
                         if let value = parameters[routeParameter.name] {
                             routeParameter.value = value
-                            route.updateParameter(routeParameter, value: routeParameter.value)
+                            route.updateParameter(named: routeParameter.name, value: routeParameter.value)
                         } else if routeParameter.defaultValue == nil {
                             return nil
                         }

@@ -59,8 +59,18 @@ extension Route {
     }
 
     @discardableResult
-    public mutating func updateParameter(_ parameter: Parameter) -> Parameter? {
-        mutableParameters?.update(with: parameter)
+    public mutating func updateParameter(_ parameter: Parameter, value: String?) -> Parameter? {
+        guard var parameter = mutableParameters?.first(where: { $0 == parameter }) else { return nil }
+
+        if parameter.defaultValue == nil {
+            if value != nil {
+                parameter.value = value
+            }
+        } else {
+            parameter.value = value
+        }
+
+        return mutableParameters?.update(with: parameter)
     }
 }
 

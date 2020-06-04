@@ -71,7 +71,7 @@ final class RouteTests: XCTestCase {
         XCTAssertNil(route)
     }
 
-    func testPathWithTrailingSlash() {
+    func testPathWithTrailingPathComponentSeparator() {
         // Arrange
         let method: Request.Method = .GET
         let path = "/blog/"

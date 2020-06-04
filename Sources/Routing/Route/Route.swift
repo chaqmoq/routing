@@ -7,7 +7,8 @@ public struct Route {
     public private(set) var path: String
     public private(set) var pattern: String
     public var name: String
-    public private(set) var parameters: Set<Parameter>?
+    public var parameters: Set<Parameter>? { mutableParameters }
+    private var mutableParameters: Set<Parameter>?
     public var requestHandler: RequestHandler
 
     public init?(
@@ -24,7 +25,7 @@ public struct Route {
         let (isValid, parameters) = Route.isValid(path: self.path)
 
         if isValid {
-            self.parameters = parameters
+            self.mutableParameters = parameters
             pattern = Route.generatePattern(from: self.path, parameters: parameters)
             let separator = String(Route.pathComponentSeparator)
             guard pattern == separator || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
@@ -40,7 +41,7 @@ extension Route {
 
 extension Route {
     public mutating func updateParameter(_ parameter: Parameter) {
-        parameters?.update(with: parameter)
+        mutableParameters?.update(with: parameter)
     }
 }
 

@@ -10,4 +10,12 @@ final class RouteParameterDefaultValueTests: XCTestCase {
         // Assert
         XCTAssertEqual("\(defaultValue)", String(Route.Parameter.optionalSymbol))
     }
+
+    func testOptionalWithEmptyValue() {
+        // Arrange
+        let defaultValue: Route.Parameter.DefaultValue = .optional("")
+
+        // Assert
+        XCTAssertEqual("\(defaultValue)", String(Route.Parameter.optionalSymbol))
+    }
 }

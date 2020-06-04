@@ -40,7 +40,8 @@ extension Route {
 }
 
 extension Route {
-    public mutating func updateParameter(_ parameter: Parameter) {
+    @discardableResult
+    public mutating func updateParameter(_ parameter: Parameter) -> Parameter? {
         mutableParameters?.update(with: parameter)
     }
 }

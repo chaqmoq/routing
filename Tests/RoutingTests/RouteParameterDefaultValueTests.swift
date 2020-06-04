@@ -27,4 +27,12 @@ final class RouteParameterDefaultValueTests: XCTestCase {
         // Assert
         XCTAssertEqual("\(defaultValue)", String(Route.Parameter.optionalSymbol) + value)
     }
+
+    func testForcedWithEmptyValue() {
+        // Arrange
+        let defaultValue: Route.Parameter.DefaultValue = .forced("")
+
+        // Assert
+        XCTAssertEqual("\(defaultValue)", String(Route.Parameter.forcedSymbol))
+    }
 }

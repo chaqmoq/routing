@@ -543,6 +543,20 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.parameters?.first?.value, "")
     }
 
+    func testUpdateOptionalParameterValueAndDefaultValueWithNewValueAndNewDefaultValue() {
+        // Arrange
+        var route = Route(method: .GET, path: "/blog/{page?1}") { request in Response() }!
+
+        // Act
+        route.updateParameter(named: "page", value: "2", defaultValue: "3")
+
+        // Assert
+        XCTAssertEqual(route.parameters?.count, 1)
+        XCTAssertEqual(route.path, "/blog/{page?3}")
+        XCTAssertEqual(route.pattern, "/blog(/.+|3)?")
+        XCTAssertEqual(route.parameters?.first?.value, "2")
+    }
+
     func testDescription() {
         // Arrange
         let route = Route(method: .GET, name: "post_get") { request in Response() }

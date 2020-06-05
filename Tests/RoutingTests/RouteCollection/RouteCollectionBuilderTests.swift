@@ -14,72 +14,72 @@ final class RouteCollectionBuilderTests: XCTestCase {
 
     func testDelete() {
         // Act
-        let route = builder.delete("/posts/{id<\\d+>}", name: "post_delete") { request in Response() }
+        let route = builder.delete("/posts/{id<\\d+>}", name: "post_delete") { request in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
         XCTAssertEqual(builder.routes[.DELETE].count, 1)
-        XCTAssertTrue(builder.routes[.DELETE].contains(where: { $0.path == route?.path && $0.name == route?.name }))
+        XCTAssertTrue(builder.routes.has(route))
     }
 
     func testGet() {
         // Act
-        let route = builder.get("/posts/{id<\\d+>}", name: "post_get") { request in Response() }
+        let route = builder.get("/posts/{id<\\d+>}", name: "post_get") { request in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
         XCTAssertEqual(builder.routes[.GET].count, 1)
-        XCTAssertTrue(builder.routes[.GET].contains(where: { $0.path == route?.path && $0.name == route?.name }))
+        XCTAssertTrue(builder.routes.has(route))
     }
 
     func testHead() {
         // Act
-        let route = builder.head("/posts", name: "post_head") { request in Response() }
+        let route = builder.head("/posts", name: "post_head") { request in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
         XCTAssertEqual(builder.routes[.HEAD].count, 1)
-        XCTAssertTrue(builder.routes[.HEAD].contains(where: { $0.path == route?.path && $0.name == route?.name }))
+        XCTAssertTrue(builder.routes.has(route))
     }
 
     func testOptions() {
         // Act
-        let route = builder.options("/posts", name: "post_options") { request in Response() }
+        let route = builder.options("/posts", name: "post_options") { request in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
         XCTAssertEqual(builder.routes[.OPTIONS].count, 1)
-        XCTAssertTrue(builder.routes[.OPTIONS].contains(where: { $0.path == route?.path && $0.name == route?.name }))
+        XCTAssertTrue(builder.routes.has(route))
     }
 
     func testPatch() {
         // Act
-        let route = builder.patch("/posts/{id<\\d+>}", name: "post_update") { request in Response() }
+        let route = builder.patch("/posts/{id<\\d+>}", name: "post_update") { request in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
         XCTAssertEqual(builder.routes[.PATCH].count, 1)
-        XCTAssertTrue(builder.routes[.PATCH].contains(where: { $0.path == route?.path && $0.name == route?.name }))
+        XCTAssertTrue(builder.routes.has(route))
     }
 
     func testPost() {
         // Act
-        let route = builder.post("/posts", name: "post_create") { request in Response() }
+        let route = builder.post("/posts", name: "post_create") { request in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
         XCTAssertEqual(builder.routes[.POST].count, 1)
-        XCTAssertTrue(builder.routes[.POST].contains(where: { $0.path == route?.path && $0.name == route?.name }))
+        XCTAssertTrue(builder.routes.has(route))
     }
 
     func testPut() {
         // Act
-        let route = builder.put("/posts/{id<\\d+>}", name: "post_update") { request in Response() }
+        let route = builder.put("/posts/{id<\\d+>}", name: "post_update") { request in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
         XCTAssertEqual(builder.routes[.PUT].count, 1)
-        XCTAssertTrue(builder.routes[.PUT].contains(where: { $0.path == route?.path && $0.name == route?.name }))
+        XCTAssertTrue(builder.routes.has(route))
     }
 
     func testRequestWithMultipleMethods() {

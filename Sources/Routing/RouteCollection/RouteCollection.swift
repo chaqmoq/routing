@@ -108,7 +108,7 @@ extension RouteCollection {
     @discardableResult
     public func remove(_ route: Route) -> Route? {
         if let index = self[route.method].firstIndex(of: route) {
-            self[route.method].remove(at: index)
+            return self[route.method].remove(at: index)
         }
 
         return nil

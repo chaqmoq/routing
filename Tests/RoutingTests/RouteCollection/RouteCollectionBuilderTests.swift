@@ -1,6 +1,6 @@
 import XCTest
 import struct HTTP.Response
-@testable import Routing
+@testable import class Routing.RouteCollection
 
 final class RouteCollectionBuilderTests: XCTestCase {
     var builder: RouteCollection.Builder!

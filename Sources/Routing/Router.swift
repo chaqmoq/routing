@@ -156,8 +156,6 @@ extension Router {
                 } else {
                     if let value = parameters?[routeParameter.name] {
                         path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
-                    } else {
-                        return nil
                     }
                 }
             }

@@ -112,12 +112,10 @@ final class RouteCollectionTests: XCTestCase {
     func testInitWithEmptyPathAndName() {
         // Arrange
         let name = "blog_"
-        let routes = RouteCollection(path: "", name: name)!
+        let routes = RouteCollection(path: "", name: name)
 
         // Assert
-        XCTAssertTrue(routes.isEmpty)
-        XCTAssertEqual(routes.path, String(Route.pathComponentSeparator))
-        XCTAssertEqual(routes.name, name)
+        XCTAssertNil(routes)
     }
 
     func testInitWithPathAndName() {

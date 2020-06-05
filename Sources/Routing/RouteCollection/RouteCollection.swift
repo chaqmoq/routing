@@ -27,14 +27,9 @@ public class RouteCollection {
     public init?(path: String = String(Route.pathComponentSeparator), name: String = "") {
         routes = .init()
         self.name = name
-
-        if path.isEmpty {
-            self.path = String(Route.pathComponentSeparator)
-        } else {
-            self.path = Route.normalize(path: path)
-            let (isValid, _) = Route.isValid(path: self.path)
-            if !isValid { return nil }
-        }
+        self.path = Route.normalize(path: path)
+        let (isValid, _) = Route.isValid(path: self.path)
+        if !isValid { return nil }
     }
 
     public init?(
@@ -44,35 +39,20 @@ public class RouteCollection {
     ) {
         self.routes = .init()
         var path = path
-        var name = name
         self.path = path
         self.name = name
 
-        if routes.path.isEmpty {
-            if path.isEmpty {
-                path = String(Route.pathComponentSeparator)
-            } else {
-                path = Route.normalize(path: path)
-            }
+        if routes.path == String(Route.pathComponentSeparator) {
+            path = Route.normalize(path: path)
         } else {
-            if path.isEmpty {
-                path = routes.path
-            } else {
-                if routes.path == String(Route.pathComponentSeparator) {
-                    path = Route.normalize(path: path)
-                } else {
-                    path = Route.normalize(path: routes.path + Route.normalize(path: path))
-                }
-            }
+            path = Route.normalize(path: routes.path + Route.normalize(path: path))
         }
-
-        name = routes.name + name
 
         let (isValid, _) = Route.isValid(path: path)
         if !isValid { return nil }
         insert(routes)
         self.path = path
-        self.name = name
+        self.name = routes.name + name
     }
 
     public convenience init?(

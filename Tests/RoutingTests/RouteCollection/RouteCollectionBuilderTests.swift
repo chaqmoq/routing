@@ -135,7 +135,7 @@ final class RouteCollectionBuilderTests: XCTestCase {
         XCTAssertTrue(builder.routes[.PUT].contains(where: { $0.path == path && $0.method == .PUT }))
     }
 
-    func testGroupRoutes() {
+    func testGroup() {
         // Act
         builder.group(name: "front_") { front in
             front.group(name: "blog_") { blog in
@@ -208,5 +208,13 @@ final class RouteCollectionBuilderTests: XCTestCase {
         XCTAssertTrue(builder.routes[.DELETE].contains(where: { $0.path == "/admin/categories/{id<\\d+>}" && $0.name == "admin_category_delete" }))
         XCTAssertTrue(builder.routes[.DELETE].contains(where: { $0.path == "/admin/posts/{id<\\d+>}" && $0.name == "admin_post_delete" }))
         XCTAssertTrue(builder.routes[.DELETE].contains(where: { $0.path == "/admin/tags/{id<\\d+>}" && $0.name == "admin_tag_delete" }))
+    }
+
+    func testGroupedWithInvalidPath() {
+        // Act
+        let group = builder.grouped("", name: "front_")
+
+        // Assert
+        XCTAssertNil(group)
     }
 }

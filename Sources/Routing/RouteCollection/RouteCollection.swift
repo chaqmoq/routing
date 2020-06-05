@@ -9,7 +9,7 @@ public class RouteCollection {
     public private(set) var name: String
     private var routes: DictionaryType
 
-    public private(set) lazy var builder: RouteCollectionBuilder = .init(self)
+    public private(set) lazy var builder: Builder = .init(self)
 
     public convenience init() {
         self.init()!

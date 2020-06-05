@@ -3,13 +3,13 @@ import struct HTTP.Response
 @testable import Routing
 
 final class RouteCollectionBuilderTests: XCTestCase {
-    var builder: RouteCollectionBuilder!
+    var builder: RouteCollection.Builder!
 
     override func setUp() {
         super.setUp()
 
         // Arrange
-        builder = RouteCollectionBuilder()
+        builder = RouteCollection.Builder()
     }
 
     func testDelete() {

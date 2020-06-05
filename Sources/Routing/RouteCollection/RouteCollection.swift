@@ -89,12 +89,16 @@ extension RouteCollection {
             requestHandler: route.requestHandler
         )!
 
-        if !self[route.method].contains(route) {
+        if !has(route) {
             self[route.method].append(route)
             return route
         }
 
         return nil
+    }
+
+    public func has(_ route: Route) -> Bool {
+        self[route.method].contains(route)
     }
 
     public func remove(_ routes: [Route]) {

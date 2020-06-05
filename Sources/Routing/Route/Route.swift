@@ -3,6 +3,8 @@ import struct HTTP.Request
 import struct HTTP.Response
 
 public struct Route {
+    public typealias RequestHandler = (Request) -> Any
+
     public var method: Request.Method
     public private(set) var path: String
     public private(set) var pattern: String
@@ -36,10 +38,6 @@ public struct Route {
             return nil
         }
     }
-}
-
-extension Route {
-    public typealias RequestHandler = (Request) -> Any
 }
 
 extension Route {

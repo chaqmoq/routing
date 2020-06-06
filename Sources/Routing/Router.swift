@@ -32,9 +32,14 @@ extension Router {
                                 if let nameRange = Range(parameterMatch.range, in: route.path),
                                     let valueRange = Range(pattern.range(at: index + 1), in: path) {
 
-                                    if var parameter = parameters.first(where: { "\($0)" == route.path[nameRange] }) {
-                                        parameter.value = String(path[valueRange])
-                                        resolvedRoute.updateParameter(named: parameter.name, value: parameter.value)
+                                    if let parameter = parameters.first(where: { "\($0)" == route.path[nameRange] }) {
+                                        let newParameter = Route.Parameter(
+                                            name: parameter.name,
+                                            value: String(path[valueRange]),
+                                            requirement: parameter.requirement,
+                                            defaultValue: parameter.defaultValue
+                                        )!
+                                        resolvedRoute.updateParameter(newParameter)
                                         parameters.remove(parameter)
                                     }
                                 }
@@ -73,11 +78,14 @@ extension Router {
             if var route = methodRoutes.first(where: { $0.name == name }) {
                 if let routeParameters = route.parameters {
                     for routeParameter in routeParameters {
-                        var routeParameter = routeParameter
-
                         if let value = parameters[routeParameter.name] {
-                            routeParameter.value = value
-                            route.updateParameter(named: routeParameter.name, value: routeParameter.value)
+                            let newParameter = Route.Parameter(
+                                name: routeParameter.name,
+                                value: value,
+                                requirement: routeParameter.requirement,
+                                defaultValue: routeParameter.defaultValue
+                            )!
+                            route.updateParameter(newParameter)
                         } else if routeParameter.defaultValue == nil {
                             return nil
                         }

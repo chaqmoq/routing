@@ -6,9 +6,7 @@ public struct Route {
     public typealias RequestHandler = (Request) -> Any
 
     public var method: Request.Method
-    public private(set) var path: String {
-        didSet { pattern = Route.generatePattern(from: path, parameters: mutableParameters) }
-    }
+    public let path: String
     public private(set) var pattern: String
     public var name: String
     public var parameters: Set<Parameter>? { mutableParameters }
@@ -54,95 +52,8 @@ extension Route {
 
 extension Route {
     @discardableResult
-    public mutating func updateParameter(named name: String, value: String) -> Parameter? {
-        guard var parameter = getParameter(named: name) else { return nil }
-
-        if parameter.defaultValue == nil {
-            if !value.isEmpty {
-                parameter.value = value
-                return replaceParameter(with: parameter)
-            }
-        } else {
-            parameter.value = value
-            return replaceParameter(with: parameter)
-        }
-
-        return parameter
-    }
-
-    @discardableResult
-    public mutating func updateParameter(named name: String, defaultValue: String) -> Parameter? {
-        guard var parameter = getParameter(named: name) else { return nil }
-
-        if let parameterDefaultValue = parameter.defaultValue {
-            let oldParameter = parameter
-
-            switch parameterDefaultValue {
-            case .optional:
-                parameter.defaultValue = .optional(defaultValue)
-                return replaceParameter(oldParameter, with: parameter)
-            case .forced:
-                if !defaultValue.isEmpty {
-                    parameter.defaultValue = .forced(defaultValue)
-                    return replaceParameter(oldParameter, with: parameter)
-                }
-            }
-        }
-
-        return parameter
-    }
-
-    @discardableResult
-    public mutating func updateParameter(
-        named name: String,
-        value: String,
-        defaultValue: String
-    ) -> Parameter? {
-        guard var parameter = getParameter(named: name) else { return nil }
-
-        if let parameterDefaultValue = parameter.defaultValue {
-            let oldParameter = parameter
-            parameter.value = value
-
-            switch parameterDefaultValue {
-            case .optional:
-                parameter.defaultValue = .optional(defaultValue)
-                return replaceParameter(oldParameter, with: parameter)
-            case .forced:
-                if defaultValue.isEmpty {
-                    return replaceParameter(with: parameter)
-                } else {
-                    parameter.defaultValue = .forced(defaultValue)
-                    return replaceParameter(oldParameter, with: parameter)
-                }
-            }
-        } else {
-            if !value.isEmpty {
-                parameter.value = value
-                return replaceParameter(with: parameter)
-            }
-        }
-
-        return parameter
-    }
-
-    private func getParameter(named name: String) -> Parameter? {
-        if name.isEmpty { return nil }
-        return mutableParameters?.first(where: { $0.name == name })
-    }
-
-    private mutating func replaceParameter(
-        _ oldParameter: Parameter? = nil,
-        with newParameter: Parameter
-    ) -> Parameter? {
-        if let oldParameter = oldParameter {
-            let parameter = mutableParameters?.update(with: newParameter)
-            path = path.replacingOccurrences(of: "\(oldParameter)", with: "\(newParameter)")
-
-            return parameter
-        }
-
-        return mutableParameters?.update(with: newParameter)
+    mutating func updateParameter(_ parameter: Parameter) -> Parameter? {
+        mutableParameters?.update(with: parameter)
     }
 }
 

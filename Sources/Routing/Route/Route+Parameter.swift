@@ -3,13 +3,13 @@ import class Foundation.NSRegularExpression
 
 extension Route {
     public struct Parameter {
-        public var name: String
-        public var value: String
-        public var requirement: String
-        public var defaultValue: DefaultValue?
+        public let name: String
+        public let value: String
+        public let requirement: String
+        public let defaultValue: DefaultValue?
 
         public init?(name: String, value: String = "", requirement: String = "", defaultValue: DefaultValue? = nil) {
-            guard !name.isEmpty else { return nil }
+            if name.isEmpty || defaultValue == .forced("") { return nil }
             self.name = name
             self.value = value
             self.requirement = requirement

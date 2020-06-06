@@ -104,37 +104,37 @@ extension Route {
                 if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.optionalSymbol) {
                     let defaultValueEndIndex = nameEndIndex
                     defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                    parameter.defaultValue = .optional(
+                    parameter?.defaultValue = .optional(
                         String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex])
                     )
                 } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.forcedSymbol) {
                     let defaultValueEndIndex = nameEndIndex
                     defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                    parameter.defaultValue = .forced(
+                    parameter?.defaultValue = .forced(
                         String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex])
                     )
                 }
 
                 nameEndIndex = requirementStartIndex
                 requirementStartIndex = pathComponentPart.index(after: requirementStartIndex)
-                parameter.requirement = String(pathComponentPart[requirementStartIndex..<requirementEndIndex])
+                parameter?.requirement = String(pathComponentPart[requirementStartIndex..<requirementEndIndex])
             } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.optionalSymbol) {
                 let defaultValueEndIndex = nameEndIndex
                 nameEndIndex = defaultValueStartIndex
                 defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                parameter.defaultValue = .optional(
+                parameter?.defaultValue = .optional(
                     String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex])
                 )
             } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.forcedSymbol) {
                 let defaultValueEndIndex = nameEndIndex
                 nameEndIndex = defaultValueStartIndex
                 defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                parameter.defaultValue = .forced(
+                parameter?.defaultValue = .forced(
                     String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex])
                 )
             }
 
-            parameter.name = String(pathComponentPart[nameStartIndex..<nameEndIndex])
+            parameter?.name = String(pathComponentPart[nameStartIndex..<nameEndIndex])
 
             return parameter
         }

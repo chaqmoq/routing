@@ -6,7 +6,9 @@ public struct Route {
     public typealias RequestHandler = (Request) -> Any
 
     public var method: Request.Method
-    public private(set) var path: String
+    public private(set) var path: String {
+        didSet { pattern = Route.generatePattern(from: path, parameters: mutableParameters) }
+    }
     public private(set) var pattern: String
     public var name: String
     public var parameters: Set<Parameter>? { mutableParameters }
@@ -31,7 +33,7 @@ public struct Route {
 
         if isValid {
             self.mutableParameters = parameters
-            pattern = Route.generatePattern(from: self.path, parameters: parameters)
+            pattern = Route.generatePattern(from: self.path, parameters: self.mutableParameters)
             let separator = String(Route.pathComponentSeparator)
             guard pattern == separator || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
         } else {
@@ -136,7 +138,6 @@ extension Route {
         if let oldParameter = oldParameter {
             let parameter = mutableParameters?.update(with: newParameter)
             path = path.replacingOccurrences(of: "\(oldParameter)", with: "\(newParameter)")
-            pattern = Route.generatePattern(from: path, parameters: mutableParameters)
 
             return parameter
         }

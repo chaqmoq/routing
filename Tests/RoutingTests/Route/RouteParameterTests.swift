@@ -12,7 +12,7 @@ final class RouteParameterTests: XCTestCase {
         // Assert
         XCTAssertEqual(parameter.name, name)
         XCTAssertTrue(parameter.value.isEmpty)
-        XCTAssertNil(parameter.requirement)
+        XCTAssertTrue(parameter.requirement.isEmpty)
         XCTAssertNil(parameter.defaultValue)
         XCTAssertEqual(parameter.pattern, "(.+)")
         XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(nameEnclosingSymbols.1)")
@@ -51,7 +51,7 @@ final class RouteParameterTests: XCTestCase {
         // Assert
         XCTAssertEqual(parameter.name, name)
         XCTAssertTrue(parameter.value.isEmpty)
-        XCTAssertNil(parameter.requirement)
+        XCTAssertTrue(parameter.requirement.isEmpty)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
         XCTAssertEqual(parameter.pattern, "(.+)?")
         XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(optionalSymbol)\(nameEnclosingSymbols.1)")
@@ -68,7 +68,7 @@ final class RouteParameterTests: XCTestCase {
         // Assert
         XCTAssertEqual(parameter.name, name)
         XCTAssertTrue(parameter.value.isEmpty)
-        XCTAssertNil(parameter.requirement)
+        XCTAssertTrue(parameter.requirement.isEmpty)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
         XCTAssertEqual(parameter.pattern, "(.+|1)?")
         XCTAssertEqual(
@@ -132,7 +132,7 @@ final class RouteParameterTests: XCTestCase {
         // Assert
         XCTAssertEqual(parameter.name, name)
         XCTAssertTrue(parameter.value.isEmpty)
-        XCTAssertNil(parameter.requirement)
+        XCTAssertTrue(parameter.requirement.isEmpty)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
         XCTAssertEqual(parameter.pattern, "(.+)?")
         XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(defaultValue)\(nameEnclosingSymbols.1)")
@@ -149,7 +149,7 @@ final class RouteParameterTests: XCTestCase {
         // Assert
         XCTAssertEqual(parameter.name, name)
         XCTAssertTrue(parameter.value.isEmpty)
-        XCTAssertNil(parameter.requirement)
+        XCTAssertTrue(parameter.requirement.isEmpty)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
         XCTAssertEqual(parameter.pattern, "(.+|1)?")
         XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(defaultValue)\(nameEnclosingSymbols.1)")

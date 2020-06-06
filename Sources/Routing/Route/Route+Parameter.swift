@@ -1,16 +1,20 @@
+import class Foundation.NSRegularExpression
+
 extension Route {
     public struct Parameter {
         public var name: String
         public var value: String
-        public var requirement: String?
+        public var requirement: String
         public var defaultValue: DefaultValue?
 
-        public init(
-            name: String,
-            value: String = "",
-            requirement: String? = nil,
-            defaultValue: DefaultValue? = nil
-        ) {
+        public init(name: String, value: String = "", defaultValue: DefaultValue? = nil) {
+            self.name = name
+            self.value = value
+            requirement = ""
+            self.defaultValue = defaultValue
+        }
+
+        public init(name: String, value: String = "", requirement: String, defaultValue: DefaultValue? = nil) {
             self.name = name
             self.value = value
             self.requirement = requirement
@@ -21,7 +25,7 @@ extension Route {
 
 extension Route.Parameter {
     public var pattern: String {
-        if let requirement = requirement {
+        if !requirement.isEmpty {
             if let defaultValue = defaultValue {
                 switch defaultValue {
                 case .optional(let value),
@@ -61,7 +65,7 @@ extension Route.Parameter: CustomStringConvertible {
     public var description: String {
         var pattern = "\(Route.Parameter.nameEnclosingSymbols.0)\(name)"
 
-        if let requirement = requirement {
+        if !requirement.isEmpty {
             let requirementEnclosingSymbols = Route.Parameter.requirementEnclosingSymbols
             pattern += "\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)"
         }

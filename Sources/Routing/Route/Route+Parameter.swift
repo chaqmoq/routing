@@ -1,3 +1,4 @@
+import struct Foundation.NSRange
 import class Foundation.NSRegularExpression
 
 extension Route {
@@ -8,17 +9,20 @@ extension Route {
         public var defaultValue: DefaultValue?
 
         public init(name: String, value: String = "", defaultValue: DefaultValue? = nil) {
-            self.name = name
-            self.value = value
-            requirement = ""
-            self.defaultValue = defaultValue
+            self.init(name: name, value: value, requirement: "", defaultValue: defaultValue)!
         }
 
-        public init(name: String, value: String = "", requirement: String, defaultValue: DefaultValue? = nil) {
+        public init?(name: String, value: String = "", requirement: String, defaultValue: DefaultValue? = nil) {
             self.name = name
             self.value = value
             self.requirement = requirement
             self.defaultValue = defaultValue
+
+            if !self.value.isEmpty && !self.requirement.isEmpty {
+                guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
+                let valueRange = NSRange(location: 0, length: self.value.utf8.count)
+                guard regex.firstMatch(in: self.value, range: valueRange) != nil else { return nil }
+            }
         }
     }
 }

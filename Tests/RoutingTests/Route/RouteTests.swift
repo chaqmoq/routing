@@ -196,7 +196,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.pattern, "/blog/(\\d+)")
         XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")))
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")!))
         XCTAssertNotNil(route.requestHandler)
     }
 
@@ -213,7 +213,7 @@ final class RouteTests: XCTestCase {
         XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(
-            route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .optional()))
+            route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .optional())!)
         )
         XCTAssertNotNil(route.requestHandler)
     }
@@ -232,7 +232,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(
             route.parameters!.contains(
-                Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .optional("1"))
+                Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .optional("1"))!
             )
         )
         XCTAssertNotNil(route.requestHandler)
@@ -261,7 +261,7 @@ final class RouteTests: XCTestCase {
         XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
         XCTAssertTrue(
-            route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .forced("1")))
+            route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .forced("1"))!)
         )
         XCTAssertNotNil(route.requestHandler)
     }
@@ -288,7 +288,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.pattern, "/blog(/\\d+)?/posts")
         XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .optional())))
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+", defaultValue: .optional())!))
         XCTAssertNotNil(route.requestHandler)
     }
 
@@ -304,8 +304,8 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.pattern, "/blog/(\\d+)/posts/(\\d+)")
         XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 2)
-        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")))
-        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "id", requirement: "\\d+")))
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", requirement: "\\d+")!))
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "id", requirement: "\\d+")!))
         XCTAssertNotNil(route.requestHandler)
     }
 

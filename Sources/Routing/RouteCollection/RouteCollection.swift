@@ -98,7 +98,8 @@ extension RouteCollection {
     }
 
     public func has(_ route: Route) -> Bool {
-        self[route.method].contains(route)
+        for (_, routes) in self where routes.contains(route) { return true }
+        return false
     }
 
     public func remove(_ routes: [Route]) {

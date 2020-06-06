@@ -50,9 +50,13 @@ final class RouteCollectionTests: XCTestCase {
         let routes2 = RouteCollection(routes1, path: path, name: name)!
 
         // Assert
-        XCTAssertEqual(routes2.count, routes1.count)
+        XCTAssertEqual(routes1.count, 2)
+        XCTAssertEqual(routes1[.GET].count, 1)
+        XCTAssertEqual(routes1[.POST].count, 1)
+        XCTAssertEqual(routes2.count, 1)
         XCTAssertEqual(routes2.path, path)
         XCTAssertEqual(routes2.name, name)
+        XCTAssertEqual(routes2[routes2.first!.key].filter({ $0.name == name }).count, 1)
     }
 
     func testInitWithAnotherRouteCollectionHavingPathAndName() {
@@ -68,17 +72,15 @@ final class RouteCollectionTests: XCTestCase {
         let routes2 = RouteCollection(routes1)
 
         // Assert
+        XCTAssertEqual(routes1.count, 1)
+        XCTAssertEqual(routes1[routes1.first!.key].filter({ $0.name == name }).count, 1)
         XCTAssertEqual(routes2.count, routes1.count)
-        XCTAssertEqual(routes2[.GET].count, routes1[.GET].count)
-        XCTAssertEqual(routes2[.POST].count, routes1[.POST].count)
         XCTAssertEqual(routes2.path, routes1.path)
         XCTAssertEqual(routes2.name, routes1.name)
-        XCTAssertEqual(routes2[.GET], [
-            Route(method: .GET, path: "/blog") { request in Response() }!
-        ])
-        XCTAssertEqual(routes2[.POST], [
-            Route(method: .POST, path: "/blog") { request in Response() }!
-        ])
+        XCTAssertEqual(
+            routes2[routes2.first!.key].filter({ $0.name == name }).count,
+            routes1[routes1.first!.key].filter({ $0.name == name }).count
+        )
     }
 
     func testInitWithRoutes() {

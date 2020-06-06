@@ -24,10 +24,9 @@ extension Route.Parameter {
         if let requirement = requirement {
             if let defaultValue = defaultValue {
                 switch defaultValue {
-                case .optional(let value):
+                case .optional(let value),
+                     .forced(let value):
                     if value.isEmpty { return "(\(requirement))?" }
-                    return "(\(requirement)|\(value))?"
-                case .forced(let value):
                     return "(\(requirement)|\(value))?"
                 }
             }
@@ -35,10 +34,9 @@ extension Route.Parameter {
             return "(\(requirement))"
         } else if let defaultValue = defaultValue {
             switch defaultValue {
-            case .optional(let value):
+            case .optional(let value),
+                 .forced(let value):
                 if value.isEmpty { return "(.+)?" }
-                return "(.+|\(value))?"
-            case .forced(let value):
                 return "(.+|\(value))?"
             }
         }

@@ -2,7 +2,7 @@ import XCTest
 @testable import struct Routing.Route
 
 final class RouteParameterDefaultValueTests: XCTestCase {
-    func testOptional() {
+    func testOptionalWithDefaultValue() {
         // Arrange
         let defaultValue: Route.Parameter.DefaultValue = .optional()
 

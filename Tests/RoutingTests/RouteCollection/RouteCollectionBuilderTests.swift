@@ -1,6 +1,6 @@
 import XCTest
 import struct HTTP.Response
-@testable import class Routing.RouteCollection
+@testable import Routing
 
 final class RouteCollectionBuilderTests: XCTestCase {
     var builder: RouteCollection.Builder!
@@ -91,14 +91,14 @@ final class RouteCollectionBuilderTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(routes.count, 2)
-        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .DELETE }))
-        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .GET }))
+        XCTAssertTrue(routes.contains(Route(method: .DELETE, path: path) { request in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .GET, path: path) { request in Response() }!))
 
         XCTAssertEqual(builder.routes.count, 2)
         XCTAssertEqual(builder.routes[.DELETE].count, 1)
         XCTAssertEqual(builder.routes[.GET].count, 1)
-        XCTAssertTrue(builder.routes[.DELETE].contains(where: { $0.path == path && $0.method == .DELETE }))
-        XCTAssertTrue(builder.routes[.GET].contains(where: { $0.path == path && $0.method == .GET }))
+        XCTAssertTrue(builder.routes.has(Route(method: .DELETE, path: path) { request in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .GET, path: path) { request in Response() }!))
     }
 
     func testRequestDefaultMethods() {
@@ -110,13 +110,13 @@ final class RouteCollectionBuilderTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(routes.count, 7)
-        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .DELETE }))
-        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .GET }))
-        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .HEAD }))
-        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .OPTIONS }))
-        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .PATCH }))
-        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .POST }))
-        XCTAssertTrue(routes.contains(where: { $0.path == path && $0.method == .PUT }))
+        XCTAssertTrue(routes.contains(Route(method: .DELETE, path: path) { request in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .GET, path: path) { request in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .HEAD, path: path) { request in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .OPTIONS, path: path) { request in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .PATCH, path: path) { request in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .POST, path: path) { request in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .PUT, path: path) { request in Response() }!))
 
         XCTAssertEqual(builder.routes.count, 7)
         XCTAssertEqual(builder.routes[.DELETE].count, 1)
@@ -126,13 +126,13 @@ final class RouteCollectionBuilderTests: XCTestCase {
         XCTAssertEqual(builder.routes[.PATCH].count, 1)
         XCTAssertEqual(builder.routes[.POST].count, 1)
         XCTAssertEqual(builder.routes[.PUT].count, 1)
-        XCTAssertTrue(builder.routes[.DELETE].contains(where: { $0.path == path && $0.method == .DELETE }))
-        XCTAssertTrue(builder.routes[.GET].contains(where: { $0.path == path && $0.method == .GET }))
-        XCTAssertTrue(builder.routes[.HEAD].contains(where: { $0.path == path && $0.method == .HEAD }))
-        XCTAssertTrue(builder.routes[.OPTIONS].contains(where: { $0.path == path && $0.method == .OPTIONS }))
-        XCTAssertTrue(builder.routes[.PATCH].contains(where: { $0.path == path && $0.method == .PATCH }))
-        XCTAssertTrue(builder.routes[.POST].contains(where: { $0.path == path && $0.method == .POST }))
-        XCTAssertTrue(builder.routes[.PUT].contains(where: { $0.path == path && $0.method == .PUT }))
+        XCTAssertTrue(builder.routes.has(Route(method: .DELETE, path: path) { request in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .GET, path: path) { request in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .HEAD, path: path) { request in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .OPTIONS, path: path) { request in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .PATCH, path: path) { request in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .POST, path: path) { request in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .PUT, path: path) { request in Response() }!))
     }
 
     func testGroup() {

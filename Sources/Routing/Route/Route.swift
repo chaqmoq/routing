@@ -147,7 +147,10 @@ extension Route {
 
 extension Route: Equatable {
     public static func ==(lhs: Route, rhs: Route) -> Bool {
-        lhs.name == rhs.name || (lhs.method == rhs.method && lhs.pattern == rhs.pattern)
+        let isEqual = lhs.method == rhs.method && lhs.pattern == rhs.pattern
+        if isEqual { return true }
+        if lhs.name.isEmpty || rhs.name.isEmpty { return false }
+        return lhs.name == rhs.name
     }
 }
 

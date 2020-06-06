@@ -122,7 +122,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.pattern, "/blog/(.+)")
         XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page")))
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page")!))
         XCTAssertNotNil(route.requestHandler)
     }
 
@@ -138,7 +138,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.pattern, "/blog(/.+)?")
         XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .optional())))
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .optional())!))
         XCTAssertNotNil(route.requestHandler)
     }
 
@@ -154,7 +154,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.pattern, "/blog(/.+|1)?")
         XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .optional("1"))))
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .optional("1"))!))
         XCTAssertNotNil(route.requestHandler)
     }
 
@@ -180,7 +180,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.pattern, "/blog(/.+|1)?")
         XCTAssertTrue(route.name.isEmpty)
         XCTAssertEqual(route.parameters?.count, 1)
-        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .forced("1"))))
+        XCTAssertTrue(route.parameters!.contains(Route.Parameter(name: "page", defaultValue: .forced("1"))!))
         XCTAssertNotNil(route.requestHandler)
     }
 

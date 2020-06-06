@@ -84,7 +84,7 @@ extension RouteCollection {
         let separator = String(Route.pathComponentSeparator)
         let route = Route(
             method: route.method,
-            path: self.path == separator ? route.path : self.path + route.path,
+            path: path == separator ? route.path : Route.normalize(path: path + route.path),
             name: name + route.name,
             requestHandler: route.requestHandler
         )!

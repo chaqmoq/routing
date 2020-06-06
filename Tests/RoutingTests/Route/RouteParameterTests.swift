@@ -2,94 +2,87 @@ import XCTest
 @testable import struct Routing.Route
 
 final class RouteParameterTests: XCTestCase {
-    func testInitWithName() {
-        // Arrange
-        let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
-
-        let name = "id"
-        let parameter = Route.Parameter(name: name)
-
-        // Assert
-        XCTAssertEqual(parameter.name, name)
-        XCTAssertTrue(parameter.value.isEmpty)
-        XCTAssertTrue(parameter.requirement.isEmpty)
-        XCTAssertNil(parameter.defaultValue)
-        XCTAssertEqual(parameter.pattern, "(.+)")
-        XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(nameEnclosingSymbols.1)")
-    }
-
-    func testInitWithNameAndRequirement() {
+    func testInit() {
         // Arrange
         let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
         let requirementEnclosingSymbols = Route.Parameter.requirementEnclosingSymbols
 
         let name = "id"
+        let value = "1"
         let requirement = "\\d+"
-        let parameter = Route.Parameter(name: name, requirement: requirement)!
+        let defaultValue: Route.Parameter.DefaultValue = .optional("2")
+
+        // Act
+        let parameter = Route.Parameter(name: name, value: value, requirement: requirement, defaultValue: defaultValue)!
 
         // Assert
         XCTAssertEqual(parameter.name, name)
-        XCTAssertTrue(parameter.value.isEmpty)
+        XCTAssertEqual(parameter.value, value)
         XCTAssertEqual(parameter.requirement, requirement)
-        XCTAssertNil(parameter.defaultValue)
-        XCTAssertEqual(parameter.pattern, "(\\d+)")
+        XCTAssertEqual(parameter.defaultValue, defaultValue)
+        XCTAssertEqual(parameter.pattern, "(\\d+|2)?")
         XCTAssertEqual(
             "\(parameter)",
-            "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(nameEnclosingSymbols.1)"
+            "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)"
         )
     }
 
-    func testInitWithNameAndOptionalDefaultValue() {
-        // Arrange
-        let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
-        let optionalSymbol = Route.Parameter.optionalSymbol
-
-        let name = "id"
-        let defaultValue: Route.Parameter.DefaultValue = .optional()
-        let parameter = Route.Parameter(name: name, defaultValue: defaultValue)
+    func testInitWithEmptyName() {
+        // Act
+        let parameter = Route.Parameter(name: "")
 
         // Assert
-        XCTAssertEqual(parameter.name, name)
-        XCTAssertTrue(parameter.value.isEmpty)
-        XCTAssertTrue(parameter.requirement.isEmpty)
-        XCTAssertEqual(parameter.defaultValue, defaultValue)
-        XCTAssertEqual(parameter.pattern, "(.+)?")
-        XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(optionalSymbol)\(nameEnclosingSymbols.1)")
+        XCTAssertNil(parameter)
     }
 
-    func testInitWithNameAndOptionalValue() {
+    func testInitWithInvalidValue() {
+        // Act
+        let parameter = Route.Parameter(name: "id", value: "a", requirement: "\\d+")
+
+        // Assert
+        XCTAssertNil(parameter)
+    }
+
+    func testInitWithEmptyRequirement() {
         // Arrange
         let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
 
         let name = "id"
-        let defaultValue: Route.Parameter.DefaultValue = .optional("1")
-        let parameter = Route.Parameter(name: name, defaultValue: defaultValue)
+        let value = "1"
+        let requirement = ""
+        let defaultValue: Route.Parameter.DefaultValue = .optional("2")
+
+        // Act
+        let parameter = Route.Parameter(name: name, value: value, requirement: requirement, defaultValue: defaultValue)!
 
         // Assert
         XCTAssertEqual(parameter.name, name)
-        XCTAssertTrue(parameter.value.isEmpty)
-        XCTAssertTrue(parameter.requirement.isEmpty)
+        XCTAssertEqual(parameter.value, value)
+        XCTAssertEqual(parameter.requirement, requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
-        XCTAssertEqual(parameter.pattern, "(.+|1)?")
+        XCTAssertEqual(parameter.pattern, "(.+|2)?")
         XCTAssertEqual(
             "\(parameter)",
             "\(nameEnclosingSymbols.0)\(name)\(defaultValue)\(nameEnclosingSymbols.1)"
         )
     }
 
-    func testInitWithNameRequirementAndOptionalDefaultValue() {
+    func testInitWithEmptyDefaultValue() {
         // Arrange
         let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
         let requirementEnclosingSymbols = Route.Parameter.requirementEnclosingSymbols
 
         let name = "id"
+        let value = "1"
         let requirement = "\\d+"
         let defaultValue: Route.Parameter.DefaultValue = .optional()
-        let parameter = Route.Parameter(name: name, requirement: requirement, defaultValue: defaultValue)!
+
+        // Act
+        let parameter = Route.Parameter(name: name, value: value, requirement: requirement, defaultValue: defaultValue)!
 
         // Assert
         XCTAssertEqual(parameter.name, name)
-        XCTAssertTrue(parameter.value.isEmpty)
+        XCTAssertEqual(parameter.value, value)
         XCTAssertEqual(parameter.requirement, requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
         XCTAssertEqual(parameter.pattern, "(\\d+)?")
@@ -99,135 +92,38 @@ final class RouteParameterTests: XCTestCase {
         )
     }
 
-    func testInitWithNameRequirementAndOptionalValue() {
-        // Arrange
-        let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
-        let requirementEnclosingSymbols = Route.Parameter.requirementEnclosingSymbols
-
-        let name = "id"
-        let requirement = "\\d+"
-        let defaultValue: Route.Parameter.DefaultValue = .optional("1")
-        let parameter = Route.Parameter(name: name, requirement: requirement, defaultValue: defaultValue)!
-
-        // Assert
-        XCTAssertEqual(parameter.name, name)
-        XCTAssertTrue(parameter.value.isEmpty)
-        XCTAssertEqual(parameter.requirement, requirement)
-        XCTAssertEqual(parameter.defaultValue, defaultValue)
-        XCTAssertEqual(parameter.pattern, "(\\d+|1)?")
-        XCTAssertEqual(
-            "\(parameter)",
-            "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)"
-        )
-    }
-
-    func testInitWithNameAndForcedEmptyValue() {
+    func testInitWithEmptyRequirementAndEmptyDefaultValue() {
         // Arrange
         let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
 
         let name = "id"
-        let defaultValue: Route.Parameter.DefaultValue = .forced("")
-        let parameter = Route.Parameter(name: name, defaultValue: defaultValue)
-
-        // Assert
-        XCTAssertEqual(parameter.name, name)
-        XCTAssertTrue(parameter.value.isEmpty)
-        XCTAssertTrue(parameter.requirement.isEmpty)
-        XCTAssertEqual(parameter.defaultValue, defaultValue)
-        XCTAssertEqual(parameter.pattern, "(.+)?")
-        XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(defaultValue)\(nameEnclosingSymbols.1)")
-    }
-
-    func testInitWithNameAndForcedValue() {
-        // Arrange
-        let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
-
-        let name = "id"
-        let defaultValue: Route.Parameter.DefaultValue = .forced("1")
-        let parameter = Route.Parameter(name: name, defaultValue: defaultValue)
-
-        // Assert
-        XCTAssertEqual(parameter.name, name)
-        XCTAssertTrue(parameter.value.isEmpty)
-        XCTAssertTrue(parameter.requirement.isEmpty)
-        XCTAssertEqual(parameter.defaultValue, defaultValue)
-        XCTAssertEqual(parameter.pattern, "(.+|1)?")
-        XCTAssertEqual("\(parameter)", "\(nameEnclosingSymbols.0)\(name)\(defaultValue)\(nameEnclosingSymbols.1)")
-    }
-
-    func testInitWithNameRequirementAndForcedValue() {
-        // Arrange
-        let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
-        let requirementEnclosingSymbols = Route.Parameter.requirementEnclosingSymbols
-
-        let name = "id"
-        let requirement = "\\d+"
-        let defaultValue: Route.Parameter.DefaultValue = .forced("1")
-        let parameter = Route.Parameter(name: name, requirement: requirement, defaultValue: defaultValue)!
-
-        // Assert
-        XCTAssertEqual(parameter.name, name)
-        XCTAssertTrue(parameter.value.isEmpty)
-        XCTAssertEqual(parameter.requirement, requirement)
-        XCTAssertEqual(parameter.defaultValue, defaultValue)
-        XCTAssertEqual(parameter.pattern, "(\\d+|1)?")
-        XCTAssertEqual(
-            "\(parameter)",
-            "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)"
-        )
-    }
-
-    func testUpdate() {
-        // Arrange
-        let nameEnclosingSymbols = Route.Parameter.nameEnclosingSymbols
-        let requirementEnclosingSymbols = Route.Parameter.requirementEnclosingSymbols
-
-        let name = "page"
-        let value = "2"
-        let requirement = "\\d+"
-        let defaultValue: Route.Parameter.DefaultValue = .optional("1")
-        var parameter = Route.Parameter(name: "id")
+        let value = "1"
+        let requirement = ""
+        let defaultValue: Route.Parameter.DefaultValue = .optional()
 
         // Act
-        parameter.name = name
-        parameter.value = value
-        parameter.requirement = requirement
-        parameter.defaultValue = defaultValue
+        let parameter = Route.Parameter(name: name, value: value, requirement: requirement, defaultValue: defaultValue)!
 
         // Assert
         XCTAssertEqual(parameter.name, name)
         XCTAssertEqual(parameter.value, value)
         XCTAssertEqual(parameter.requirement, requirement)
         XCTAssertEqual(parameter.defaultValue, defaultValue)
-        XCTAssertEqual(parameter.pattern, "(\\d+|1)?")
+        XCTAssertEqual(parameter.pattern, "(.+)?")
         XCTAssertEqual(
             "\(parameter)",
-            "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)"
+            "\(nameEnclosingSymbols.0)\(name)\(defaultValue)\(nameEnclosingSymbols.1)"
         )
     }
 
-    func testEquality() {
+    func testHashable() {
         // Arrange
-        let name = "id"
-        let value = "2"
-        let requirement = "\\d+"
-        let defaultValue: Route.Parameter.DefaultValue = .optional("1")
+        let parameter = Route.Parameter(name: "id", value: "1")!
 
         // Act
-        let parameter1 = Route.Parameter(
-            name: name,
-            value: value,
-            requirement: requirement,
-            defaultValue: defaultValue
-        )
-        let parameter2 = Route.Parameter(
-            name: name,
-            value: value,
-            requirement: requirement,
-            defaultValue: defaultValue
-        )
+        let dictionary: [Route.Parameter: String] = [parameter: parameter.value]
 
         // Assert
-        XCTAssertEqual(parameter1, parameter2)
+        XCTAssertEqual(dictionary[parameter], parameter.value)
     }
 }

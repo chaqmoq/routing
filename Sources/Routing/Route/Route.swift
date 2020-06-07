@@ -53,7 +53,14 @@ extension Route {
 extension Route {
     @discardableResult
     mutating func updateParameter(_ parameter: Parameter) -> Parameter? {
-        mutableParameters?.update(with: parameter)
+        guard let index = mutableParameters?.firstIndex(of: parameter),
+            let existingParameter = mutableParameters?[index] else { return nil }
+        guard let newParameter = Parameter(
+            name: existingParameter.name,
+            value: parameter.value,
+            requirement: existingParameter.requirement,
+            defaultValue: existingParameter.defaultValue) else { return existingParameter }
+        return mutableParameters?.update(with: newParameter)
     }
 }
 

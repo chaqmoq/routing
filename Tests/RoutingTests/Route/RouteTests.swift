@@ -118,7 +118,7 @@ final class RouteTests: XCTestCase {
 
     func testDescription() {
         // Arrange
-        let route = Route(method: .GET, path: "/posts/{id<\\d+>?1}", name: "post_get") { request in Response() }!
+        let route = Route(method: .GET, path: "/posts/{id!1}", name: "post_get") { request in Response() }!
 
         // Act
         var description = "method=\(route.method.rawValue)\npath=\(route.path)\npattern=\(route.pattern)"

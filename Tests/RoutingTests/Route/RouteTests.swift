@@ -89,6 +89,33 @@ final class RouteTests: XCTestCase {
         XCTAssertTrue(route.parameters!.contains(where: { $0.name == "id" && $0.value == "2" && $0.requirement == "\\d+" && $0.defaultValue == .optional("1") }))
     }
 
+    func testEquatable() {
+        // Arrange
+        let path = "/posts/{id<\\d+>?1}"
+        let name = "post_"
+
+        // Act
+        var route1 = Route(method: .GET, path: path) { request in Response() }
+        var route2 = Route(method: .GET, path: path) { request in Response() }
+
+        // Assert
+        XCTAssertEqual(route2, route1)
+
+        // Act
+        route1 = Route(method: .GET, path: path) { request in Response() }
+        route2 = Route(method: .POST, path: path) { request in Response() }
+
+        // Assert
+        XCTAssertNotEqual(route2, route1)
+
+        // Act
+        route1 = Route(method: .GET, path: path, name: name) { request in Response() }
+        route2 = Route(method: .POST, path: path, name: name) { request in Response() }
+
+        // Assert
+        XCTAssertEqual(route2, route1)
+    }
+
     func testDescription() {
         // Arrange
         let route = Route(method: .GET, name: "post_get") { request in Response() }

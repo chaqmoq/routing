@@ -13,41 +13,32 @@ extension Route {
         for pathComponent in pathComponents {
             let range = NSRange(location: 0, length: pathComponent.utf8.count)
             let matches = regex.matches(in: pathComponent, range: range)
+            var matchesString = ""
 
-            if matches.isEmpty {
-                return (false, nil)
-            } else {
-                var matchesString = ""
+            for match in matches {
+                if let range = Range(match.range, in: pathComponent) {
+                    let pathComponentPart = String(pathComponent[range])
 
-                for match in matches {
-                    if let range = Range(match.range, in: pathComponent) {
-                        let pathComponentPart = String(pathComponent[range])
+                    if pathComponentPart.hasPrefix(String(Parameter.nameEnclosingSymbols.0)) {
+                        let requirementEnclosingSymbols = Parameter.requirementEnclosingSymbols
+                        let startRange = pathComponentPart.range(of: String(requirementEnclosingSymbols.0))
+                        let endRange = pathComponentPart.range(of: String(requirementEnclosingSymbols.1))
 
-                        if pathComponentPart.hasPrefix(String(Parameter.nameEnclosingSymbols.0)) {
-                            let requirementEnclosingSymbols = Parameter.requirementEnclosingSymbols
-                            let startRange = pathComponentPart.range(of: String(requirementEnclosingSymbols.0))
-                            let endRange = pathComponentPart.range(of: String(requirementEnclosingSymbols.1))
-
-                            if let startIndex = startRange?.upperBound, let endIndex = endRange?.lowerBound {
-                                let pattern = String(pathComponentPart[startIndex..<endIndex])
-                                if (try? NSRegularExpression(pattern: pattern)) == nil { return (false, nil) }
-                            }
+                        if let startIndex = startRange?.upperBound, let endIndex = endRange?.lowerBound {
+                            let pattern = String(pathComponentPart[startIndex..<endIndex])
+                            if (try? NSRegularExpression(pattern: pattern)) == nil { return (false, nil) }
                         }
-
-                        if let parameter = Route.extractParameter(from: pathComponentPart) {
-                            if parameters.contains(parameter) {
-                                return (false, nil)
-                            } else {
-                                parameters.insert(parameter)
-                            }
-                        }
-
-                        matchesString.append(pathComponentPart)
                     }
-                }
 
-                if matchesString != pathComponent { return (false, nil) }
+                    if let parameter = Route.extractParameter(from: pathComponentPart) {
+                        parameters.insert(parameter)
+                    }
+
+                    matchesString.append(pathComponentPart)
+                }
             }
+
+            if matchesString != pathComponent { return (false, nil) }
         }
 
         return (true, parameters.isEmpty ? nil : parameters)
@@ -72,18 +63,18 @@ extension Route {
             let separator = String(Route.pathComponentSeparator)
 
             for parameter in parameters {
-                if parameter.defaultValue != nil, let range = pattern.range(of: "\(separator)\(parameter)") {
-                    if range.upperBound == pattern.endIndex || String(pattern[range.upperBound]) == separator {
-                        var parameterPattern = parameter.pattern
-                        parameterPattern.insert(
-                            contentsOf: separator,
-                            at: parameterPattern.index(parameterPattern.startIndex, offsetBy: 1)
-                        )
-                        pattern = pattern.replacingOccurrences(
-                            of: "\(separator)\(parameter)",
-                            with: parameterPattern
-                        )
-                    }
+                if parameter.defaultValue != nil,
+                    let range = pattern.range(of: "\(separator)\(parameter)"),
+                    range.upperBound == pattern.endIndex {
+                    var parameterPattern = parameter.pattern
+                    parameterPattern.insert(
+                        contentsOf: separator,
+                        at: parameterPattern.index(parameterPattern.startIndex, offsetBy: 1)
+                    )
+                    pattern = pattern.replacingOccurrences(
+                        of: "\(separator)\(parameter)",
+                        with: parameterPattern
+                    )
                 }
 
                 pattern = pattern.replacingOccurrences(of: "\(parameter)", with: parameter.pattern)

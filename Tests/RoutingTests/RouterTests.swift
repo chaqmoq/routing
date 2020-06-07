@@ -11,7 +11,7 @@ final class RouterTests: XCTestCase {
 
         // Arrange
         let routes = RouteCollection([
-            Route(method: .OPTIONS, path: "/", name: "index") { request in Response() }!,
+            Route(method: .OPTIONS, name: "index") { request in Response() },
             Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
             Route(method: .DELETE, path: "/posts/{id<\\d+>}", name: "post_delete") { request in Response() }!,
             Route(method: .GET, path: "/blog/{page<\\d+>!1}", name: "blog_page") { request in Response() }!,
@@ -23,7 +23,7 @@ final class RouterTests: XCTestCase {
         router = Router(routes: routes)
     }
 
-    func testResolveRouteWithEmptyPath() {
+    func testResolveRouteWithoutPath() {
         // Arrange
         let method: Request.Method = .OPTIONS
         let name = "index"
@@ -83,43 +83,7 @@ final class RouterTests: XCTestCase {
         XCTAssertNil(route)
     }
 
-    func testResolveRouteWithForcedDefaultParameter() {
-        // Arrange
-        let method: Request.Method = .GET
-        let name = "blog_page"
-
-        // Act
-        var route = router.resolveRouteBy(method: method, uri: "/blog/")
-
-        // Assert
-        XCTAssertEqual(route?.name, name)
-
-        // Act
-        route = router.resolveRouteBy(method: method, uri: "/blog")
-
-        // Assert
-        XCTAssertEqual(route?.name, name)
-
-        // Act
-        route = router.resolveRouteBy(method: method, uri: "/blog/1")
-
-        // Assert
-        XCTAssertEqual(route?.name, name)
-
-        // Act
-        route = router.resolveRouteBy(method: method, uri: "/blog/1/")
-
-        // Assert
-        XCTAssertEqual(route?.name, name)
-
-        // Act
-        route = router.resolveRouteBy(method: method, uri: "/blog/a")
-
-        // Assert
-        XCTAssertNil(route)
-    }
-
-    func testResolveRouteWithOptionalDefaultParameter() {
+    func testResolveRouteWithOptionalParameter() {
         // Arrange
         let method: Request.Method = .GET
         let name = "category_get"
@@ -155,6 +119,42 @@ final class RouterTests: XCTestCase {
         XCTAssertNil(route)
     }
 
+    func testResolveRouteWithForcedParameter() {
+        // Arrange
+        let method: Request.Method = .GET
+        let name = "blog_page"
+
+        // Act
+        var route = router.resolveRouteBy(method: method, uri: "/blog/")
+
+        // Assert
+        XCTAssertEqual(route?.name, name)
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/blog")
+
+        // Assert
+        XCTAssertEqual(route?.name, name)
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/blog/1")
+
+        // Assert
+        XCTAssertEqual(route?.name, name)
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/blog/1/")
+
+        // Assert
+        XCTAssertEqual(route?.name, name)
+
+        // Act
+        route = router.resolveRouteBy(method: method, uri: "/blog/a")
+
+        // Assert
+        XCTAssertNil(route)
+    }
+
     func testResolveRouteWithMultipleParameters() {
         // Arrange
         let method: Request.Method = .HEAD
@@ -179,7 +179,7 @@ final class RouterTests: XCTestCase {
         XCTAssertNil(route)
     }
 
-    func testResolveRouteWithOneRequiredAndOneOptionalDefaultParameters() {
+    func testResolveRouteWithRequiredAndOptionalParameters() {
         // Arrange
         let method: Request.Method = .GET
         let name = "category_post_get"

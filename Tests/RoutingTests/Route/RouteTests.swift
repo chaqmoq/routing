@@ -38,12 +38,30 @@ final class RouteTests: XCTestCase {
         XCTAssertTrue(route.parameters!.contains(where: { $0.name == "id" && $0.value == "" && $0.requirement == "\\d+" && $0.defaultValue == .optional("1") }))
     }
 
-    func testInitWithInvalidPath() {
+    func testInitWithInvalidPaths() {
         // Arrange
-        let path = "//"
+        var path = "/posts//{id<\\d+>?1}"
 
         // Act
-        let route = Route(method: .GET, path: path) { request in Response() }
+        var route = Route(method: .GET, path: path) { request in Response() }
+
+        // Assert
+        XCTAssertNil(route)
+
+        // Arrange
+        path = "posts/{id<\\d+>?1}"
+
+        // Act
+        route = Route(method: .GET, path: path) { request in Response() }
+
+        // Assert
+        XCTAssertNil(route)
+
+        // Arrange
+        path = "/posts/{id<\\d+>!}"
+
+        // Act
+        route = Route(method: .GET, path: path) { request in Response() }
 
         // Assert
         XCTAssertNil(route)

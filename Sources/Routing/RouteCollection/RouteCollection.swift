@@ -11,29 +11,14 @@ public class RouteCollection {
 
     public private(set) lazy var builder: Builder = .init(self)
 
-    public convenience init() {
-        self.init()!
-    }
-
-    public convenience init(_ routes: RouteCollection) {
-        self.init(routes)!
-    }
-
-    public convenience init(_ routes: [Route]) {
-        self.init()!
-        insert(routes)
-    }
-
-    public init?(path: String = String(Route.pathComponentSeparator), name: String = "") {
+    public init() {
         routes = .init()
-        self.name = name
-        self.path = Route.normalize(path: path)
-        let (isValid, _) = Route.isValid(path: self.path)
-        if !isValid { return nil }
+        path = String(Route.pathComponentSeparator)
+        name = ""
     }
 
     public init?(
-        _ routes: RouteCollection,
+        _ routes: RouteCollection = .init(),
         path: String = String(Route.pathComponentSeparator),
         name: String = ""
     ) {
@@ -53,6 +38,19 @@ public class RouteCollection {
         insert(routes)
         self.path = path
         self.name = routes.name + name
+    }
+
+    public convenience init(_ routes: RouteCollection) {
+        self.init(routes)!
+    }
+
+    public convenience init(_ routes: [Route]) {
+        self.init()
+        insert(routes)
+    }
+
+    public convenience init(name: String) {
+        self.init(name: name)!
     }
 
     public convenience init?(
@@ -110,7 +108,9 @@ extension RouteCollection {
     public func remove(_ route: Route) -> Route? {
         for (method, routes) in self {
             if let index = routes.firstIndex(of: route) {
-                return self[method].remove(at: index)
+                let result = self[method].remove(at: index)
+                if self[method].isEmpty { self.routes.removeValue(forKey: method) }
+                return result
             }
         }
 

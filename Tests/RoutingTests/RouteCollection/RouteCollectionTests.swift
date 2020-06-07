@@ -15,26 +15,23 @@ final class RouteCollectionTests: XCTestCase {
 
     func testInitWithAnotherRouteCollection() {
         // Arrange
+        let path = "/blog"
         let routes1 = RouteCollection([
-            Route(method: .GET) { request in Response() },
-            Route(method: .GET, path: "/blog") { request in Response() }!,
-            Route(method: .POST) { request in Response() },
-            Route(method: .POST, path: "/blog") { request in Response() }!
+            Route(method: .GET, path: path) { request in Response() }!,
+            Route(method: .POST, path: path) { request in Response() }!
         ])
 
         // Act
         let routes2 = RouteCollection(routes1)
 
         // Assert
-        XCTAssertEqual(routes2.count, routes1.count)
-        XCTAssertEqual(routes2[.GET].count, routes1[.GET].count)
-        XCTAssertEqual(routes2[.POST].count, routes1[.POST].count)
-        XCTAssertEqual(routes2.path, routes1.path)
-        XCTAssertEqual(routes2.name, routes1.name)
-        XCTAssertTrue(routes2[.GET].contains(Route(method: .GET) { request in Response() }))
-        XCTAssertTrue(routes2[.GET].contains(Route(method: .GET, path: "/blog") { request in Response() }!))
-        XCTAssertTrue(routes2[.POST].contains(Route(method: .POST) { request in Response() }))
-        XCTAssertTrue(routes2[.POST].contains(Route(method: .POST, path: "/blog") { request in Response() }!))
+        XCTAssertEqual(routes2.count, 2)
+        XCTAssertEqual(routes2[.GET].count, 1)
+        XCTAssertEqual(routes2[.POST].count, 1)
+        XCTAssertTrue(routes2[.GET].contains(where: { $0.path == "/blog" && $0.name == "" }))
+        XCTAssertTrue(routes2[.POST].contains(where: { $0.path == "/blog" && $0.name == "" }))
+        XCTAssertEqual(routes2.path, String(Route.pathComponentSeparator))
+        XCTAssertTrue(routes2.name.isEmpty)
     }
 
     func testInitWithAnotherRouteCollectionPathAndName() {
@@ -50,54 +47,57 @@ final class RouteCollectionTests: XCTestCase {
         let routes2 = RouteCollection(routes1, path: path, name: name)!
 
         // Assert
-        XCTAssertEqual(routes1.count, 2)
-        XCTAssertEqual(routes1[.GET].count, 1)
-        XCTAssertEqual(routes1[.POST].count, 1)
         XCTAssertEqual(routes2.count, 1)
+        XCTAssertEqual(routes2[routes2.first!.key].filter({ $0.path == path && $0.name == name }).count, 1)
         XCTAssertEqual(routes2.path, path)
         XCTAssertEqual(routes2.name, name)
-        XCTAssertEqual(routes2[routes2.first!.key].filter({ $0.name == name }).count, 1)
     }
 
-    func testInitWithAnotherRouteCollectionHavingPathAndName() {
+    func testInitWithPathNameAndAnotherRouteCollectionWithPathAndName() {
         // Arrange
-        let path = "/blog"
-        let name = "blog_"
-        let routes1 = RouteCollection([
-            Route(method: .GET) { request in Response() },
-            Route(method: .POST) { request in Response() }
-        ], path: path, name: name)!
+        let routes1 = RouteCollection(path: "/blog", name: "blog_")!
 
         // Act
-        let routes2 = RouteCollection(routes1)
+        let routes2 = RouteCollection(routes1, path: "/posts", name: "post_")!
 
         // Assert
-        XCTAssertEqual(routes1.count, 1)
-        XCTAssertEqual(routes1[routes1.first!.key].filter({ $0.name == name }).count, 1)
-        XCTAssertEqual(routes2.count, routes1.count)
-        XCTAssertEqual(routes2.path, routes1.path)
-        XCTAssertEqual(routes2.name, routes1.name)
-        XCTAssertEqual(
-            routes2[routes2.first!.key].filter({ $0.name == name }).count,
-            routes1[routes1.first!.key].filter({ $0.name == name }).count
-        )
+        XCTAssertEqual(routes2.count, 0)
+        XCTAssertEqual(routes2.path, "/blog/posts")
+        XCTAssertEqual(routes2.name, "blog_post_")
     }
 
     func testInitWithRoutes() {
         // Act
         let routes = RouteCollection([
-            Route(method: .GET) { request in Response() },
-            Route(method: .GET, path: "/blog") { request in Response() }!,
-            Route(method: .POST) { request in Response() },
-            Route(method: .POST, path: "/blog") { request in Response() }!
+            Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
+            Route(method: .POST, path: "/posts", name: "post_create") { request in Response() }!
         ])
 
         // Assert
         XCTAssertEqual(routes.count, 2)
-        XCTAssertTrue(routes[.GET].contains(Route(method: .GET) { request in Response() }))
-        XCTAssertTrue(routes[.GET].contains(Route(method: .GET, path: "/blog") { request in Response() }!))
-        XCTAssertTrue(routes[.POST].contains(Route(method: .POST) { request in Response() }))
-        XCTAssertTrue(routes[.POST].contains(Route(method: .POST, path: "/blog") { request in Response() }!))
+        XCTAssertEqual(routes[.GET].count, 1)
+        XCTAssertEqual(routes[.POST].count, 1)
+        XCTAssertTrue(routes[.GET].contains(where: { $0.path == "/posts" && $0.name == "post_list" }))
+        XCTAssertTrue(routes[.POST].contains(where: { $0.path == "/posts" && $0.name == "post_create" }))
+        XCTAssertEqual(routes.path, String(Route.pathComponentSeparator))
+        XCTAssertTrue(routes.name.isEmpty)
+    }
+
+    func testInitWithRoutesPathAndName() {
+        // Act
+        let routes = RouteCollection([
+            Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
+            Route(method: .POST, path: "/posts", name: "post_create") { request in Response() }!
+        ], path: "/blog", name: "blog_")!
+
+        // Assert
+        XCTAssertEqual(routes.count, 2)
+        XCTAssertEqual(routes[.GET].count, 1)
+        XCTAssertEqual(routes[.POST].count, 1)
+        XCTAssertTrue(routes[.GET].contains(where: { $0.path == "/blog/posts" && $0.name == "blog_post_list" }))
+        XCTAssertTrue(routes[.POST].contains(where: { $0.path == "/blog/posts" && $0.name == "blog_post_create" }))
+        XCTAssertEqual(routes.path, "/blog")
+        XCTAssertEqual(routes.name, "blog_")
     }
 
     func testInitWithName() {
@@ -105,36 +105,11 @@ final class RouteCollectionTests: XCTestCase {
         let name = "blog_"
 
         // Act
-        let routes = RouteCollection(name: name)!
+        let routes = RouteCollection(name: name)
 
         // Assert
         XCTAssertTrue(routes.isEmpty)
         XCTAssertEqual(routes.path, String(Route.pathComponentSeparator))
-        XCTAssertEqual(routes.name, name)
-    }
-
-    func testInitWithEmptyPathAndName() {
-        // Arrange
-        let name = "blog_"
-
-        // Act
-        let routes = RouteCollection(path: "", name: name)
-
-        // Assert
-        XCTAssertNil(routes)
-    }
-
-    func testInitWithPathAndName() {
-        // Arrange
-        let path = "/blog"
-        let name = "blog_"
-
-        // Act
-        let routes = RouteCollection(path: path, name: name)!
-
-        // Assert
-        XCTAssertTrue(routes.isEmpty)
-        XCTAssertEqual(routes.path, path)
         XCTAssertEqual(routes.name, name)
     }
 
@@ -150,18 +125,52 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertNil(routes)
     }
 
-    func testInsertRouteWithSameName() {
+    func testInitWithAnotherRouteCollectionInvalidPathAndName() {
+        // Arrange
+        let routes1 = RouteCollection()
+        let path = "//blog"
+        let name = "blog_"
+
+        // Act
+        let routes2 = RouteCollection(routes1, path: path, name: name)
+
+        // Assert
+        XCTAssertNil(routes2)
+    }
+
+    func testRemoveRoutes() {
         // Arrange
         let routes = RouteCollection([
-            Route(method: .GET, path: "/", name: "blog") { request in Response() }!
+            Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
+            Route(method: .POST, path: "/posts", name: "post_create") { request in Response() }!
         ])
 
         // Act
-        routes.insert(Route(method: .GET, path: "/blog", name: "blog") { request in Response() }!)
+        routes.remove([
+            Route(method: .GET, name: "post_list") { request in Response() },
+            Route(method: .POST, name: "post_create") { request in Response() }
+        ])
 
         // Assert
-        XCTAssertEqual(routes.count, 1)
+        XCTAssertTrue(routes.isEmpty)
+    }
+
+    func testRemoveNonExistingRoute() {
+        // Arrange
+        let routes = RouteCollection([
+            Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
+            Route(method: .POST, path: "/posts", name: "post_create") { request in Response() }!
+        ])
+
+        // Act
+        let route = routes.remove(Route(method: .GET, name: "post_list2") { request in Response() })
+
+        // Assert
+        XCTAssertNil(route)
+        XCTAssertEqual(routes.count, 2)
         XCTAssertEqual(routes[.GET].count, 1)
-        XCTAssertEqual(routes[.GET].first?.path, "/")
+        XCTAssertEqual(routes[.POST].count, 1)
+        XCTAssertTrue(routes[.GET].contains(where: { $0.path == "/posts" && $0.name == "post_list" }))
+        XCTAssertTrue(routes[.POST].contains(where: { $0.path == "/posts" && $0.name == "post_create" }))
     }
 }

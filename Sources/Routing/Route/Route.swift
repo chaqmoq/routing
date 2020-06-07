@@ -75,8 +75,9 @@ extension Route: Equatable {
 
 extension Route: CustomStringConvertible {
     public var description: String {
-        var description = "method=\(method.rawValue)\npath=\(path)"
+        var description = "method=\(method.rawValue)\npath=\(path)\npattern=\(pattern)"
         if !name.isEmpty { description.append("\nname=\(name)") }
+        if let parameters = parameters { description.append("\nparameters=\(parameters)") }
 
         return description
     }

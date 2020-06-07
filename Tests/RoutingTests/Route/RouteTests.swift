@@ -118,11 +118,14 @@ final class RouteTests: XCTestCase {
 
     func testDescription() {
         // Arrange
-        let route = Route(method: .GET, name: "post_get") { request in Response() }
-        var string = "method=\(route.method.rawValue)\npath=\(route.path)"
-        if !route.name.isEmpty { string.append("\nname=\(route.name)") }
+        let route = Route(method: .GET, path: "/posts/{id<\\d+>?1}", name: "post_get") { request in Response() }!
+
+        // Act
+        var description = "method=\(route.method.rawValue)\npath=\(route.path)\npattern=\(route.pattern)"
+        if !route.name.isEmpty { description.append("\nname=\(route.name)") }
+        if let parameters = route.parameters { description.append("\nparameters=\(parameters)") }
 
         // Assert
-        XCTAssertEqual("\(route)", string)
+        XCTAssertEqual("\(route)", description)
     }
 }

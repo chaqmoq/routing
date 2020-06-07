@@ -4,7 +4,7 @@ import struct HTTP.Response
 
 final class RouteCollectionTests: XCTestCase {
     func testInit() {
-        // Arrange
+        // Act
         let routes = RouteCollection()
 
         // Assert
@@ -84,7 +84,7 @@ final class RouteCollectionTests: XCTestCase {
     }
 
     func testInitWithRoutes() {
-        // Arrange
+        // Act
         let routes = RouteCollection([
             Route(method: .GET) { request in Response() },
             Route(method: .GET, path: "/blog") { request in Response() }!,
@@ -103,6 +103,8 @@ final class RouteCollectionTests: XCTestCase {
     func testInitWithName() {
         // Arrange
         let name = "blog_"
+
+        // Act
         let routes = RouteCollection(name: name)!
 
         // Assert
@@ -114,6 +116,8 @@ final class RouteCollectionTests: XCTestCase {
     func testInitWithEmptyPathAndName() {
         // Arrange
         let name = "blog_"
+
+        // Act
         let routes = RouteCollection(path: "", name: name)
 
         // Assert
@@ -124,6 +128,8 @@ final class RouteCollectionTests: XCTestCase {
         // Arrange
         let path = "/blog"
         let name = "blog_"
+
+        // Act
         let routes = RouteCollection(path: path, name: name)!
 
         // Assert
@@ -136,6 +142,8 @@ final class RouteCollectionTests: XCTestCase {
         // Arrange
         let path = "//blog"
         let name = "blog_"
+
+        // Act
         let routes = RouteCollection(path: path, name: name)
 
         // Assert

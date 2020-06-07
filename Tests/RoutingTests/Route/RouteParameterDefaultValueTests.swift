@@ -3,7 +3,7 @@ import XCTest
 
 final class RouteParameterDefaultValueTests: XCTestCase {
     func testOptionalWithDefaultValue() {
-        // Arrange
+        // Act
         let defaultValue: Route.Parameter.DefaultValue = .optional()
 
         // Assert
@@ -13,6 +13,8 @@ final class RouteParameterDefaultValueTests: XCTestCase {
     func testOptionalWithValue() {
         // Arrange
         let value = "1"
+
+        // Act
         let defaultValue: Route.Parameter.DefaultValue = .optional(value)
 
         // Assert
@@ -22,6 +24,8 @@ final class RouteParameterDefaultValueTests: XCTestCase {
     func testForcedWithValue() {
         // Arrange
         let value = "1"
+
+        // Act
         let defaultValue: Route.Parameter.DefaultValue = .forced(value)
 
         // Assert

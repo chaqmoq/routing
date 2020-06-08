@@ -2,7 +2,7 @@ import struct Foundation.NSRange
 import class Foundation.NSRegularExpression
 import struct HTTP.Request
 
-public class RouteCollection {
+public final class RouteCollection {
     public typealias DictionaryType = [Request.Method: [Route]]
 
     public private(set) var path: String

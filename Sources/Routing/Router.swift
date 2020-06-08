@@ -2,7 +2,7 @@ import Foundation
 import struct HTTP.ParameterBag
 import struct HTTP.Request
 
-public class Router {
+public final class Router {
     public var routes: RouteCollection
 
     public init(routes: RouteCollection = .init()) {

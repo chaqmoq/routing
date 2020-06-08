@@ -15,7 +15,7 @@ extension RouteCollection {
             name: String = "",
             handler: @escaping Route.RequestHandler
         ) -> Route? {
-            makeRequest(path, methods: [.DELETE], name: name, handler: handler).first
+            _request(path, methods: [.DELETE], name: name, handler: handler).first
         }
 
         @discardableResult
@@ -24,7 +24,7 @@ extension RouteCollection {
             name: String = "",
             handler: @escaping Route.RequestHandler
         ) -> Route? {
-            makeRequest(path, methods: [.GET], name: name, handler: handler).first
+            _request(path, methods: [.GET], name: name, handler: handler).first
         }
 
         @discardableResult
@@ -33,7 +33,7 @@ extension RouteCollection {
             name: String = "",
             handler: @escaping Route.RequestHandler
         ) -> Route? {
-            makeRequest(path, methods: [.HEAD], name: name, handler: handler).first
+            _request(path, methods: [.HEAD], name: name, handler: handler).first
         }
 
         @discardableResult
@@ -42,7 +42,7 @@ extension RouteCollection {
             name: String = "",
             handler: @escaping Route.RequestHandler
         ) -> Route? {
-            makeRequest(path, methods: [.OPTIONS], name: name, handler: handler).first
+            _request(path, methods: [.OPTIONS], name: name, handler: handler).first
         }
 
         @discardableResult
@@ -51,7 +51,7 @@ extension RouteCollection {
             name: String = "",
             handler: @escaping Route.RequestHandler
         ) -> Route? {
-            makeRequest(path, methods: [.PATCH], name: name, handler: handler).first
+            _request(path, methods: [.PATCH], name: name, handler: handler).first
         }
 
         @discardableResult
@@ -60,7 +60,7 @@ extension RouteCollection {
             name: String = "",
             handler: @escaping Route.RequestHandler
         ) -> Route? {
-            makeRequest(path, methods: [.POST], name: name, handler: handler).first
+            _request(path, methods: [.POST], name: name, handler: handler).first
         }
 
         @discardableResult
@@ -69,26 +69,25 @@ extension RouteCollection {
             name: String = "",
             handler: @escaping Route.RequestHandler
         ) -> Route? {
-            makeRequest(path, methods: [.PUT], name: name, handler: handler).first
+            _request(path, methods: [.PUT], name: name, handler: handler).first
         }
 
         @discardableResult
         public func request(
             _ path: String = String(Route.pathComponentSeparator),
-            methods: Set<Request.Method>? = nil,
+            methods: Set<Request.Method> = Set(Request.Method.allCases),
             handler: @escaping Route.RequestHandler
         ) -> [Route] {
-            makeRequest(path, methods: methods, handler: handler)
+            _request(path, methods: methods, handler: handler)
         }
 
         @discardableResult
-        private func makeRequest(
+        private func _request(
             _ path: String = String(Route.pathComponentSeparator),
-            methods: Set<Request.Method>? = nil,
+            methods: Set<Request.Method> = Set(Request.Method.allCases),
             name: String = "",
             handler: @escaping Route.RequestHandler
         ) -> [Route] {
-            let methods = methods ?? Set(Request.Method.allCases)
             var routes: [Route] = []
 
             for method in methods {

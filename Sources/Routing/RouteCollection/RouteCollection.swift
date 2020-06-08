@@ -125,6 +125,6 @@ extension RouteCollection: Collection {
     public var startIndex: Index { routes.startIndex }
     public var endIndex: Index { routes.endIndex }
 
-    public subscript(index: Index) -> RouteCollection.Element { routes[index] }
+    public subscript(index: Index) -> Element { routes[index] }
     public func index(after index: Index) -> Index { routes.index(after: index) }
 }

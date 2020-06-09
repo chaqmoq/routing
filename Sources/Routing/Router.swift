@@ -1,5 +1,5 @@
 import Foundation
-import struct HTTP.ParameterBag
+import struct HTTP.Parameters
 import struct HTTP.Request
 
 public final class Router {
@@ -71,7 +71,7 @@ extension Router {
         return nil
     }
 
-    public func resolveRoute(named name: String, parameters: ParameterBag<String, String>) -> Route? {
+    public func resolveRoute(named name: String, parameters: Parameters<String, String>) -> Route? {
         if name.isEmpty { return nil }
 
         for (_, methodRoutes) in routes {
@@ -105,26 +105,26 @@ extension Router {
         _generateURLForRoute(named: name)
     }
 
-    public func generateURLForRoute(named name: String, parameters: ParameterBag<String, String>) -> URL? {
+    public func generateURLForRoute(named name: String, parameters: Parameters<String, String>) -> URL? {
         _generateURLForRoute(named: name, parameters: parameters)
     }
 
-    public func generateURLForRoute(named name: String, query: ParameterBag<String, String>) -> URL? {
+    public func generateURLForRoute(named name: String, query: Parameters<String, String>) -> URL? {
         _generateURLForRoute(named: name, query: query)
     }
 
     public func generateURLForRoute(
         named name: String,
-        parameters: ParameterBag<String, String>,
-        query: ParameterBag<String, String>
+        parameters: Parameters<String, String>,
+        query: Parameters<String, String>
     ) -> URL? {
         _generateURLForRoute(named: name, parameters: parameters, query: query)
     }
 
     private func _generateURLForRoute(
         named name: String,
-        parameters: ParameterBag<String, String>? = nil,
-        query: ParameterBag<String, String>? = nil
+        parameters: Parameters<String, String>? = nil,
+        query: Parameters<String, String>? = nil
     ) -> URL? {
         var resolvedRoute: Route?
 

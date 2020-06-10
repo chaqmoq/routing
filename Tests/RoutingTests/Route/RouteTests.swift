@@ -10,7 +10,7 @@ final class RouteTests: XCTestCase {
         let name = "post_list"
 
         // Act
-        let route = Route(method: method, name: name) { request in Response() }
+        let route = Route(method: method, name: name) { _ in Response() }
 
         // Assert
         XCTAssertEqual(route.method, method)
@@ -27,7 +27,7 @@ final class RouteTests: XCTestCase {
         let name = "/post_get"
 
         // Act
-        let route = Route(method: method, path: path, name: name) { request in Response() }!
+        let route = Route(method: method, path: path, name: name) { _ in Response() }!
 
         // Assert
         XCTAssertEqual(route.method, method)
@@ -43,7 +43,7 @@ final class RouteTests: XCTestCase {
         var path = "/posts//{id<\\d+>?1}"
 
         // Act
-        var route = Route(method: .GET, path: path) { request in Response() }
+        var route = Route(method: .GET, path: path) { _ in Response() }
 
         // Assert
         XCTAssertNil(route)
@@ -52,7 +52,7 @@ final class RouteTests: XCTestCase {
         path = "posts/{id<\\d+>?1}"
 
         // Act
-        route = Route(method: .GET, path: path) { request in Response() }
+        route = Route(method: .GET, path: path) { _ in Response() }
 
         // Assert
         XCTAssertNil(route)
@@ -61,7 +61,7 @@ final class RouteTests: XCTestCase {
         path = "/posts/{id<\\d+>!}"
 
         // Act
-        route = Route(method: .GET, path: path) { request in Response() }
+        route = Route(method: .GET, path: path) { _ in Response() }
 
         // Assert
         XCTAssertNil(route)
@@ -70,7 +70,7 @@ final class RouteTests: XCTestCase {
     func testUpdateParameter() {
         // Arrange
         let path = "/posts/{id<\\d+>?1}"
-        var route = Route(method: .GET, path: path) { request in Response() }!
+        var route = Route(method: .GET, path: path) { _ in Response() }!
 
         // Act/Assert
         XCTAssertNil(route.updateParameter(Route.Parameter(name: "page")!))
@@ -95,22 +95,22 @@ final class RouteTests: XCTestCase {
         let name = "post_"
 
         // Act
-        var route1 = Route(method: .GET, path: path) { request in Response() }
-        var route2 = Route(method: .GET, path: path) { request in Response() }
+        var route1 = Route(method: .GET, path: path) { _ in Response() }
+        var route2 = Route(method: .GET, path: path) { _ in Response() }
 
         // Assert
         XCTAssertEqual(route2, route1)
 
         // Act
-        route1 = Route(method: .GET, path: path) { request in Response() }
-        route2 = Route(method: .POST, path: path) { request in Response() }
+        route1 = Route(method: .GET, path: path) { _ in Response() }
+        route2 = Route(method: .POST, path: path) { _ in Response() }
 
         // Assert
         XCTAssertNotEqual(route2, route1)
 
         // Act
-        route1 = Route(method: .GET, path: path, name: name) { request in Response() }
-        route2 = Route(method: .POST, path: path, name: name) { request in Response() }
+        route1 = Route(method: .GET, path: path, name: name) { _ in Response() }
+        route2 = Route(method: .POST, path: path, name: name) { _ in Response() }
 
         // Assert
         XCTAssertEqual(route2, route1)
@@ -118,7 +118,7 @@ final class RouteTests: XCTestCase {
 
     func testDescription() {
         // Arrange
-        let route = Route(method: .GET, path: "/posts/{id!1}", name: "post_get") { request in Response() }!
+        let route = Route(method: .GET, path: "/posts/{id!1}", name: "post_get") { _ in Response() }!
 
         // Act
         var description = "method=\(route.method.rawValue)\npath=\(route.path)\npattern=\(route.pattern)"

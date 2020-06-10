@@ -17,8 +17,8 @@ final class RouteCollectionTests: XCTestCase {
         // Arrange
         let path = "/blog"
         let routes1 = RouteCollection([
-            Route(method: .GET, path: path) { request in Response() }!,
-            Route(method: .POST, path: path) { request in Response() }!
+            Route(method: .GET, path: path) { _ in Response() }!,
+            Route(method: .POST, path: path) { _ in Response() }!
         ])
 
         // Act
@@ -39,8 +39,8 @@ final class RouteCollectionTests: XCTestCase {
         let path = "/blog"
         let name = "blog_"
         let routes1 = RouteCollection([
-            Route(method: .GET) { request in Response() },
-            Route(method: .POST) { request in Response() }
+            Route(method: .GET) { _ in Response() },
+            Route(method: .POST) { _ in Response() }
         ])
 
         // Act
@@ -69,8 +69,8 @@ final class RouteCollectionTests: XCTestCase {
     func testInitWithRoutes() {
         // Act
         let routes = RouteCollection([
-            Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
-            Route(method: .POST, path: "/posts", name: "post_create") { request in Response() }!
+            Route(method: .GET, path: "/posts", name: "post_list") { _ in Response() }!,
+            Route(method: .POST, path: "/posts", name: "post_create") { _ in Response() }!
         ])
 
         // Assert
@@ -86,8 +86,8 @@ final class RouteCollectionTests: XCTestCase {
     func testInitWithRoutesPathAndName() {
         // Act
         let routes = RouteCollection([
-            Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
-            Route(method: .POST, path: "/posts", name: "post_create") { request in Response() }!
+            Route(method: .GET, path: "/posts", name: "post_list") { _ in Response() }!,
+            Route(method: .POST, path: "/posts", name: "post_create") { _ in Response() }!
         ], path: "/blog", name: "blog_")!
 
         // Assert
@@ -141,14 +141,14 @@ final class RouteCollectionTests: XCTestCase {
     func testRemoveRoutes() {
         // Arrange
         var routes = RouteCollection([
-            Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
-            Route(method: .POST, path: "/posts", name: "post_create") { request in Response() }!
+            Route(method: .GET, path: "/posts", name: "post_list") { _ in Response() }!,
+            Route(method: .POST, path: "/posts", name: "post_create") { _ in Response() }!
         ])
 
         // Act
         routes.remove([
-            Route(method: .GET, name: "post_list") { request in Response() },
-            Route(method: .POST, name: "post_create") { request in Response() }
+            Route(method: .GET, name: "post_list") { _ in Response() },
+            Route(method: .POST, name: "post_create") { _ in Response() }
         ])
 
         // Assert
@@ -158,12 +158,12 @@ final class RouteCollectionTests: XCTestCase {
     func testRemoveNonExistingRoute() {
         // Arrange
         var routes = RouteCollection([
-            Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
-            Route(method: .POST, path: "/posts", name: "post_create") { request in Response() }!
+            Route(method: .GET, path: "/posts", name: "post_list") { _ in Response() }!,
+            Route(method: .POST, path: "/posts", name: "post_create") { _ in Response() }!
         ])
 
         // Act
-        let route = routes.remove(Route(method: .GET, name: "post_list2") { request in Response() })
+        let route = routes.remove(Route(method: .GET, name: "post_list2") { _ in Response() })
 
         // Assert
         XCTAssertNil(route)

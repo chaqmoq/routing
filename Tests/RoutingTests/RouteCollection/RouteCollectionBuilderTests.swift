@@ -14,7 +14,7 @@ final class RouteCollectionBuilderTests: XCTestCase {
 
     func testDelete() {
         // Act
-        let route = builder.delete("/posts/{id<\\d+>}", name: "post_delete") { request in Response() }!
+        let route = builder.delete("/posts/{id<\\d+>}", name: "post_delete") { _ in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
@@ -24,7 +24,7 @@ final class RouteCollectionBuilderTests: XCTestCase {
 
     func testGet() {
         // Act
-        let route = builder.get("/posts/{id<\\d+>}", name: "post_get") { request in Response() }!
+        let route = builder.get("/posts/{id<\\d+>}", name: "post_get") { _ in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
@@ -34,7 +34,7 @@ final class RouteCollectionBuilderTests: XCTestCase {
 
     func testHead() {
         // Act
-        let route = builder.head("/posts", name: "post_head") { request in Response() }!
+        let route = builder.head("/posts", name: "post_head") { _ in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
@@ -44,7 +44,7 @@ final class RouteCollectionBuilderTests: XCTestCase {
 
     func testOptions() {
         // Act
-        let route = builder.options("/posts", name: "post_options") { request in Response() }!
+        let route = builder.options("/posts", name: "post_options") { _ in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
@@ -54,7 +54,7 @@ final class RouteCollectionBuilderTests: XCTestCase {
 
     func testPatch() {
         // Act
-        let route = builder.patch("/posts/{id<\\d+>}", name: "post_update") { request in Response() }!
+        let route = builder.patch("/posts/{id<\\d+>}", name: "post_update") { _ in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
@@ -64,7 +64,7 @@ final class RouteCollectionBuilderTests: XCTestCase {
 
     func testPost() {
         // Act
-        let route = builder.post("/posts", name: "post_create") { request in Response() }!
+        let route = builder.post("/posts", name: "post_create") { _ in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
@@ -74,7 +74,7 @@ final class RouteCollectionBuilderTests: XCTestCase {
 
     func testPut() {
         // Act
-        let route = builder.put("/posts/{id<\\d+>}", name: "post_update") { request in Response() }!
+        let route = builder.put("/posts/{id<\\d+>}", name: "post_update") { _ in Response() }!
 
         // Assert
         XCTAssertEqual(builder.routes.count, 1)
@@ -87,18 +87,18 @@ final class RouteCollectionBuilderTests: XCTestCase {
         let path = "/posts/{id<\\d+>}"
 
         // Act
-        let routes = builder.request(path, methods: [.DELETE, .GET]) { request in Response() }
+        let routes = builder.request(path, methods: [.DELETE, .GET]) { _ in Response() }
 
         // Assert
         XCTAssertEqual(routes.count, 2)
-        XCTAssertTrue(routes.contains(Route(method: .DELETE, path: path) { request in Response() }!))
-        XCTAssertTrue(routes.contains(Route(method: .GET, path: path) { request in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .DELETE, path: path) { _ in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .GET, path: path) { _ in Response() }!))
 
         XCTAssertEqual(builder.routes.count, 2)
         XCTAssertEqual(builder.routes[.DELETE].count, 1)
         XCTAssertEqual(builder.routes[.GET].count, 1)
-        XCTAssertTrue(builder.routes.has(Route(method: .DELETE, path: path) { request in Response() }!))
-        XCTAssertTrue(builder.routes.has(Route(method: .GET, path: path) { request in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .DELETE, path: path) { _ in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .GET, path: path) { _ in Response() }!))
     }
 
     func testRequestDefaultMethods() {
@@ -106,17 +106,17 @@ final class RouteCollectionBuilderTests: XCTestCase {
         let path = "/posts/{id<\\d+>}"
 
         // Act
-        let routes = builder.request(path) { request in Response() }
+        let routes = builder.request(path) { _ in Response() }
 
         // Assert
         XCTAssertEqual(routes.count, 7)
-        XCTAssertTrue(routes.contains(Route(method: .DELETE, path: path) { request in Response() }!))
-        XCTAssertTrue(routes.contains(Route(method: .GET, path: path) { request in Response() }!))
-        XCTAssertTrue(routes.contains(Route(method: .HEAD, path: path) { request in Response() }!))
-        XCTAssertTrue(routes.contains(Route(method: .OPTIONS, path: path) { request in Response() }!))
-        XCTAssertTrue(routes.contains(Route(method: .PATCH, path: path) { request in Response() }!))
-        XCTAssertTrue(routes.contains(Route(method: .POST, path: path) { request in Response() }!))
-        XCTAssertTrue(routes.contains(Route(method: .PUT, path: path) { request in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .DELETE, path: path) { _ in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .GET, path: path) { _ in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .HEAD, path: path) { _ in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .OPTIONS, path: path) { _ in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .PATCH, path: path) { _ in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .POST, path: path) { _ in Response() }!))
+        XCTAssertTrue(routes.contains(Route(method: .PUT, path: path) { _ in Response() }!))
 
         XCTAssertEqual(builder.routes.count, 7)
         XCTAssertEqual(builder.routes[.DELETE].count, 1)
@@ -126,54 +126,54 @@ final class RouteCollectionBuilderTests: XCTestCase {
         XCTAssertEqual(builder.routes[.PATCH].count, 1)
         XCTAssertEqual(builder.routes[.POST].count, 1)
         XCTAssertEqual(builder.routes[.PUT].count, 1)
-        XCTAssertTrue(builder.routes.has(Route(method: .DELETE, path: path) { request in Response() }!))
-        XCTAssertTrue(builder.routes.has(Route(method: .GET, path: path) { request in Response() }!))
-        XCTAssertTrue(builder.routes.has(Route(method: .HEAD, path: path) { request in Response() }!))
-        XCTAssertTrue(builder.routes.has(Route(method: .OPTIONS, path: path) { request in Response() }!))
-        XCTAssertTrue(builder.routes.has(Route(method: .PATCH, path: path) { request in Response() }!))
-        XCTAssertTrue(builder.routes.has(Route(method: .POST, path: path) { request in Response() }!))
-        XCTAssertTrue(builder.routes.has(Route(method: .PUT, path: path) { request in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .DELETE, path: path) { _ in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .GET, path: path) { _ in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .HEAD, path: path) { _ in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .OPTIONS, path: path) { _ in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .PATCH, path: path) { _ in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .POST, path: path) { _ in Response() }!))
+        XCTAssertTrue(builder.routes.has(Route(method: .PUT, path: path) { _ in Response() }!))
     }
 
     func testGroup() {
         // Act
         builder.group(name: "front_") { front in
             front.group(name: "blog_") { blog in
-                blog.get(name: "index") { request in Response() }
+                blog.get(name: "index") { _ in Response() }
             }
             front.group("/categories", name: "category_") { categories in
-                categories.get("/{name}", name: "get") { request in Response() }
-                categories.get(name: "list") { request in Response() }
+                categories.get("/{name}", name: "get") { _ in Response() }
+                categories.get(name: "list") { _ in Response() }
             }
             front.group("/posts", name: "post_") { posts in
-                posts.get(name: "list") { request in Response() }
+                posts.get(name: "list") { _ in Response() }
             }
             front.group("/tags", name: "tag_") { tags in
-                tags.get("/{name}", name: "get") { request in Response() }
-                tags.get(name: "list") { request in Response() }
+                tags.get("/{name}", name: "get") { _ in Response() }
+                tags.get(name: "list") { _ in Response() }
             }
         }
         builder.group("/admin", name: "admin_") { admin in
             admin.group("/categories", name: "category_") { categories in
-                categories.post(name: "create") { request in Response() }
-                categories.delete("/{id<\\d+>}", name: "delete") { request in Response() }
-                categories.get("/{id<\\d+>}", name: "get") { request in Response() }
-                categories.get(name: "list") { request in Response() }
-                categories.put("/{id<\\d+>}", name: "update") { request in Response() }
+                categories.post(name: "create") { _ in Response() }
+                categories.delete("/{id<\\d+>}", name: "delete") { _ in Response() }
+                categories.get("/{id<\\d+>}", name: "get") { _ in Response() }
+                categories.get(name: "list") { _ in Response() }
+                categories.put("/{id<\\d+>}", name: "update") { _ in Response() }
             }
             admin.group("/posts", name: "post_") { posts in
-                posts.post(name: "create") { request in Response() }
-                posts.delete("/{id<\\d+>}", name: "delete") { request in Response() }
-                posts.get("/{id<\\d+>}", name: "get") { request in Response() }
-                posts.get(name: "list") { request in Response() }
-                posts.put("/{id<\\d+>}", name: "update") { request in Response() }
+                posts.post(name: "create") { _ in Response() }
+                posts.delete("/{id<\\d+>}", name: "delete") { _ in Response() }
+                posts.get("/{id<\\d+>}", name: "get") { _ in Response() }
+                posts.get(name: "list") { _ in Response() }
+                posts.put("/{id<\\d+>}", name: "update") { _ in Response() }
             }
             admin.group("/tags", name: "tag_") { tags in
-                tags.post(name: "create") { request in Response() }
-                tags.delete("/{id<\\d+>}", name: "delete") { request in Response() }
-                tags.get("/{id<\\d+>}", name: "get") { request in Response() }
-                tags.get(name: "list") { request in Response() }
-                tags.put("/{id<\\d+>}", name: "update") { request in Response() }
+                tags.post(name: "create") { _ in Response() }
+                tags.delete("/{id<\\d+>}", name: "delete") { _ in Response() }
+                tags.get("/{id<\\d+>}", name: "get") { _ in Response() }
+                tags.get(name: "list") { _ in Response() }
+                tags.put("/{id<\\d+>}", name: "update") { _ in Response() }
             }
         }
 

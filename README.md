@@ -24,11 +24,11 @@ let package = Package(
 import Routing
 
 let routes = RouteCollection([
-    Route(method: .GET, path: "/posts", name: "post_list") { request in Response() }!,
-    Route(method: .GET, path: "/posts/{id<\\d+>}", name: "post_detail") { request in Response() }!,
-    Route(method: .POST, path: "/posts", name: "post_create") { request in Response() }!,
-    Route(method: .PUT, path: "/posts", name: "post_update") { request in Response() }!,
-    Route(method: .DELETE, path: "/posts/{id<\\d+>}", name: "post_delete") { request in Response() }!
+    Route(method: .GET, path: "/posts", name: "post_list") { _ in Response() }!,
+    Route(method: .GET, path: "/posts/{id<\\d+>}", name: "post_detail") { _ in Response() }!,
+    Route(method: .POST, path: "/posts", name: "post_create") { _ in Response() }!,
+    Route(method: .PUT, path: "/posts", name: "post_update") { _ in Response() }!,
+    Route(method: .DELETE, path: "/posts/{id<\\d+>}", name: "post_delete") { _ in Response() }!
 ])
 let router = Router(routes: routes)
 

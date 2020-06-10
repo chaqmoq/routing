@@ -156,24 +156,30 @@ final class RouteCollectionBuilderTests: XCTestCase {
         builder.group("/admin", name: "admin_") { admin in
             admin.group("/categories", name: "category_") { categories in
                 categories.post(name: "create") { _ in Response() }
-                categories.delete("/{id<\\d+>}", name: "delete") { _ in Response() }
-                categories.get("/{id<\\d+>}", name: "get") { _ in Response() }
                 categories.get(name: "list") { _ in Response() }
-                categories.put("/{id<\\d+>}", name: "update") { _ in Response() }
+                categories.group("/{id<\\d+>}") { category in
+                    category.delete(name: "delete") { _ in Response() }
+                    category.get(name: "get") { _ in Response() }
+                    category.put(name: "update") { _ in Response() }
+                }
             }
             admin.group("/posts", name: "post_") { posts in
                 posts.post(name: "create") { _ in Response() }
-                posts.delete("/{id<\\d+>}", name: "delete") { _ in Response() }
-                posts.get("/{id<\\d+>}", name: "get") { _ in Response() }
                 posts.get(name: "list") { _ in Response() }
-                posts.put("/{id<\\d+>}", name: "update") { _ in Response() }
+                posts.group("/{id<\\d+>}") { post in
+                    post.delete(name: "delete") { _ in Response() }
+                    post.get(name: "get") { _ in Response() }
+                    post.put(name: "update") { _ in Response() }
+                }
             }
             admin.group("/tags", name: "tag_") { tags in
                 tags.post(name: "create") { _ in Response() }
-                tags.delete("/{id<\\d+>}", name: "delete") { _ in Response() }
-                tags.get("/{id<\\d+>}", name: "get") { _ in Response() }
                 tags.get(name: "list") { _ in Response() }
-                tags.put("/{id<\\d+>}", name: "update") { _ in Response() }
+                tags.group("/{id<\\d+>}") { tag in
+                    tag.delete(name: "delete") { _ in Response() }
+                    tag.get(name: "get") { _ in Response() }
+                    tag.put(name: "update") { _ in Response() }
+                }
             }
         }
 

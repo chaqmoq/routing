@@ -35,7 +35,9 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.pattern, "/posts(/\\d+|1)?")
         XCTAssertEqual(route.name, name)
         XCTAssertEqual(route.parameters!.count, 1)
-        XCTAssertTrue(route.parameters!.contains(where: { $0.name == "id" && $0.value == "" && $0.requirement == "\\d+" && $0.defaultValue == .optional("1") }))
+        XCTAssertTrue(route.parameters!.contains(where: {
+            $0.name == "id" && $0.value == "" && $0.requirement == "\\d+" && $0.defaultValue == .optional("1")
+        }))
     }
 
     func testInitWithInvalidPaths() {
@@ -76,17 +78,25 @@ final class RouteTests: XCTestCase {
         XCTAssertNil(route.updateParameter(Route.Parameter(name: "page")!))
 
         // Act
-        route.updateParameter(Route.Parameter(name: "id", value: "a", requirement: "[a-zA-Z]", defaultValue: .forced("b"))!)
+        route.updateParameter(
+            Route.Parameter(name: "id", value: "a", requirement: "[a-zA-Z]", defaultValue: .forced("b"))!
+        )
 
         // Assert
-        XCTAssertTrue(route.parameters!.contains(where: { $0.name == "id" && $0.value == "" && $0.requirement == "\\d+" && $0.defaultValue == .optional("1") }))
-        XCTAssertFalse(route.parameters!.contains(where: { $0.name == "id" && ($0.value == "a" || $0.requirement == "[a-zA-Z]" || $0.defaultValue == .forced("b")) }))
+        XCTAssertTrue(route.parameters!.contains(where: {
+            $0.name == "id" && $0.value == "" && $0.requirement == "\\d+" && $0.defaultValue == .optional("1")
+        }))
+        XCTAssertFalse(route.parameters!.contains(where: {
+            $0.name == "id" && ($0.value == "a" || $0.requirement == "[a-zA-Z]" || $0.defaultValue == .forced("b"))
+        }))
 
         // Act
         route.updateParameter(Route.Parameter(name: "id", value: "2")!)
 
         // Assert
-        XCTAssertTrue(route.parameters!.contains(where: { $0.name == "id" && $0.value == "2" && $0.requirement == "\\d+" && $0.defaultValue == .optional("1") }))
+        XCTAssertTrue(route.parameters!.contains(where: {
+            $0.name == "id" && $0.value == "2" && $0.requirement == "\\d+" && $0.defaultValue == .optional("1")
+        }))
     }
 
     func testEquatable() {

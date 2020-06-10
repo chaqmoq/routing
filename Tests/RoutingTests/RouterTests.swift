@@ -16,8 +16,16 @@ final class RouterTests: XCTestCase {
             Route(method: .DELETE, path: "/posts/{id<\\d+>}", name: "post_delete") { _ in Response() }!,
             Route(method: .GET, path: "/blog/{page<\\d+>!1}", name: "blog_page") { _ in Response() }!,
             Route(method: .GET, path: "/categories/{id<\\d+>?1}", name: "category_get") { _ in Response() }!,
-            Route(method: .HEAD, path: "/blog/{page<\\d+>}/posts/{id<\\d+>}", name: "blog_page_post_get") { _ in Response() }!,
-            Route(method: .GET, path: "/categories/{name}/posts/{id<\\d+>?1}", name: "category_post_get") { _ in Response() }!,
+            Route(
+                method: .HEAD,
+                path: "/blog/{page<\\d+>}/posts/{id<\\d+>}",
+                name: "blog_page_post_get"
+            ) { _ in Response() }!,
+            Route(
+                method: .GET,
+                path: "/categories/{name}/posts/{id<\\d+>?1}",
+                name: "category_post_get"
+            ) { _ in Response() }!,
             Route(method: .GET, path: "/tags/{name?}", name: "tag_get") { _ in Response() }!
         ])
         router = Router(routes: routes)

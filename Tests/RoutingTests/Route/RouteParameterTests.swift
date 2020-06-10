@@ -23,7 +23,10 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertEqual(parameter.pattern, "(\\d+|2)?")
         XCTAssertEqual(
             "\(parameter)",
-            "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)"
+            """
+            \(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\
+            \(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)
+            """
         )
     }
 
@@ -88,7 +91,10 @@ final class RouteParameterTests: XCTestCase {
         XCTAssertEqual(parameter.pattern, "(\\d+)?")
         XCTAssertEqual(
             "\(parameter)",
-            "\(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)"
+            """
+            \(nameEnclosingSymbols.0)\(name)\(requirementEnclosingSymbols.0)\(requirement)\
+            \(requirementEnclosingSymbols.1)\(defaultValue)\(nameEnclosingSymbols.1)
+            """
         )
     }
 

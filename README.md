@@ -2,24 +2,37 @@
 [![Swift](https://img.shields.io/badge/swift-5.1-brightgreen.svg)](https://swift.org/download/#releases) [![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/chaqmoq/routing/blob/master/LICENSE/) [![Actions Status](https://github.com/chaqmoq/routing/workflows/development/badge.svg)](https://github.com/chaqmoq/routing/actions) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/efd97c9d7ea44f0da2db6289ebefc939)](https://www.codacy.com/gh/chaqmoq/routing?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=chaqmoq/routing&amp;utm_campaign=Badge_Grade) [![Contributing](https://img.shields.io/badge/contributing-guide-brightgreen.svg)](https://github.com/chaqmoq/routing/blob/master/CONTRIBUTING.md) [![Twitter](https://img.shields.io/badge/twitter-chaqmoqdev-brightgreen.svg)](https://twitter.com/chaqmoqdev)
 
 ## Installation
+### Swift
+Download and install [Swift](https://swift.org/download)
 
-### Package.swift
+### Swift Package
+#### Shell
+```shell
+mkdir MyApp
+cd MyApp
+swift package init --type executable // Creates an executable app named "MyApp"
+```
+
+#### Package.swift
 ```swift
+// swift-tools-version:5.1
+
+import PackageDescription
+
 let package = Package(
-    // ...
+    name: "MyApp",
     dependencies: [
-        // Other packages...
         .package(url: "https://github.com/chaqmoq/routing.git", .branch("master"))
     ],
     targets: [
-        // Other targets...
-        .target(name: "...", dependencies: ["Routing"])
+        .target(name: "MyApp", dependencies: ["Routing"]),
+        .testTarget(name: "MyAppTests", dependencies: ["MyApp"])
     ]
 )
 ```
 
 ## Usage
-
+### main.swift
 ```swift
 import Routing
 
@@ -55,4 +68,10 @@ print(url!.absoluteString)
 // Prints "/posts/1"
 url = router.generateURLForRoute(named: "post_delete", parameters: ["id": "1"])
 print(url!.absoluteString)
+```
+
+### Shell
+```shell
+swift build -c release
+swift run
 ```

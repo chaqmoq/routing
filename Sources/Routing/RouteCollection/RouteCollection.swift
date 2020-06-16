@@ -2,7 +2,7 @@ import struct Foundation.NSRange
 import class Foundation.NSRegularExpression
 import struct HTTP.Request
 
-public struct RouteCollection {
+public class RouteCollection {
     public typealias DictionaryType = [Request.Method: [Route]]
 
     public private(set) var path: String
@@ -40,20 +40,20 @@ public struct RouteCollection {
         self.name = routes.name + name
     }
 
-    public init(_ routes: RouteCollection) {
+    public convenience init(_ routes: RouteCollection) {
         self.init(routes)!
     }
 
-    public init(_ routes: [Route]) {
+    public convenience init(_ routes: [Route]) {
         self.init()
         insert(routes)
     }
 
-    public init(name: String) {
+    public convenience init(name: String) {
         self.init(name: name)!
     }
 
-    public init?(
+    public convenience init?(
         _ routes: [Route],
         path: String = String(Route.pathComponentSeparator),
         name: String = ""
@@ -69,16 +69,16 @@ extension RouteCollection {
         set { routes[method] = newValue }
     }
 
-    private mutating func insert(_ routes: [Route]) {
+    private func insert(_ routes: [Route]) {
         for route in routes { insert(route) }
     }
 
-    public mutating func insert(_ routes: RouteCollection) {
+    public func insert(_ routes: RouteCollection) {
         for (_, methodRoutes) in routes { insert(methodRoutes) }
     }
 
     @discardableResult
-    public mutating func insert(_ route: Route) -> Route? {
+    public func insert(_ route: Route) -> Route? {
         let separator = String(Route.pathComponentSeparator)
         let route = Route(
             method: route.method,
@@ -100,12 +100,12 @@ extension RouteCollection {
         return false
     }
 
-    public mutating func remove(_ routes: [Route]) {
+    public func remove(_ routes: [Route]) {
         for route in routes { remove(route) }
     }
 
     @discardableResult
-    public mutating func remove(_ route: Route) -> Route? {
+    public func remove(_ route: Route) -> Route? {
         for (method, routes) in self {
             if let index = routes.firstIndex(of: route) {
                 let result = self[method].remove(at: index)

@@ -140,7 +140,7 @@ final class RouteCollectionTests: XCTestCase {
 
     func testRemoveRoutes() {
         // Arrange
-        var routes = RouteCollection([
+        let routes = RouteCollection([
             Route(method: .GET, path: "/posts", name: "post_list") { _ in Response() }!,
             Route(method: .POST, path: "/posts", name: "post_create") { _ in Response() }!
         ])
@@ -157,7 +157,7 @@ final class RouteCollectionTests: XCTestCase {
 
     func testRemoveNonExistingRoute() {
         // Arrange
-        var routes = RouteCollection([
+        let routes = RouteCollection([
             Route(method: .GET, path: "/posts", name: "post_list") { _ in Response() }!,
             Route(method: .POST, path: "/posts", name: "post_create") { _ in Response() }!
         ])

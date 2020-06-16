@@ -8,6 +8,7 @@ extension Route.Parameter {
             case .optional(let value):
                 return "\(Route.Parameter.optionalSymbol)\(value)"
             case .forced(let value):
+                if value.isEmpty { return "\(Route.Parameter.optionalSymbol)" }
                 return "\(Route.Parameter.forcedSymbol)\(value)"
             }
         }

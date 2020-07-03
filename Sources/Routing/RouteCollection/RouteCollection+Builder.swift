@@ -13,7 +13,7 @@ extension RouteCollection {
         public func delete(
             _ path: String = String(Route.pathComponentSeparator),
             name: String = "",
-            handler: @escaping Route.RequestHandler
+            handler: @escaping Route.Handler
         ) -> Route? {
             _request(path, methods: [.DELETE], name: name, handler: handler).first
         }
@@ -22,7 +22,7 @@ extension RouteCollection {
         public func get(
             _ path: String = String(Route.pathComponentSeparator),
             name: String = "",
-            handler: @escaping Route.RequestHandler
+            handler: @escaping Route.Handler
         ) -> Route? {
             _request(path, methods: [.GET], name: name, handler: handler).first
         }
@@ -31,7 +31,7 @@ extension RouteCollection {
         public func head(
             _ path: String = String(Route.pathComponentSeparator),
             name: String = "",
-            handler: @escaping Route.RequestHandler
+            handler: @escaping Route.Handler
         ) -> Route? {
             _request(path, methods: [.HEAD], name: name, handler: handler).first
         }
@@ -40,7 +40,7 @@ extension RouteCollection {
         public func options(
             _ path: String = String(Route.pathComponentSeparator),
             name: String = "",
-            handler: @escaping Route.RequestHandler
+            handler: @escaping Route.Handler
         ) -> Route? {
             _request(path, methods: [.OPTIONS], name: name, handler: handler).first
         }
@@ -49,7 +49,7 @@ extension RouteCollection {
         public func patch(
             _ path: String = String(Route.pathComponentSeparator),
             name: String = "",
-            handler: @escaping Route.RequestHandler
+            handler: @escaping Route.Handler
         ) -> Route? {
             _request(path, methods: [.PATCH], name: name, handler: handler).first
         }
@@ -58,7 +58,7 @@ extension RouteCollection {
         public func post(
             _ path: String = String(Route.pathComponentSeparator),
             name: String = "",
-            handler: @escaping Route.RequestHandler
+            handler: @escaping Route.Handler
         ) -> Route? {
             _request(path, methods: [.POST], name: name, handler: handler).first
         }
@@ -67,7 +67,7 @@ extension RouteCollection {
         public func put(
             _ path: String = String(Route.pathComponentSeparator),
             name: String = "",
-            handler: @escaping Route.RequestHandler
+            handler: @escaping Route.Handler
         ) -> Route? {
             _request(path, methods: [.PUT], name: name, handler: handler).first
         }
@@ -76,7 +76,7 @@ extension RouteCollection {
         public func request(
             _ path: String = String(Route.pathComponentSeparator),
             methods: Set<Request.Method> = Set(Request.Method.allCases),
-            handler: @escaping Route.RequestHandler
+            handler: @escaping Route.Handler
         ) -> [Route] {
             _request(path, methods: methods, handler: handler)
         }
@@ -86,12 +86,12 @@ extension RouteCollection {
             _ path: String = String(Route.pathComponentSeparator),
             methods: Set<Request.Method> = Set(Request.Method.allCases),
             name: String = "",
-            handler: @escaping Route.RequestHandler
+            handler: @escaping Route.Handler
         ) -> [Route] {
             var routes: [Route] = []
 
             for method in methods {
-                if let route = Route(method: method, path: path, name: name, requestHandler: handler) {
+                if let route = Route(method: method, path: path, name: name, handler: handler) {
                     if let route = self.routes.insert(route) {
                         if let root = root {
                             if let route = root.routes.insert(route) {

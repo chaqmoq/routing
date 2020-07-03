@@ -3,7 +3,7 @@ import struct HTTP.Request
 import struct HTTP.Response
 
 public struct Route {
-    public typealias RequestHandler = (Request) -> Any
+    public typealias Handler = (Request) -> Any
 
     public var method: Request.Method
     public let path: String
@@ -11,22 +11,22 @@ public struct Route {
     public var name: String
     public var parameters: Set<Parameter>? { mutableParameters }
     private var mutableParameters: Set<Parameter>?
-    public var requestHandler: RequestHandler
+    public var handler: Handler
 
-    public init(method: Request.Method, name: String = "", requestHandler: @escaping RequestHandler) {
+    public init(method: Request.Method, name: String = "", handler: @escaping Handler) {
         self.method = method
         self.path = String(Route.pathComponentSeparator)
         pattern = Route.generatePattern(from: self.path)
         self.name = name
-        self.requestHandler = requestHandler
+        self.handler = handler
     }
 
-    public init?(method: Request.Method, path: String, name: String = "", requestHandler: @escaping RequestHandler) {
+    public init?(method: Request.Method, path: String, name: String = "", handler: @escaping Handler) {
         self.method = method
         self.path = Route.normalize(path: path)
         pattern = self.path
         self.name = name
-        self.requestHandler = requestHandler
+        self.handler = handler
         let (isValid, parameters) = Route.isValid(path: self.path)
 
         if isValid {

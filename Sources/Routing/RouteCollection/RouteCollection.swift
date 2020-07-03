@@ -84,7 +84,7 @@ extension RouteCollection {
             method: route.method,
             path: path == separator ? route.path : Route.normalize(path: path + route.path),
             name: name + route.name,
-            requestHandler: route.requestHandler
+            handler: route.handler
         )!
 
         if !has(route) {

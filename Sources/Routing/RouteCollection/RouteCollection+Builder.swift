@@ -1,7 +1,7 @@
 import struct HTTP.Request
 
 extension RouteCollection {
-    public class Builder {
+    open class Builder {
         public var routes: RouteCollection
         private weak var root: Builder?
 

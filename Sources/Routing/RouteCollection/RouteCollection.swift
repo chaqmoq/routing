@@ -7,7 +7,7 @@ public final class RouteCollection {
 
     public private(set) var path: String
     public private(set) var name: String
-    public var middleware: [Middleware]
+    public let middleware: [Middleware]
     private var routes: DictionaryType
 
     public private(set) lazy var builder: Builder = .init(self)

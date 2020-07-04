@@ -11,21 +11,35 @@ public struct Route {
     public var name: String
     public var parameters: Set<Parameter>? { mutableParameters }
     private var mutableParameters: Set<Parameter>?
+    public var middleware: [Middleware]
     public var handler: Handler
 
-    public init(method: Request.Method, name: String = "", handler: @escaping Handler) {
+    public init(
+        method: Request.Method,
+        name: String = "",
+        middleware: [Middleware] = .init(),
+        handler: @escaping Handler
+    ) {
         self.method = method
         self.path = String(Route.pathComponentSeparator)
         pattern = Route.generatePattern(from: self.path)
         self.name = name
+        self.middleware = middleware
         self.handler = handler
     }
 
-    public init?(method: Request.Method, path: String, name: String = "", handler: @escaping Handler) {
+    public init?(
+        method: Request.Method,
+        path: String,
+        name: String = "",
+        middleware: [Middleware] = .init(),
+        handler: @escaping Handler
+    ) {
         self.method = method
         self.path = Route.normalize(path: path)
         pattern = self.path
         self.name = name
+        self.middleware = middleware
         self.handler = handler
         let (isValid, parameters) = Route.isValid(path: self.path)
 

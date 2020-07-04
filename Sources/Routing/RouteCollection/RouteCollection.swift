@@ -7,6 +7,7 @@ public final class RouteCollection {
 
     public private(set) var path: String
     public private(set) var name: String
+    public var middleware: [Middleware]
     private var routes: DictionaryType
 
     public private(set) lazy var builder: Builder = .init(self)
@@ -15,17 +16,20 @@ public final class RouteCollection {
         routes = .init()
         path = String(Route.pathComponentSeparator)
         name = ""
+        middleware = .init()
     }
 
     public init?(
         _ routes: RouteCollection = .init(),
         path: String = String(Route.pathComponentSeparator),
-        name: String = ""
+        name: String = "",
+        middleware: [Middleware] = .init()
     ) {
         self.routes = .init()
         var path = path
         self.path = path
         self.name = name
+        self.middleware = middleware
 
         if routes.path == String(Route.pathComponentSeparator) {
             path = Route.normalize(path: path)

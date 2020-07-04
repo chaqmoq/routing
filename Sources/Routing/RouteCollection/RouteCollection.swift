@@ -88,7 +88,7 @@ extension RouteCollection {
             method: route.method,
             path: path == separator ? route.path : Route.normalize(path: path + route.path),
             name: name + route.name,
-            middleware: route.middleware,
+            middleware: middleware + route.middleware,
             handler: route.handler
         )!
 

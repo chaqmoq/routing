@@ -177,7 +177,6 @@ extension RouteCollection {
             middleware: [Middleware] = .init(),
             handler: @escaping Route.Handler
         ) -> [Route] {
-            let middleware = routes.middleware + middleware
             var routes: [Route] = .init()
 
             for method in methods {
@@ -206,7 +205,7 @@ extension RouteCollection {
                 routes,
                 path: path,
                 name: name,
-                middleware: middleware
+                middleware: routes.middleware + middleware
             ) else { return nil }
             if root == nil { root = self }
             let builder = Builder(routes)
@@ -229,7 +228,7 @@ extension RouteCollection {
             middleware: [Middleware] = .init(),
             handler: @escaping (Builder) -> Void
         ) {
-            if let builder = grouped(path, name: name, middleware: routes.middleware + middleware) { handler(builder) }
+            if let builder = grouped(path, name: name, middleware: middleware) { handler(builder) }
         }
 
         public func group(

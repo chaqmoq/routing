@@ -1,5 +1,5 @@
 import struct HTTP.Request
 
 public protocol Middleware: class {
-    func handle(request: Request, next: @escaping Route.Handler) -> Any
+    func handle(request: Request, nextHandler: @escaping Route.Handler) -> Any
 }

@@ -2,5 +2,13 @@ import struct HTTP.Request
 import struct HTTP.Response
 
 public protocol Middleware: class {
-    func handle(request: inout Request, response: inout Any, nextHandler: @escaping Route.Handler) -> Any
+    typealias RequestHandler = (Request) -> Void
+
+    func handle(request: inout Request, nextHandler: @escaping RequestHandler) -> Any
+}
+
+extension Middleware {
+    public func handle(request: inout Request, nextHandler: @escaping RequestHandler) -> Any {
+        nextHandler(request)
+    }
 }

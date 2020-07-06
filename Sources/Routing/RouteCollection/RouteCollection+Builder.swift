@@ -20,16 +20,6 @@ extension RouteCollection {
         }
 
         @discardableResult
-        public func delete(
-            _ path: String = Route.defaultPath,
-            name: String = "",
-            middleware: Middleware...,
-            handler: @escaping Route.Handler
-        ) -> Route? {
-            delete(path, name: name, middleware: middleware, handler: handler)
-        }
-
-        @discardableResult
         public func get(
             _ path: String = Route.defaultPath,
             name: String = "",
@@ -37,16 +27,6 @@ extension RouteCollection {
             handler: @escaping Route.Handler
         ) -> Route? {
             _request(path, methods: [.GET], name: name, middleware: middleware, handler: handler).first
-        }
-
-        @discardableResult
-        public func get(
-            _ path: String = Route.defaultPath,
-            name: String = "",
-            middleware: Middleware...,
-            handler: @escaping Route.Handler
-        ) -> Route? {
-            get(path, name: name, middleware: middleware, handler: handler)
         }
 
         @discardableResult
@@ -60,16 +40,6 @@ extension RouteCollection {
         }
 
         @discardableResult
-        public func head(
-            _ path: String = Route.defaultPath,
-            name: String = "",
-            middleware: Middleware...,
-            handler: @escaping Route.Handler
-        ) -> Route? {
-            head(path, name: name, middleware: middleware, handler: handler)
-        }
-
-        @discardableResult
         public func options(
             _ path: String = Route.defaultPath,
             name: String = "",
@@ -77,16 +47,6 @@ extension RouteCollection {
             handler: @escaping Route.Handler
         ) -> Route? {
             _request(path, methods: [.OPTIONS], name: name, middleware: middleware, handler: handler).first
-        }
-
-        @discardableResult
-        public func options(
-            _ path: String = Route.defaultPath,
-            name: String = "",
-            middleware: Middleware...,
-            handler: @escaping Route.Handler
-        ) -> Route? {
-            options(path, name: name, middleware: middleware, handler: handler)
         }
 
         @discardableResult
@@ -100,16 +60,6 @@ extension RouteCollection {
         }
 
         @discardableResult
-        public func patch(
-            _ path: String = Route.defaultPath,
-            name: String = "",
-            middleware: Middleware...,
-            handler: @escaping Route.Handler
-        ) -> Route? {
-            patch(path, name: name, middleware: middleware, handler: handler)
-        }
-
-        @discardableResult
         public func post(
             _ path: String = Route.defaultPath,
             name: String = "",
@@ -117,16 +67,6 @@ extension RouteCollection {
             handler: @escaping Route.Handler
         ) -> Route? {
             _request(path, methods: [.POST], name: name, middleware: middleware, handler: handler).first
-        }
-
-        @discardableResult
-        public func post(
-            _ path: String = Route.defaultPath,
-            name: String = "",
-            middleware: Middleware...,
-            handler: @escaping Route.Handler
-        ) -> Route? {
-            post(path, name: name, middleware: middleware, handler: handler)
         }
 
         @discardableResult
@@ -140,16 +80,6 @@ extension RouteCollection {
         }
 
         @discardableResult
-        public func put(
-            _ path: String = Route.defaultPath,
-            name: String = "",
-            middleware: Middleware...,
-            handler: @escaping Route.Handler
-        ) -> Route? {
-            put(path, name: name, middleware: middleware, handler: handler)
-        }
-
-        @discardableResult
         public func request(
             _ path: String = Route.defaultPath,
             methods: Set<Request.Method> = Set(Request.Method.allCases),
@@ -157,16 +87,6 @@ extension RouteCollection {
             handler: @escaping Route.Handler
         ) -> [Route] {
             _request(path, methods: methods, middleware: middleware, handler: handler)
-        }
-
-        @discardableResult
-        public func request(
-            _ path: String = Route.defaultPath,
-            methods: Set<Request.Method> = Set(Request.Method.allCases),
-            middleware: Middleware...,
-            handler: @escaping Route.Handler
-        ) -> [Route] {
-            request(path, methods: methods, middleware: middleware, handler: handler)
         }
 
         @discardableResult
@@ -214,14 +134,6 @@ extension RouteCollection {
             return builder
         }
 
-        public func grouped(
-            _ path: String = Route.defaultPath,
-            name: String = "",
-            middleware: Middleware...
-        ) -> Builder? {
-            grouped(path, name: name, middleware: middleware)
-        }
-
         public func group(
             _ path: String = Route.defaultPath,
             name: String = "",
@@ -229,15 +141,6 @@ extension RouteCollection {
             handler: @escaping (Builder) -> Void
         ) {
             if let builder = grouped(path, name: name, middleware: middleware) { handler(builder) }
-        }
-
-        public func group(
-            _ path: String = Route.defaultPath,
-            name: String = "",
-            middleware: Middleware...,
-            handler: @escaping (Builder) -> Void
-        ) {
-            group(path, name: name, middleware: middleware, handler: handler)
         }
     }
 }

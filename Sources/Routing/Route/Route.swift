@@ -3,17 +3,57 @@ import struct HTTP.Request
 import struct HTTP.Response
 
 public struct Route {
+    /// A default path.
+    public static let pathComponentSeparator: Character = "/"
+
+    /// A regular expression pattern for the path components having a static text.
+    static let textPattern = "[a-zA-Z0-9_~.-]+"
+
+    /// A regular expression pattern for parameters' name.
+    static let parameterNamePattern = "\\w+"
+
+    /// A regular expression pattern for parameters.
+    static let parameterPattern = """
+    (\\{\(parameterNamePattern)(<[^\\/{}<>]+>)?(\\?(\(textPattern))?|!\(textPattern))?\\})+
+    """
+
+    /// A regular expression pattern for the path.
+    static let pathPattern = "\(textPattern)|\(parameterPattern)"
+
+    /// A typealias for the handler.
     public typealias Handler = (Request) -> Any
 
+    /// An HTTP request method.
     public var method: Request.Method
+
+    /// A path to a resource.
     public let path: String
+
+    /// A regular expression pattern generated for the path.
     public private(set) var pattern: String
+
+    /// A unique name for the route.
     public var name: String
+
+    /// A read-only list of parameters extracted from the path.
     public var parameters: Set<Parameter>? { mutableParameters }
+
+    /// A list of parameters extracted from the path.
     private var mutableParameters: Set<Parameter>?
+
+    /// A list of registered middleware.
     public var middleware: [Middleware]
+
+    /// A handler to call.
     public var handler: Handler
 
+    /// Initializes a new instance with a default `/` path.
+    ///
+    /// - Parameters:
+    ///   - method: An HTTP request method.
+    ///   - name: A unique name for the route.
+    ///   - middleware: A list of registered middleware.
+    ///   - handler: A handler to call.
     public init(
         method: Request.Method,
         name: String = "",
@@ -28,6 +68,15 @@ public struct Route {
         self.handler = handler
     }
 
+    /// Initializes a new instance or` nil`.
+    ///
+    /// - Warning: It may return `nil` if the path is invalid.
+    /// - Parameters:
+    ///   - method: An HTTP request method.
+    ///   - path: A path to a resource.
+    ///   - name: A unique name for the route.
+    ///   - middleware: A list of registered middleware.
+    ///   - handler: A handler to call.
     public init?(
         method: Request.Method,
         path: String,
@@ -55,16 +104,10 @@ public struct Route {
 }
 
 extension Route {
-    public static let pathComponentSeparator: Character = "/"
-    static let textPattern = "[a-zA-Z0-9_~.-]+"
-    static let parameterNamePattern = "\\w+"
-    static let parameterPattern = """
-    (\\{\(parameterNamePattern)(<[^\\/{}<>]+>)?(\\?(\(textPattern))?|!\(textPattern))?\\})+
-    """
-    static let pathPattern = "\(textPattern)|\(parameterPattern)"
-}
-
-extension Route {
+    /// Updates a parameter extracted from a path.
+    ///
+    /// - Parameter parameter: An instance of `Route.Parameter`.
+    /// - Returns: An updated instance of `Route.Parameter` or nil
     @discardableResult
     mutating func updateParameter(_ parameter: Parameter) -> Parameter? {
         guard let index = mutableParameters?.firstIndex(of: parameter),
@@ -79,6 +122,7 @@ extension Route {
 }
 
 extension Route: Equatable {
+    /// See `Equatable`.
     public static func ==(lhs: Route, rhs: Route) -> Bool {
         let isEqual = lhs.method == rhs.method && lhs.pattern == rhs.pattern
         if isEqual { return true }
@@ -88,6 +132,7 @@ extension Route: Equatable {
 }
 
 extension Route: CustomStringConvertible {
+    /// See `CustomStringConvertible`.
     public var description: String {
         var description = "method=\(method.rawValue)\npath=\(path)\npattern=\(pattern)"
         if !name.isEmpty { description.append("\nname=\(name)") }

@@ -2,8 +2,9 @@ import class Foundation.NSRegularExpression
 import struct HTTP.Request
 import struct HTTP.Response
 
+/// A route is a combination of an HTTP request method, path, name, a list of middleware, and handler.
 public struct Route {
-    /// A default path.
+    /// A default `/` path.
     public static let defaultPath: String = "/"
 
     /// A regular expression pattern for the path components having a static text.
@@ -51,8 +52,8 @@ public struct Route {
     ///
     /// - Parameters:
     ///   - method: An HTTP request method.
-    ///   - name: A unique name for the route.
-    ///   - middleware: A list of registered middleware.
+    ///   - name: A unique name for the route. Defaults to an empty string.
+    ///   - middleware: A list of registered middleware. Defaults to an empty array.
     ///   - handler: A handler to call.
     public init(
         method: Request.Method,
@@ -62,7 +63,7 @@ public struct Route {
     ) {
         self.method = method
         self.path = Route.defaultPath
-        pattern = Route.generatePattern(from: self.path)
+        pattern = Route.generatePattern(for: self.path)
         self.name = name
         self.middleware = middleware
         self.handler = handler
@@ -74,8 +75,8 @@ public struct Route {
     /// - Parameters:
     ///   - method: An HTTP request method.
     ///   - path: A path to a resource.
-    ///   - name: A unique name for the route.
-    ///   - middleware: A list of registered middleware.
+    ///   - name: A unique name for the route. Defaults to an empty string.
+    ///   - middleware: A list of registered middleware. Defaults to an empty array.
     ///   - handler: A handler to call.
     public init?(
         method: Request.Method,
@@ -94,7 +95,7 @@ public struct Route {
 
         if isValid {
             self.mutableParameters = parameters
-            pattern = Route.generatePattern(from: self.path, parameters: self.mutableParameters)
+            pattern = Route.generatePattern(for: self.path, with: self.mutableParameters)
             let separator = Route.defaultPath
             guard pattern == separator || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
         } else {
@@ -107,7 +108,7 @@ extension Route {
     /// Updates a parameter extracted from a path.
     ///
     /// - Parameter parameter: An instance of `Route.Parameter`.
-    /// - Returns: An updated instance of `Route.Parameter` or nil
+    /// - Returns: An updated instance of `Route.Parameter` or `nil`
     @discardableResult
     mutating func updateParameter(_ parameter: Parameter) -> Parameter? {
         guard let index = mutableParameters?.firstIndex(of: parameter),

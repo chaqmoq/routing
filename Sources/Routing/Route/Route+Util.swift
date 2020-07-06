@@ -2,6 +2,10 @@ import struct Foundation.NSRange
 import class Foundation.NSRegularExpression
 
 extension Route {
+    /// Checks if a path is valid or not.
+    /// 
+    /// - Parameter path: A path to a resource.
+    /// - Returns: If the path is valid, it returns `true` and a set of extracted parameters. Otherwise, it returns `false` and `nil`.
     public static func isValid(path: String) -> (Bool, Set<Parameter>?) {
         let separator = Route.defaultPath
         if path == separator { return (true, nil) }
@@ -30,7 +34,7 @@ extension Route {
                         }
                     }
 
-                    if let parameter = Route.extractParameter(from: pathComponentPart) {
+                    if let parameter = Route.createParameter(from: pathComponentPart) {
                         parameters.insert(parameter)
                     }
 
@@ -44,6 +48,10 @@ extension Route {
         return (true, parameters.isEmpty ? nil : parameters)
     }
 
+    /// Normalizes a path.
+    ///
+    /// - Parameter path: A path to a resource.
+    /// - Returns: A normalized path.
     public static func normalize(path: String) -> String {
         let separator = Route.defaultPath
         let doubleSeparator = separator + separator
@@ -56,7 +64,13 @@ extension Route {
             : path
     }
 
-    public static func generatePattern(from path: String, parameters: Set<Parameter>? = nil) -> String {
+    /// Generates a regular expression pattern for a path and parameters.
+    ///
+    /// - Parameters:
+    ///   - path: A path to a resource.
+    ///   - parameters: A set of parameters.
+    /// - Returns: A regular expression pattern.
+    public static func generatePattern(for path: String, with parameters: Set<Parameter>? = nil) -> String {
         var pattern = path
 
         if let parameters = parameters {
@@ -84,42 +98,46 @@ extension Route {
         return pattern
     }
 
-    public static func extractParameter(from pathComponentPart: String) -> Parameter? {
-        if var nameStartIndex = pathComponentPart.firstIndex(of: Parameter.nameEnclosingSymbols.0),
-            var nameEndIndex = pathComponentPart.firstIndex(of: Parameter.nameEnclosingSymbols.1) {
-            nameStartIndex = pathComponentPart.index(after: nameStartIndex)
+    /// Creates an instance of `Parameter` from a parameter pattern `{name<requirement>?defaultValue}`.
+    ///
+    /// - Parameter part: A part of a path component.
+    /// - Returns: An instance of `Parameter` or `nil`.
+    public static func createParameter(from part: String) -> Parameter? {
+        if var nameStartIndex = part.firstIndex(of: Parameter.nameEnclosingSymbols.0),
+            var nameEndIndex = part.firstIndex(of: Parameter.nameEnclosingSymbols.1) {
+            nameStartIndex = part.index(after: nameStartIndex)
             var requirement = ""
             var defaultValue: Parameter.DefaultValue?
 
-            if var requirementStartIndex = pathComponentPart.firstIndex(of: Parameter.requirementEnclosingSymbols.0),
-                let requirementEndIndex = pathComponentPart.firstIndex(of: Parameter.requirementEnclosingSymbols.1) {
-                if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.optionalSymbol) {
+            if var requirementStartIndex = part.firstIndex(of: Parameter.requirementEnclosingSymbols.0),
+                let requirementEndIndex = part.firstIndex(of: Parameter.requirementEnclosingSymbols.1) {
+                if var defaultValueStartIndex = part.firstIndex(of: Parameter.optionalSymbol) {
                     let defaultValueEndIndex = nameEndIndex
-                    defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                    defaultValue = .optional(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
-                } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.forcedSymbol) {
+                    defaultValueStartIndex = part.index(after: defaultValueStartIndex)
+                    defaultValue = .optional(String(part[defaultValueStartIndex..<defaultValueEndIndex]))
+                } else if var defaultValueStartIndex = part.firstIndex(of: Parameter.forcedSymbol) {
                     let defaultValueEndIndex = nameEndIndex
-                    defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                    defaultValue = .forced(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
+                    defaultValueStartIndex = part.index(after: defaultValueStartIndex)
+                    defaultValue = .forced(String(part[defaultValueStartIndex..<defaultValueEndIndex]))
                 }
 
                 nameEndIndex = requirementStartIndex
-                requirementStartIndex = pathComponentPart.index(after: requirementStartIndex)
-                requirement = String(pathComponentPart[requirementStartIndex..<requirementEndIndex])
-            } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.optionalSymbol) {
+                requirementStartIndex = part.index(after: requirementStartIndex)
+                requirement = String(part[requirementStartIndex..<requirementEndIndex])
+            } else if var defaultValueStartIndex = part.firstIndex(of: Parameter.optionalSymbol) {
                 let defaultValueEndIndex = nameEndIndex
                 nameEndIndex = defaultValueStartIndex
-                defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                defaultValue = .optional(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
-            } else if var defaultValueStartIndex = pathComponentPart.firstIndex(of: Parameter.forcedSymbol) {
+                defaultValueStartIndex = part.index(after: defaultValueStartIndex)
+                defaultValue = .optional(String(part[defaultValueStartIndex..<defaultValueEndIndex]))
+            } else if var defaultValueStartIndex = part.firstIndex(of: Parameter.forcedSymbol) {
                 let defaultValueEndIndex = nameEndIndex
                 nameEndIndex = defaultValueStartIndex
-                defaultValueStartIndex = pathComponentPart.index(after: defaultValueStartIndex)
-                defaultValue = .forced(String(pathComponentPart[defaultValueStartIndex..<defaultValueEndIndex]))
+                defaultValueStartIndex = part.index(after: defaultValueStartIndex)
+                defaultValue = .forced(String(part[defaultValueStartIndex..<defaultValueEndIndex]))
             }
 
             return Parameter(
-                name: String(pathComponentPart[nameStartIndex..<nameEndIndex]),
+                name: String(part[nameStartIndex..<nameEndIndex]),
                 requirement: requirement,
                 defaultValue: defaultValue
             )

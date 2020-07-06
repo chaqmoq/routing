@@ -3,7 +3,7 @@ import class Foundation.NSRegularExpression
 
 extension Route {
     public static func isValid(path: String) -> (Bool, Set<Parameter>?) {
-        let separator = String(Route.pathComponentSeparator)
+        let separator = Route.defaultPath
         if path == separator { return (true, nil) }
         if !path.starts(with: separator) || path.contains(separator + separator) { return (false, nil) }
         guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return (false, nil) }
@@ -45,7 +45,7 @@ extension Route {
     }
 
     public static func normalize(path: String) -> String {
-        let separator = String(Route.pathComponentSeparator)
+        let separator = Route.defaultPath
         let doubleSeparator = separator + separator
 
         return !path.isEmpty &&
@@ -60,7 +60,7 @@ extension Route {
         var pattern = path
 
         if let parameters = parameters {
-            let separator = String(Route.pathComponentSeparator)
+            let separator = Route.defaultPath
 
             for parameter in parameters {
                 if parameter.defaultValue != nil,

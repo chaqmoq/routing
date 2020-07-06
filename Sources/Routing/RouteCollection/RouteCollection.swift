@@ -14,14 +14,14 @@ public final class RouteCollection {
 
     public init() {
         routes = .init()
-        path = String(Route.pathComponentSeparator)
+        path = Route.defaultPath
         name = ""
         middleware = .init()
     }
 
     public init?(
         _ routes: RouteCollection = .init(),
-        path: String = String(Route.pathComponentSeparator),
+        path: String = Route.defaultPath,
         name: String = "",
         middleware: [Middleware] = .init()
     ) {
@@ -31,7 +31,7 @@ public final class RouteCollection {
         self.name = name
         self.middleware = middleware
 
-        if routes.path == String(Route.pathComponentSeparator) {
+        if routes.path == Route.defaultPath {
             path = Route.normalize(path: path)
         } else {
             path = Route.normalize(path: routes.path + Route.normalize(path: path))
@@ -59,7 +59,7 @@ public final class RouteCollection {
 
     public convenience init?(
         _ routes: [Route],
-        path: String = String(Route.pathComponentSeparator),
+        path: String = Route.defaultPath,
         name: String = ""
     ) {
         self.init(path: path, name: name)
@@ -83,7 +83,7 @@ extension RouteCollection {
 
     @discardableResult
     public func insert(_ route: Route) -> Route? {
-        let separator = String(Route.pathComponentSeparator)
+        let separator = Route.defaultPath
         let route = Route(
             method: route.method,
             path: path == separator ? route.path : Route.normalize(path: path + route.path),

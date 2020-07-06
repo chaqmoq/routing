@@ -14,7 +14,7 @@ final class RouteTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(route.method, method)
-        XCTAssertEqual(route.path, String(Route.pathComponentSeparator))
+        XCTAssertEqual(route.path, Route.defaultPath)
         XCTAssertEqual(route.pattern, route.path)
         XCTAssertEqual(route.name, name)
         XCTAssertTrue(route.middleware.isEmpty)

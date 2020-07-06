@@ -9,7 +9,7 @@ final class RouteCollectionTests: XCTestCase {
 
         // Assert
         XCTAssertTrue(routes.isEmpty)
-        XCTAssertEqual(routes.path, String(Route.pathComponentSeparator))
+        XCTAssertEqual(routes.path, Route.defaultPath)
         XCTAssertTrue(routes.name.isEmpty)
         XCTAssertTrue(routes.middleware.isEmpty)
     }
@@ -31,7 +31,7 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertEqual(routes2[.POST].count, 1)
         XCTAssertTrue(routes2[.GET].contains(where: { $0.path == "/blog" && $0.name == "" }))
         XCTAssertTrue(routes2[.POST].contains(where: { $0.path == "/blog" && $0.name == "" }))
-        XCTAssertEqual(routes2.path, String(Route.pathComponentSeparator))
+        XCTAssertEqual(routes2.path, Route.defaultPath)
         XCTAssertTrue(routes2.name.isEmpty)
         XCTAssertTrue(routes2.middleware.isEmpty)
     }
@@ -83,7 +83,7 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertEqual(routes[.POST].count, 1)
         XCTAssertTrue(routes[.GET].contains(where: { $0.path == "/posts" && $0.name == "post_list" }))
         XCTAssertTrue(routes[.POST].contains(where: { $0.path == "/posts" && $0.name == "post_create" }))
-        XCTAssertEqual(routes.path, String(Route.pathComponentSeparator))
+        XCTAssertEqual(routes.path, Route.defaultPath)
         XCTAssertTrue(routes.name.isEmpty)
         XCTAssertTrue(routes.middleware.isEmpty)
     }
@@ -115,7 +115,7 @@ final class RouteCollectionTests: XCTestCase {
 
         // Assert
         XCTAssertTrue(routes.isEmpty)
-        XCTAssertEqual(routes.path, String(Route.pathComponentSeparator))
+        XCTAssertEqual(routes.path, Route.defaultPath)
         XCTAssertEqual(routes.name, name)
         XCTAssertTrue(routes.middleware.isEmpty)
     }

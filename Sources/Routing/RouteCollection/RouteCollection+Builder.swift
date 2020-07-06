@@ -11,7 +11,7 @@ extension RouteCollection {
 
         @discardableResult
         public func delete(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: [Middleware] = .init(),
             handler: @escaping Route.Handler
@@ -21,7 +21,7 @@ extension RouteCollection {
 
         @discardableResult
         public func delete(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: Middleware...,
             handler: @escaping Route.Handler
@@ -31,7 +31,7 @@ extension RouteCollection {
 
         @discardableResult
         public func get(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: [Middleware] = .init(),
             handler: @escaping Route.Handler
@@ -41,7 +41,7 @@ extension RouteCollection {
 
         @discardableResult
         public func get(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: Middleware...,
             handler: @escaping Route.Handler
@@ -51,7 +51,7 @@ extension RouteCollection {
 
         @discardableResult
         public func head(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: [Middleware] = .init(),
             handler: @escaping Route.Handler
@@ -61,7 +61,7 @@ extension RouteCollection {
 
         @discardableResult
         public func head(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: Middleware...,
             handler: @escaping Route.Handler
@@ -71,7 +71,7 @@ extension RouteCollection {
 
         @discardableResult
         public func options(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: [Middleware] = .init(),
             handler: @escaping Route.Handler
@@ -81,7 +81,7 @@ extension RouteCollection {
 
         @discardableResult
         public func options(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: Middleware...,
             handler: @escaping Route.Handler
@@ -91,7 +91,7 @@ extension RouteCollection {
 
         @discardableResult
         public func patch(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: [Middleware] = .init(),
             handler: @escaping Route.Handler
@@ -101,7 +101,7 @@ extension RouteCollection {
 
         @discardableResult
         public func patch(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: Middleware...,
             handler: @escaping Route.Handler
@@ -111,7 +111,7 @@ extension RouteCollection {
 
         @discardableResult
         public func post(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: [Middleware] = .init(),
             handler: @escaping Route.Handler
@@ -121,7 +121,7 @@ extension RouteCollection {
 
         @discardableResult
         public func post(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: Middleware...,
             handler: @escaping Route.Handler
@@ -131,7 +131,7 @@ extension RouteCollection {
 
         @discardableResult
         public func put(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: [Middleware] = .init(),
             handler: @escaping Route.Handler
@@ -141,7 +141,7 @@ extension RouteCollection {
 
         @discardableResult
         public func put(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: Middleware...,
             handler: @escaping Route.Handler
@@ -151,7 +151,7 @@ extension RouteCollection {
 
         @discardableResult
         public func request(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             methods: Set<Request.Method> = Set(Request.Method.allCases),
             middleware: [Middleware] = .init(),
             handler: @escaping Route.Handler
@@ -161,7 +161,7 @@ extension RouteCollection {
 
         @discardableResult
         public func request(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             methods: Set<Request.Method> = Set(Request.Method.allCases),
             middleware: Middleware...,
             handler: @escaping Route.Handler
@@ -171,7 +171,7 @@ extension RouteCollection {
 
         @discardableResult
         private func _request(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             methods: Set<Request.Method> = Set(Request.Method.allCases),
             name: String = "",
             middleware: [Middleware] = .init(),
@@ -197,7 +197,7 @@ extension RouteCollection {
         }
 
         public func grouped(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: [Middleware] = .init()
         ) -> Builder? {
@@ -215,7 +215,7 @@ extension RouteCollection {
         }
 
         public func grouped(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: Middleware...
         ) -> Builder? {
@@ -223,7 +223,7 @@ extension RouteCollection {
         }
 
         public func group(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: [Middleware] = .init(),
             handler: @escaping (Builder) -> Void
@@ -232,7 +232,7 @@ extension RouteCollection {
         }
 
         public func group(
-            _ path: String = String(Route.pathComponentSeparator),
+            _ path: String = Route.defaultPath,
             name: String = "",
             middleware: Middleware...,
             handler: @escaping (Builder) -> Void

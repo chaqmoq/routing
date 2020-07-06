@@ -4,7 +4,7 @@ import struct HTTP.Response
 
 public struct Route {
     /// A default path.
-    public static let pathComponentSeparator: Character = "/"
+    public static let defaultPath: String = "/"
 
     /// A regular expression pattern for the path components having a static text.
     static let textPattern = "[a-zA-Z0-9_~.-]+"
@@ -61,7 +61,7 @@ public struct Route {
         handler: @escaping Handler
     ) {
         self.method = method
-        self.path = String(Route.pathComponentSeparator)
+        self.path = Route.defaultPath
         pattern = Route.generatePattern(from: self.path)
         self.name = name
         self.middleware = middleware
@@ -95,7 +95,7 @@ public struct Route {
         if isValid {
             self.mutableParameters = parameters
             pattern = Route.generatePattern(from: self.path, parameters: self.mutableParameters)
-            let separator = String(Route.pathComponentSeparator)
+            let separator = Route.defaultPath
             guard pattern == separator || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
         } else {
             return nil

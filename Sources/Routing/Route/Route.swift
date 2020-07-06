@@ -105,10 +105,10 @@ public struct Route {
 }
 
 extension Route {
-    /// Updates a parameter extracted from a path.
+    /// Updates a parameter extracted from the path.
     ///
-    /// - Parameter parameter: An instance of `Route.Parameter`.
-    /// - Returns: An updated instance of `Route.Parameter` or `nil`
+    /// - Parameter parameter: An instance of `Parameter`.
+    /// - Returns: An updated instance of `Parameter` or `nil`
     @discardableResult
     mutating func updateParameter(_ parameter: Parameter) -> Parameter? {
         guard let index = mutableParameters?.firstIndex(of: parameter),

@@ -17,6 +17,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.path, String(Route.pathComponentSeparator))
         XCTAssertEqual(route.pattern, route.path)
         XCTAssertEqual(route.name, name)
+        XCTAssertTrue(route.middleware.isEmpty)
         XCTAssertNil(route.parameters)
     }
 
@@ -34,6 +35,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.path, path)
         XCTAssertEqual(route.pattern, "/posts(/\\d+|1)?")
         XCTAssertEqual(route.name, name)
+        XCTAssertTrue(route.middleware.isEmpty)
         XCTAssertEqual(route.parameters!.count, 1)
         XCTAssertTrue(route.parameters!.contains(where: {
             $0.name == "id" && $0.value == "" && $0.requirement == "\\d+" && $0.defaultValue == .optional("1")

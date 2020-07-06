@@ -11,6 +11,7 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertTrue(routes.isEmpty)
         XCTAssertEqual(routes.path, String(Route.pathComponentSeparator))
         XCTAssertTrue(routes.name.isEmpty)
+        XCTAssertTrue(routes.middleware.isEmpty)
     }
 
     func testInitWithAnotherRouteCollection() {
@@ -32,6 +33,7 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertTrue(routes2[.POST].contains(where: { $0.path == "/blog" && $0.name == "" }))
         XCTAssertEqual(routes2.path, String(Route.pathComponentSeparator))
         XCTAssertTrue(routes2.name.isEmpty)
+        XCTAssertTrue(routes2.middleware.isEmpty)
     }
 
     func testInitWithAnotherRouteCollectionPathAndName() {
@@ -51,6 +53,7 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertEqual(routes2[routes2.first!.key].filter({ $0.path == path && $0.name == name }).count, 1)
         XCTAssertEqual(routes2.path, path)
         XCTAssertEqual(routes2.name, name)
+        XCTAssertTrue(routes2.middleware.isEmpty)
     }
 
     func testInitWithPathNameAndAnotherRouteCollectionWithPathAndName() {
@@ -64,6 +67,7 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertEqual(routes2.count, 0)
         XCTAssertEqual(routes2.path, "/blog/posts")
         XCTAssertEqual(routes2.name, "blog_post_")
+        XCTAssertTrue(routes2.middleware.isEmpty)
     }
 
     func testInitWithRoutes() {
@@ -81,6 +85,7 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertTrue(routes[.POST].contains(where: { $0.path == "/posts" && $0.name == "post_create" }))
         XCTAssertEqual(routes.path, String(Route.pathComponentSeparator))
         XCTAssertTrue(routes.name.isEmpty)
+        XCTAssertTrue(routes.middleware.isEmpty)
     }
 
     func testInitWithRoutesPathAndName() {
@@ -98,6 +103,7 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertTrue(routes[.POST].contains(where: { $0.path == "/blog/posts" && $0.name == "blog_post_create" }))
         XCTAssertEqual(routes.path, "/blog")
         XCTAssertEqual(routes.name, "blog_")
+        XCTAssertTrue(routes.middleware.isEmpty)
     }
 
     func testInitWithName() {
@@ -111,6 +117,7 @@ final class RouteCollectionTests: XCTestCase {
         XCTAssertTrue(routes.isEmpty)
         XCTAssertEqual(routes.path, String(Route.pathComponentSeparator))
         XCTAssertEqual(routes.name, name)
+        XCTAssertTrue(routes.middleware.isEmpty)
     }
 
     func testInitWithInvalidPathAndName() {

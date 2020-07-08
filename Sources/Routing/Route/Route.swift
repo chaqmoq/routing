@@ -3,7 +3,7 @@ import class Foundation.NSRegularExpression
 import struct HTTP.Request
 import struct HTTP.Response
 
-/// A route is a combination of an HTTP request method, path, name, a list of middleware, and handler.
+/// `Route` is a combination of an HTTP request method, path, name, a list of `Middleware`, and handler.
 public struct Route {
     /// A default `/` path.
     public static let defaultPath: String = "/"
@@ -34,16 +34,15 @@ public struct Route {
     /// A regular expression pattern generated for the path.
     public private(set) var pattern: String
 
-    /// A unique name for the route.
+    /// A unique name for `Route`.
     public var name: String
 
     /// A read-only list of parameters extracted from the path.
     public var parameters: Set<Parameter>? { mutableParameters }
 
-    /// A list of parameters extracted from the path.
     private var mutableParameters: Set<Parameter>?
 
-    /// A list of registered middleware.
+    /// An array of registered `Middleware`.
     public var middleware: [Middleware]
 
     /// A handler to call.
@@ -53,8 +52,8 @@ public struct Route {
     ///
     /// - Parameters:
     ///   - method: An HTTP request method.
-    ///   - name: A unique name for the route. Defaults to an empty string.
-    ///   - middleware: A list of registered middleware. Defaults to an empty array.
+    ///   - name: A unique name for `Route`. Defaults to an empty string.
+    ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
     ///   - handler: A handler to call.
     public init(
         method: Request.Method,
@@ -76,8 +75,8 @@ public struct Route {
     /// - Parameters:
     ///   - method: An HTTP request method.
     ///   - path: A path to a resource.
-    ///   - name: A unique name for the route. Defaults to an empty string.
-    ///   - middleware: A list of registered middleware. Defaults to an empty array.
+    ///   - name: A unique name for `Route`. Defaults to an empty string.
+    ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
     ///   - handler: A handler to call.
     public init?(
         method: Request.Method,
@@ -207,7 +206,7 @@ extension Route {
             : path
     }
 
-    /// Generates a regular expression pattern for a path and parameters.
+    /// Generates a regular expression pattern for the path with parameters.
     ///
     /// - Parameters:
     ///   - path: A path to a resource.
@@ -241,10 +240,10 @@ extension Route {
         return pattern
     }
 
-    /// Creates an instance of `Parameter` from a parameter pattern `{name<requirement>?defaultValue}`.
+    /// Creates a new instance of `Parameter` from a parameter pattern `{name<requirement>?defaultValue}`.
     ///
     /// - Parameter part: A part of a path component.
-    /// - Returns: An instance of `Parameter` or `nil`.
+    /// - Returns: A new instance of `Parameter` or `nil`.
     public static func createParameter(from part: String) -> Parameter? {
         if var nameStartIndex = part.firstIndex(of: Parameter.nameEnclosingSymbols.0),
             var nameEndIndex = part.firstIndex(of: Parameter.nameEnclosingSymbols.1) {

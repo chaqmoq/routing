@@ -2,15 +2,26 @@ import Foundation
 import struct HTTP.Parameters
 import struct HTTP.Request
 
+/// `Router` has a `RouteCollection`. It can resolve a `Route` in the `RouteCollection` and generate a URL for it.
 public final class Router {
+    /// An instance of `RouteCollection`.
     public var routes: RouteCollection
 
+    /// Initializes a new instance with `RouteCollection`.
+    ///
+    /// - Parameter routes: An instance of `RouteCollection`. Defaults to an empty `RouteCollection`.
     public init(routes: RouteCollection = .init()) {
         self.routes = routes
     }
 }
 
 extension Router {
+    /// Resolves a `Route`by HTTP request method and uri.
+    ///
+    /// - Parameters:
+    ///   - method: An HTTP request method.
+    ///   - uri: A uri string.
+    /// - Returns: A resolved `Route` or `nil`.
     public func resolveRouteBy(method: Request.Method, uri: String) -> Route? {
         let uri = Route.normalize(path: uri)
         guard let path = URLComponents(string: uri)?.path else { return nil }
@@ -55,6 +66,10 @@ extension Router {
         return nil
     }
 
+    /// Resolves a `Route`by name.
+    ///
+    /// - Parameter name: A unique name for `Route`.
+    /// - Returns: A resolved `Route` or `nil`.
     public func resolveRoute(named name: String) -> Route? {
         if name.isEmpty { return nil }
 
@@ -71,6 +86,12 @@ extension Router {
         return nil
     }
 
+    /// Resolves a `Route`by name and path's parameters.
+    ///
+    /// - Parameters:
+    ///   - name: A unique name for `Route`.
+    ///   - parameters: A `Route`'s path parameters.
+    /// - Returns: A resolved `Route` or `nil`.
     public func resolveRoute(named name: String, parameters: Parameters<String, String>) -> Route? {
         if name.isEmpty { return nil }
 
@@ -101,18 +122,41 @@ extension Router {
 }
 
 extension Router {
+    /// Generates a URL for `Route` by name.
+    ///
+    /// - Parameter name: A unique name for `Route`.
+    /// - Returns: A generated URL or `nil`.
     public func generateURLForRoute(named name: String) -> URL? {
         _generateURLForRoute(named: name)
     }
 
+    /// Generates a URL for `Route` by name and path's parameters.
+    ///
+    /// - Parameters:
+    ///   - name: A unique name for `Route`.
+    ///   - parameters: A `Route`'s path parameters.
+    /// - Returns: A generated URL or `nil`.
     public func generateURLForRoute(named name: String, parameters: Parameters<String, String>) -> URL? {
         _generateURLForRoute(named: name, parameters: parameters)
     }
 
+    /// Generates a URL for `Route` by name and query strings.
+    ///
+    /// - Parameters:
+    ///   - name: A unique name for `Route`.
+    ///   - query: A dictionary of query strings.
+    /// - Returns: A generated URL or `nil`.
     public func generateURLForRoute(named name: String, query: Parameters<String, String>) -> URL? {
         _generateURLForRoute(named: name, query: query)
     }
 
+    /// Generates a URL for `Route` by name, path's parameters and query strings.
+    ///
+    /// - Parameters:
+    ///   - name: A unique name for `Route`.
+    ///   - parameters: A `Route`'s path parameters.
+    ///   - query: A dictionary of query strings.
+    /// - Returns: A generated URL or `nil`.
     public func generateURLForRoute(
         named name: String,
         parameters: Parameters<String, String>,

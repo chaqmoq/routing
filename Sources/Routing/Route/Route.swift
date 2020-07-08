@@ -3,7 +3,7 @@ import class Foundation.NSRegularExpression
 import struct HTTP.Request
 import struct HTTP.Response
 
-/// `Route` is a combination of an HTTP request method, path, name, a list of `Middleware`, and handler.
+/// `Route` is a combination of an HTTP request method, path, name, an array of `Middleware`, and handler.
 public struct Route {
     /// A default `/` path.
     public static let defaultPath: String = "/"
@@ -37,7 +37,7 @@ public struct Route {
     /// A unique name for `Route`.
     public var name: String
 
-    /// A read-only list of parameters extracted from the path.
+    /// A read-only set of parameters extracted from the path.
     public var parameters: Set<Parameter>? { mutableParameters }
 
     private var mutableParameters: Set<Parameter>?

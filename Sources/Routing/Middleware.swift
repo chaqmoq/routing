@@ -10,7 +10,7 @@ public protocol Middleware: class {
     /// A typealias for the handler up in the chain.
     typealias ResponseHandler = (Response) -> Void
 
-    /// Receives a `Request` and can call the next handler down in the chain.
+    /// Receives a `Request` and can call the next `RequestHandler` down in the chain.
     ///
     /// - Parameters:
     ///   - request: An instance of `Request`.
@@ -18,7 +18,7 @@ public protocol Middleware: class {
     /// - Returns: `Void` to call the next `RequestHandler` down in the chain or non-`Void` to return a `Response` to a client.
     func handle(request: Request, nextHandler: @escaping RequestHandler) -> Any
 
-    /// Receives a `Response` and can call the next handler up in the chain.
+    /// Receives a `Response` and can call the next `ResponseHandler` up in the chain.
     ///
     /// - Parameters:
     ///   - response: An instance of `Response`.

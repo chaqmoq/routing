@@ -50,34 +50,34 @@ posts.group("/{id<\\d+>}") { post in
     post.get(name: "get") { _ in Response() }
     post.put(name: "update") { _ in Response() }
 }
-print(routes.count) // Prints 4
-print(routes[.DELETE].count) // Prints 1
-print(routes[.GET].count) // Prints 2
-print(routes[.POST].count) // Prints 1
-print(routes[.PUT].count) // Prints 1
+print(routes.count) // 4
+print(routes[.DELETE].count) // 1
+print(routes[.GET].count) // 2
+print(routes[.POST].count) // 1
+print(routes[.PUT].count) // 1
 
 // Router
 let router = Router(routes: routes)
 
 // Resolving a Route
 var route = router.resolveRouteBy(method: .GET, uri: "/posts")!
-print(route.name) // Prints "post_list"
+print(route.name) // "post_list"
 
 route = router.resolveRoute(named: "post_get", parameters: ["id": "1"])!
-print(route.name) // Prints "post_get"
+print(route.name) // "post_get"
 
 route = router.resolveRoute(named: "post_create")!
-print(route.name) // Prints "post_create"
+print(route.name) // "post_create"
 
 // Generating a URL
 var url = router.generateURLForRoute(named: "post_list", query: ["filter": "latest"])!
-print(url.absoluteString) // Prints "/posts?filter=latest"
+print(url.absoluteString) // "/posts?filter=latest"
 
 url = router.generateURLForRoute(named: "post_get", parameters: ["id": "1"], query: ["shows_tags": "true"])!
-print(url.absoluteString) // Prints "/posts/1?shows_tags=true"
+print(url.absoluteString) // "/posts/1?shows_tags=true"
 
 url = router.generateURLForRoute(named: "post_delete", parameters: ["id": "1"])!
-print(url.absoluteString) // Prints "/posts/1"
+print(url.absoluteString) // "/posts/1"
 ```
 
 ```shell

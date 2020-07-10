@@ -58,8 +58,8 @@ let router = Router(routes: routes)
 var route = router.resolveRouteBy(method: .GET, uri: "/posts")!
 print(route.name) // Prints "post_list"
 
-route = router.resolveRoute(named: "post_detail", parameters: ["id": "1"])!
-print(route.name) // Prints "post_detail"
+route = router.resolveRoute(named: "post_get", parameters: ["id": "1"])!
+print(route.name) // Prints "post_get"
 
 route = router.resolveRoute(named: "post_create")!
 print(route.name) // Prints "post_create"
@@ -68,7 +68,7 @@ print(route.name) // Prints "post_create"
 var url = router.generateURLForRoute(named: "post_list", query: ["filter": "latest"])!
 print(url.absoluteString) // Prints "/posts?filter=latest"
 
-url = router.generateURLForRoute(named: "post_detail", parameters: ["id": "1"], query: ["shows_tags": "true"])!
+url = router.generateURLForRoute(named: "post_get", parameters: ["id": "1"], query: ["shows_tags": "true"])!
 print(url.absoluteString) // Prints "/posts/1?shows_tags=true"
 
 url = router.generateURLForRoute(named: "post_delete", parameters: ["id": "1"])!

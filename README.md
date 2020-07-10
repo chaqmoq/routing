@@ -6,7 +6,6 @@
 Download and install [Swift](https://swift.org/download)
 
 ### Swift Package
-#### Shell
 ```shell
 mkdir MyApp
 cd MyApp
@@ -31,47 +30,51 @@ let package = Package(
 )
 ```
 
+```shell
+swift build -c release
+```
+
 ## Usage
 ### main.swift
 ```swift
 import Routing
 
+// RouteCollection
 let routes = RouteCollection([
     Route(method: .GET, path: "/posts", name: "post_list") { _ in Response() }!,
-    Route(method: .GET, path: "/posts/{id<\\d+>}", name: "post_detail") { _ in Response() }!,
-    Route(method: .POST, path: "/posts", name: "post_create") { _ in Response() }!,
-    Route(method: .PUT, path: "/posts", name: "post_update") { _ in Response() }!,
-    Route(method: .DELETE, path: "/posts/{id<\\d+>}", name: "post_delete") { _ in Response() }!
+    Route(method: .POST, path: "/posts", name: "post_create") { _ in Response() }!
 ])
+let posts = routes.builder.grouped("/posts", name: "post_")!
+posts.group("/{id<\\d+>}") { post in
+    post.delete(name: "delete") { _ in Response() }
+    post.get(name: "get") { _ in Response() }
+    post.put(name: "update") { _ in Response() }
+}
+
+// Router
 let router = Router(routes: routes)
 
-// Prints "post_list"
-var route = router.resolveRouteBy(method: .GET, uri: "/posts")
-print(route!.name)
+// Resolving
+var route = router.resolveRouteBy(method: .GET, uri: "/posts")!
+print(route.name) // Prints "post_list"
 
-// Prints "post_detail"
-route = router.resolveRoute(named: "post_detail", parameters: ["id": "1"])
-print(route!.name)
+route = router.resolveRoute(named: "post_detail", parameters: ["id": "1"])!
+print(route.name) // Prints "post_detail"
 
-// Prints "post_create"
-route = router.resolveRoute(named: "post_create")
-print(route!.name)
+route = router.resolveRoute(named: "post_create")!
+print(route.name) // Prints "post_create"
 
-// Prints "/posts?filter=latest"
-var url = router.generateURLForRoute(named: "post_list", query: ["filter": "latest"])
-print(url!.absoluteString)
+// URL generation
+var url = router.generateURLForRoute(named: "post_list", query: ["filter": "latest"])!
+print(url.absoluteString) // Prints "/posts?filter=latest"
 
-// Prints "/posts/1?shows_tags=true"
-url = router.generateURLForRoute(named: "post_detail", parameters: ["id": "1"], query: ["shows_tags": "true"])
-print(url!.absoluteString)
+url = router.generateURLForRoute(named: "post_detail", parameters: ["id": "1"], query: ["shows_tags": "true"])!
+print(url.absoluteString) // Prints "/posts/1?shows_tags=true"
 
-// Prints "/posts/1"
-url = router.generateURLForRoute(named: "post_delete", parameters: ["id": "1"])
-print(url!.absoluteString)
+url = router.generateURLForRoute(named: "post_delete", parameters: ["id": "1"])!
+print(url.absoluteString) // Prints "/posts/1"
 ```
 
-### Shell
 ```shell
-swift build -c release
 swift run
 ```

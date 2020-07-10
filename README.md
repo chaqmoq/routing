@@ -5,7 +5,7 @@
 ### Swift
 Download and install [Swift](https://swift.org/download)
 
-### Create a Swift Package
+### Swift Package
 ```shell
 mkdir MyApp
 cd MyApp
@@ -30,7 +30,7 @@ let package = Package(
 )
 ```
 
-### Build and install dependencies
+### Build
 ```shell
 swift build -c release
 ```

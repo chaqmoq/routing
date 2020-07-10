@@ -5,14 +5,14 @@
 ### Swift
 Download and install [Swift](https://swift.org/download)
 
-### Swift Package
+### Create a Swift Package
 ```shell
 mkdir MyApp
 cd MyApp
 swift package init --type executable // Creates an executable app named "MyApp"
 ```
 
-#### Package.swift
+### Package.swift
 ```swift
 // swift-tools-version:5.1
 
@@ -30,6 +30,7 @@ let package = Package(
 )
 ```
 
+### Build and install dependencies
 ```shell
 swift build -c release
 ```
@@ -80,6 +81,7 @@ url = router.generateURLForRoute(named: "post_delete", parameters: ["id": "1"])!
 print(url.absoluteString) // "/posts/1"
 ```
 
+### Run
 ```shell
 swift run
 ```

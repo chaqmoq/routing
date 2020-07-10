@@ -85,3 +85,8 @@ print(url.absoluteString) // "/posts/1"
 ```shell
 swift run
 ```
+
+### Tests
+```shell
+swift test --enable-test-discovery --sanitize=thread
+```

@@ -1,5 +1,4 @@
-import struct HTTP.Request
-import struct HTTP.Response
+import HTTP
 
 /// `Middleware` can mutate a`Request` before a resolved `Route`'s handler is called and `Response` before a client receives it. It can
 /// also return non-`Void` to stop propagating events down or up in the chain.

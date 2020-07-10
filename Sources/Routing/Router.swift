@@ -1,6 +1,5 @@
 import Foundation
-import struct HTTP.Parameters
-import struct HTTP.Request
+import HTTP
 
 /// `Router` has a `RouteCollection`. It can resolve a `Route` in the `RouteCollection` and generate a URL for it.
 public final class Router {

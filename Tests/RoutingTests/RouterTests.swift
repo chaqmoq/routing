@@ -1,7 +1,6 @@
-import XCTest
-import struct HTTP.Request
-import struct HTTP.Response
+import HTTP
 @testable import Routing
+import XCTest
 
 final class RouterTests: XCTestCase {
     var router: Router!

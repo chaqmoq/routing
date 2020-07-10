@@ -1,5 +1,5 @@
+@testable import Routing
 import XCTest
-@testable import struct Routing.Route
 
 final class RouteParameterTests: XCTestCase {
     func testInit() {

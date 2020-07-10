@@ -1,6 +1,6 @@
-import XCTest
-import struct HTTP.Response
+import HTTP
 @testable import Routing
+import XCTest
 
 final class RouteCollectionTests: XCTestCase {
     func testInit() {

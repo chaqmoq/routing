@@ -1,6 +1,5 @@
-import struct Foundation.NSRange
-import class Foundation.NSRegularExpression
-import struct HTTP.Request
+import Foundation
+import HTTP
 
 /// `RouteCollection` helps to create `Route`s with path and name prefixes and
 /// can assign an array of `Middleware` to apply before `Route`s' handler is called.

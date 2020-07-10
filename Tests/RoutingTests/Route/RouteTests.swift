@@ -1,7 +1,6 @@
+import HTTP
+@testable import Routing
 import XCTest
-import struct HTTP.Request
-import struct HTTP.Response
-@testable import struct Routing.Route
 
 final class RouteTests: XCTestCase {
     func testInitWithoutPath() {

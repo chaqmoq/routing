@@ -1,7 +1,5 @@
-import struct Foundation.NSRange
-import class Foundation.NSRegularExpression
-import struct HTTP.Request
-import struct HTTP.Response
+import Foundation
+import HTTP
 
 /// `Route` is a combination of an HTTP request method, path, name, an array of `Middleware`, and handler.
 public struct Route {

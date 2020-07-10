@@ -1,5 +1,4 @@
-import struct Foundation.NSRange
-import class Foundation.NSRegularExpression
+import Foundation
 
 extension Route {
     /// An extracted parameter from the path of `Route`.

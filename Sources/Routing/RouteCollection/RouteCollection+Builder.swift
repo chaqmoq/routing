@@ -1,4 +1,4 @@
-import struct HTTP.Request
+import HTTP
 
 extension RouteCollection {
     /// `Builder` helps to build a **tree** of `RouteCollection`s with `Route`s.

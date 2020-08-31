@@ -121,50 +121,14 @@ extension Router {
 }
 
 extension Router {
-    /// Generates a URL for `Route` by name.
-    ///
-    /// - Parameter name: A unique name for `Route`.
-    /// - Returns: A generated URL or `nil`.
-    public func generateURLForRoute(named name: String) -> URL? {
-        _generateURLForRoute(named: name)
-    }
-
-    /// Generates a URL for `Route` by name and path's parameters.
-    ///
-    /// - Parameters:
-    ///   - name: A unique name for `Route`.
-    ///   - parameters: A `Route`'s path parameters.
-    /// - Returns: A generated URL or `nil`.
-    public func generateURLForRoute(named name: String, parameters: Parameters<String, String>) -> URL? {
-        _generateURLForRoute(named: name, parameters: parameters)
-    }
-
-    /// Generates a URL for `Route` by name and query strings.
-    ///
-    /// - Parameters:
-    ///   - name: A unique name for `Route`.
-    ///   - query: A dictionary of query strings.
-    /// - Returns: A generated URL or `nil`.
-    public func generateURLForRoute(named name: String, query: Parameters<String, String>) -> URL? {
-        _generateURLForRoute(named: name, query: query)
-    }
-
     /// Generates a URL for `Route` by name, path's parameters and query strings.
     ///
     /// - Parameters:
     ///   - name: A unique name for `Route`.
-    ///   - parameters: A `Route`'s path parameters.
-    ///   - query: A dictionary of query strings.
+    ///   - parameters: A `Route`'s path parameters. Defaults to `nil`.
+    ///   - query: A dictionary of query strings. Defaults to `nil`.
     /// - Returns: A generated URL or `nil`.
     public func generateURLForRoute(
-        named name: String,
-        parameters: Parameters<String, String>,
-        query: Parameters<String, String>
-    ) -> URL? {
-        _generateURLForRoute(named: name, parameters: parameters, query: query)
-    }
-
-    private func _generateURLForRoute(
         named name: String,
         parameters: Parameters<String, String>? = nil,
         query: Parameters<String, String>? = nil

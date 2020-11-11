@@ -21,11 +21,15 @@ import PackageDescription
 let package = Package(
     name: "MyApp",
     dependencies: [
-        .package(url: "https://github.com/chaqmoq/routing.git", .branch("master"))
+        .package(name: "chaqmoq-routing", url: "https://github.com/chaqmoq/routing.git", .branch("master"))
     ],
     targets: [
-        .target(name: "MyApp", dependencies: ["Routing"]),
-        .testTarget(name: "MyAppTests", dependencies: ["MyApp"])
+        .target(name: "MyApp", dependencies: [
+            .product(name: "Routing", package: "chaqmoq-routing"),
+        ]),
+        .testTarget(name: "MyAppTests", dependencies: [
+            .target(name: "MyApp")
+        ])
     ]
 )
 ```

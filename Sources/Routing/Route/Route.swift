@@ -1,23 +1,16 @@
 import Foundation
 import HTTP
 
-/// `Route` is a combination of an HTTP request method, path, name, an array of `Middleware`, and handler.
+/// A combination of an HTTP request method, path, name, an array of `Middleware`, and a handler that points to a location where a resource exists.
 public struct Route {
-    /// A default `/` path.
-    public static let defaultPath: String = "/"
+    /// A default path `/`.
+    public static let defaultPath = "/"
 
-    /// A regular expression pattern for the path components having a static text.
     static let textPattern = "[a-zA-Z0-9_~.-]+"
-
-    /// A regular expression pattern for parameters' name.
     static let parameterNamePattern = "\\w+"
-
-    /// A regular expression pattern for parameters.
     static let parameterPattern = """
     (\\{\(parameterNamePattern)(<[^\\/{}<>]+>)?(\\?(\(textPattern))?|!\(textPattern))?\\})+
     """
-
-    /// A regular expression pattern for the path.
     static let pathPattern = "\(textPattern)|\(parameterPattern)"
 
     /// A typealias for the handler.
@@ -46,7 +39,7 @@ public struct Route {
     /// A handler to call.
     public var handler: Handler
 
-    /// Initializes a new instance with a default `/` path.
+    /// Initializes a new instance with the `defaultPath`.
     ///
     /// - Parameters:
     ///   - method: An HTTP request method.
@@ -99,25 +92,6 @@ public struct Route {
         } else {
             return nil
         }
-    }
-}
-
-extension Route {
-    /// Updates a parameter extracted from the path.
-    ///
-    /// - Parameter parameter: An instance of `Parameter`.
-    /// - Returns: An updated instance of `Parameter` or `nil`
-    @discardableResult
-    mutating func updateParameter(_ parameter: Parameter) -> Parameter? {
-        guard let index = mutableParameters?.firstIndex(of: parameter),
-              let existingParameter = mutableParameters?[index] else { return nil }
-        guard let newParameter = Parameter(
-            name: existingParameter.name,
-            value: parameter.value,
-            requirement: existingParameter.requirement,
-            defaultValue: existingParameter.defaultValue
-        ) else { return existingParameter }
-        return mutableParameters?.update(with: newParameter)
     }
 }
 
@@ -240,7 +214,7 @@ extension Route {
         return pattern
     }
 
-    /// Creates a new instance of `Parameter` from a parameter pattern `{name<requirement>?defaultValue}`.
+    /// Creates a new instance of `Parameter` based on the parameter pattern `{name<requirement>?defaultValue}`.
     ///
     /// - Parameter part: A part of a path component.
     /// - Returns: A new instance of `Parameter` or `nil`.
@@ -288,5 +262,22 @@ extension Route {
         }
 
         return nil
+    }
+
+    /// Updates a parameter extracted from the path.
+    ///
+    /// - Parameter parameter: An instance of `Parameter`.
+    /// - Returns: An updated instance of `Parameter` or `nil`.
+    @discardableResult
+    public mutating func updateParameter(_ parameter: Parameter) -> Parameter? {
+        guard let index = mutableParameters?.firstIndex(of: parameter),
+              let existingParameter = mutableParameters?[index] else { return nil }
+        guard let newParameter = Parameter(
+            name: existingParameter.name,
+            value: parameter.value,
+            requirement: existingParameter.requirement,
+            defaultValue: existingParameter.defaultValue
+        ) else { return existingParameter }
+        return mutableParameters?.update(with: newParameter)
     }
 }

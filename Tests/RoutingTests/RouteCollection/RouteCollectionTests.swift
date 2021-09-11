@@ -50,7 +50,7 @@ final class RouteCollectionTests: XCTestCase {
 
         // Assert
         XCTAssertEqual(routes2.count, 1)
-        XCTAssertEqual(routes2[routes2.first!.key].filter({ $0.path == path && $0.name == name }).count, 1)
+        XCTAssertEqual(routes2[routes2.first!.key].filter { $0.path == path && $0.name == name }.count, 1)
         XCTAssertEqual(routes2.path, path)
         XCTAssertEqual(routes2.name, name)
         XCTAssertTrue(routes2.middleware.isEmpty)

@@ -60,8 +60,8 @@ public struct Route {
         handler: @escaping Handler
     ) {
         self.method = method
-        self.path = Route.defaultPath
-        pattern = Route.generatePattern(for: self.path)
+        path = Route.defaultPath
+        pattern = Route.generatePattern(for: path)
         self.name = name
         self.middleware = middleware
         self.handler = handler
@@ -92,8 +92,8 @@ public struct Route {
         let (isValid, parameters) = Route.isValid(path: self.path)
 
         if isValid {
-            self.mutableParameters = parameters
-            pattern = Route.generatePattern(for: self.path, with: self.mutableParameters)
+            mutableParameters = parameters
+            pattern = Route.generatePattern(for: self.path, with: mutableParameters)
             let separator = Route.defaultPath
             guard pattern == separator || (try? NSRegularExpression(pattern: pattern)) != nil else { return nil }
         } else {
@@ -110,19 +110,20 @@ extension Route {
     @discardableResult
     mutating func updateParameter(_ parameter: Parameter) -> Parameter? {
         guard let index = mutableParameters?.firstIndex(of: parameter),
-            let existingParameter = mutableParameters?[index] else { return nil }
+              let existingParameter = mutableParameters?[index] else { return nil }
         guard let newParameter = Parameter(
             name: existingParameter.name,
             value: parameter.value,
             requirement: existingParameter.requirement,
-            defaultValue: existingParameter.defaultValue) else { return existingParameter }
+            defaultValue: existingParameter.defaultValue
+        ) else { return existingParameter }
         return mutableParameters?.update(with: newParameter)
     }
 }
 
 extension Route: Equatable {
     /// See `Equatable`.
-    public static func ==(lhs: Route, rhs: Route) -> Bool {
+    public static func == (lhs: Route, rhs: Route) -> Bool {
         let isEqual = lhs.method == rhs.method && lhs.pattern == rhs.pattern
         if isEqual { return true }
         if lhs.name.isEmpty || rhs.name.isEmpty { return false }
@@ -151,7 +152,7 @@ extension Route {
         if path == separator { return (true, nil) }
         if !path.starts(with: separator) || path.contains(separator + separator) { return (false, nil) }
         guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return (false, nil) }
-        let pathComponents = path.components(separatedBy: separator).filter({ $0 != "" })
+        let pathComponents = path.components(separatedBy: separator).filter { $0 != "" }
         var parameters: Set<Parameter> = .init()
 
         for pathComponent in pathComponents {
@@ -169,7 +170,7 @@ extension Route {
                         let endRange = pathComponentPart.range(of: String(requirementEnclosingSymbols.1))
 
                         if let startIndex = startRange?.upperBound, let endIndex = endRange?.lowerBound {
-                            let pattern = String(pathComponentPart[startIndex..<endIndex])
+                            let pattern = String(pathComponentPart[startIndex ..< endIndex])
                             if (try? NSRegularExpression(pattern: pattern)) == nil { return (false, nil) }
                         }
                     }
@@ -218,8 +219,9 @@ extension Route {
 
             for parameter in parameters {
                 if parameter.defaultValue != nil,
-                    let range = pattern.range(of: "\(separator)\(parameter)"),
-                    range.upperBound == pattern.endIndex {
+                   let range = pattern.range(of: "\(separator)\(parameter)"),
+                   range.upperBound == pattern.endIndex
+                {
                     var parameterPattern = parameter.pattern
                     parameterPattern.insert(
                         contentsOf: separator,
@@ -244,40 +246,42 @@ extension Route {
     /// - Returns: A new instance of `Parameter` or `nil`.
     public static func createParameter(from part: String) -> Parameter? {
         if var nameStartIndex = part.firstIndex(of: Parameter.nameEnclosingSymbols.0),
-            var nameEndIndex = part.firstIndex(of: Parameter.nameEnclosingSymbols.1) {
+           var nameEndIndex = part.firstIndex(of: Parameter.nameEnclosingSymbols.1)
+        {
             nameStartIndex = part.index(after: nameStartIndex)
             var requirement = ""
             var defaultValue: Parameter.DefaultValue?
 
             if var requirementStartIndex = part.firstIndex(of: Parameter.requirementEnclosingSymbols.0),
-                let requirementEndIndex = part.firstIndex(of: Parameter.requirementEnclosingSymbols.1) {
+               let requirementEndIndex = part.firstIndex(of: Parameter.requirementEnclosingSymbols.1)
+            {
                 if var defaultValueStartIndex = part.firstIndex(of: Parameter.optionalSymbol) {
                     let defaultValueEndIndex = nameEndIndex
                     defaultValueStartIndex = part.index(after: defaultValueStartIndex)
-                    defaultValue = .optional(String(part[defaultValueStartIndex..<defaultValueEndIndex]))
+                    defaultValue = .optional(String(part[defaultValueStartIndex ..< defaultValueEndIndex]))
                 } else if var defaultValueStartIndex = part.firstIndex(of: Parameter.forcedSymbol) {
                     let defaultValueEndIndex = nameEndIndex
                     defaultValueStartIndex = part.index(after: defaultValueStartIndex)
-                    defaultValue = .forced(String(part[defaultValueStartIndex..<defaultValueEndIndex]))
+                    defaultValue = .forced(String(part[defaultValueStartIndex ..< defaultValueEndIndex]))
                 }
 
                 nameEndIndex = requirementStartIndex
                 requirementStartIndex = part.index(after: requirementStartIndex)
-                requirement = String(part[requirementStartIndex..<requirementEndIndex])
+                requirement = String(part[requirementStartIndex ..< requirementEndIndex])
             } else if var defaultValueStartIndex = part.firstIndex(of: Parameter.optionalSymbol) {
                 let defaultValueEndIndex = nameEndIndex
                 nameEndIndex = defaultValueStartIndex
                 defaultValueStartIndex = part.index(after: defaultValueStartIndex)
-                defaultValue = .optional(String(part[defaultValueStartIndex..<defaultValueEndIndex]))
+                defaultValue = .optional(String(part[defaultValueStartIndex ..< defaultValueEndIndex]))
             } else if var defaultValueStartIndex = part.firstIndex(of: Parameter.forcedSymbol) {
                 let defaultValueEndIndex = nameEndIndex
                 nameEndIndex = defaultValueStartIndex
                 defaultValueStartIndex = part.index(after: defaultValueStartIndex)
-                defaultValue = .forced(String(part[defaultValueStartIndex..<defaultValueEndIndex]))
+                defaultValue = .forced(String(part[defaultValueStartIndex ..< defaultValueEndIndex]))
             }
 
             return Parameter(
-                name: String(part[nameStartIndex..<nameEndIndex]),
+                name: String(part[nameStartIndex ..< nameEndIndex]),
                 requirement: requirement,
                 defaultValue: defaultValue
             )

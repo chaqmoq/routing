@@ -40,9 +40,9 @@ extension Router {
 
                             for (index, parameterMatch) in parameterMatches.enumerated() {
                                 if let nameRange = Range(parameterMatch.range, in: route.path),
-                                    let valueRange = Range(pattern.range(at: index + 1), in: path) {
-
-                                    if let parameter = parameters.first(where: { "\($0)" == route.path[nameRange] }) {
+                                   let valueRange = Range(pattern.range(at: index + 1), in: path)
+                                {
+                                    if let parameter = parameters.first(where: { route.path[nameRange] == "\($0)" }) {
                                         let newParameter = Route.Parameter(
                                             name: parameter.name,
                                             value: String(path[valueRange]),
@@ -158,13 +158,13 @@ extension Router {
                         path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
                     } else {
                         switch defaultValue {
-                        case .optional(let value):
+                        case let .optional(value):
                             if value.isEmpty {
                                 path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
                             } else {
                                 path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
                             }
-                        case .forced(let value):
+                        case let .forced(value):
                             path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
                         }
                     }

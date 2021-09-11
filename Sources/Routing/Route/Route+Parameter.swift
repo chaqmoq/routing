@@ -54,8 +54,8 @@ extension Route.Parameter {
         if !requirement.isEmpty {
             if let defaultValue = defaultValue {
                 switch defaultValue {
-                case .optional(let value),
-                     .forced(let value):
+                case let .optional(value),
+                     let .forced(value):
                     if value.isEmpty { return "(\(requirement))?" }
                     return "(\(requirement)|\(value))?"
                 }
@@ -64,8 +64,8 @@ extension Route.Parameter {
             return "(\(requirement))"
         } else if let defaultValue = defaultValue {
             switch defaultValue {
-            case .optional(let value),
-                 .forced(let value):
+            case let .optional(value),
+                 let .forced(value):
                 if value.isEmpty { return "(.+)?" }
                 return "(.+|\(value))?"
             }
@@ -77,7 +77,7 @@ extension Route.Parameter {
 
 extension Route.Parameter: Hashable {
     /// See `Equatable`.
-    public static func ==(lhs: Route.Parameter, rhs: Route.Parameter) -> Bool { lhs.name == rhs.name }
+    public static func == (lhs: Route.Parameter, rhs: Route.Parameter) -> Bool { lhs.name == rhs.name }
 
     /// See `Hashable`.
     public func hash(into hasher: inout Hasher) { hasher.combine(name) }

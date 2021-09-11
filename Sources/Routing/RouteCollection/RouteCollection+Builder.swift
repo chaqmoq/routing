@@ -18,7 +18,7 @@ extension RouteCollection {
         /// Creates a new instance of `Route` with the `DELETE` HTTP request method.
         ///
         /// - Parameters:
-        ///   - path: A path to a resource. Defaults to `/`.
+        ///   - path: A path to a resource. Defaults to `Route.defaultPath`.
         ///   - name: A unique name for `Route`. Defaults to an empty string.
         ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
         ///   - handler: A handler to call.
@@ -36,7 +36,7 @@ extension RouteCollection {
         /// Creates a new instance of `Route` with the `GET` HTTP request method.
         ///
         /// - Parameters:
-        ///   - path: A path to a resource. Defaults to `/`.
+        ///   - path: A path to a resource. Defaults to `Route.defaultPath`.
         ///   - name: A unique name for `Route`. Defaults to an empty string.
         ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
         ///   - handler: A handler to call.
@@ -54,7 +54,7 @@ extension RouteCollection {
         /// Creates a new instance of `Route` with the `HEAD` HTTP request method.
         ///
         /// - Parameters:
-        ///   - path: A path to a resource. Defaults to `/`.
+        ///   - path: A path to a resource. Defaults to `Route.defaultPath`.
         ///   - name: A unique name for `Route`. Defaults to an empty string.
         ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
         ///   - handler: A handler to call.
@@ -72,7 +72,7 @@ extension RouteCollection {
         /// Creates a new instance of `Route` with the `OPTIONS` HTTP request method.
         ///
         /// - Parameters:
-        ///   - path: A path to a resource. Defaults to `/`.
+        ///   - path: A path to a resource. Defaults to `Route.defaultPath`.
         ///   - name: A unique name for `Route`. Defaults to an empty string.
         ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
         ///   - handler: A handler to call.
@@ -90,7 +90,7 @@ extension RouteCollection {
         /// Creates a new instance of `Route` with the `PATCH` HTTP request method.
         ///
         /// - Parameters:
-        ///   - path: A path to a resource. Defaults to `/`.
+        ///   - path: A path to a resource. Defaults to `Route.defaultPath`.
         ///   - name: A unique name for `Route`. Defaults to an empty string.
         ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
         ///   - handler: A handler to call.
@@ -108,7 +108,7 @@ extension RouteCollection {
         /// Creates a new instance of `Route` with the `POST` HTTP request method.
         ///
         /// - Parameters:
-        ///   - path: A path to a resource. Defaults to `/`.
+        ///   - path: A path to a resource. Defaults to `Route.defaultPath`.
         ///   - name: A unique name for `Route`. Defaults to an empty string.
         ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
         ///   - handler: A handler to call.
@@ -126,7 +126,7 @@ extension RouteCollection {
         /// Creates a new instance of `Route` with the `PUT` HTTP request method.
         ///
         /// - Parameters:
-        ///   - path: A path to a resource. Defaults to `/`.
+        ///   - path: A path to a resource. Defaults to `Route.defaultPath`.
         ///   - name: A unique name for `Route`. Defaults to an empty string.
         ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
         ///   - handler: A handler to call.
@@ -144,7 +144,7 @@ extension RouteCollection {
         /// Creates an array with one or more instances of `Route` based on HTTP request methods provided.
         ///
         /// - Parameters:
-        ///   - path: A path to a resource. Defaults to `/`.
+        ///   - path: A path to a resource. Defaults to `Route.defaultPath`.
         ///   - methods: An array of HTTP request methods. Defaults to all supported HTTP request methods.
         ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
         ///   - handler: A handler to call.
@@ -189,7 +189,7 @@ extension RouteCollection {
         /// Creates a new child instance of `Builder` with `RouteCollection` to group related `Route`s.
         ///
         /// - Parameters:
-        ///   - path: A path prefix to a resource. Defaults to `/`.
+        ///   - path: A path prefix to a resource. Defaults to `Route.defaultPath`.
         ///   - name: A name prefix for `Route`s. Defaults to an empty string.
         ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
         /// - Returns: A new child instance of `Builder`.
@@ -214,7 +214,7 @@ extension RouteCollection {
         /// Creates a new child instance of `Builder` with `RouteCollection` to group related `Route`s.
         ///
         /// - Parameters:
-        ///   - path: A path prefix to a resource. Defaults to `/`.
+        ///   - path: A path prefix to a resource. Defaults to `Route.defaultPath`.
         ///   - name: A name prefix for `Route`s. Defaults to an empty string.
         ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
         ///   - handler: A handler with a new child instance of `Builder` .

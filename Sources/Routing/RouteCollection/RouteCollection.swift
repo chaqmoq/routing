@@ -33,7 +33,7 @@ public final class RouteCollection {
     /// - Warning: It may return `nil` if the path prefix is invalid.
     /// - Parameters:
     ///   - routes: An instance of `RouteCollection`.
-    ///   - path: A path prefix to a resource. Defaults to `/`.
+    ///   - path: A path prefix to a resource. Defaults to `Route.defaultPath`.
     ///   - name: A name prefix for `Route`s. Defaults to an empty string.
     ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
     public init?(

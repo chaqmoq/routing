@@ -1,8 +1,7 @@
 import Foundation
 import HTTP
 
-/// `RouteCollection` helps to create `Route`s with path and name prefixes and
-/// can assign an array of `Middleware` to apply before `Route`s' handler is called.
+/// Helps to create `Route`s with path and name prefixes and can assign an array of `Middleware` to apply before `Route`s' handler is called.
 public final class RouteCollection {
     /// A typealias for the underlying storage type.
     public typealias DictionaryType = [Request.Method: [Route]]
@@ -18,10 +17,10 @@ public final class RouteCollection {
 
     private var routes: DictionaryType
 
-    /// A `Builder`.
+    /// The default `Builder`.
     public private(set) lazy var builder: Builder = .init(self)
 
-    /// Initializes a new instance with defaults.
+    /// Initializes a new instance with the defaults.
     public init() {
         routes = .init()
         path = Route.defaultPath
@@ -69,7 +68,7 @@ public final class RouteCollection {
         self.init(routes)!
     }
 
-    /// Initializes a new instance with An array of `Route`s.
+    /// Initializes a new instance with an array of `Route`s.
     ///
     /// - Parameter routes: An array of `Route`s.
     public convenience init(_ routes: [Route]) {
@@ -128,7 +127,7 @@ extension RouteCollection {
     /// Inserts a `Route`.
     ///
     /// - Parameter route: An instance of `Route`.
-    /// - Returns: An instance of an inserted `Route` or `nil` if the `Route` already exists.
+    /// - Returns: An instance of an inserted `Route` or `nil` if it already exists.
     @discardableResult
     public func insert(_ route: Route) -> Route? {
         let separator = Route.defaultPath
@@ -167,7 +166,7 @@ extension RouteCollection {
     /// Removes a `Route`.
     ///
     /// - Parameter route: An instance of `Route`.
-    /// - Returns: An instance of a deleted `Route` or `nil` if the `Route` doesn't exist.
+    /// - Returns: An instance of a deleted `Route` or `nil` if it doesn't exist.
     @discardableResult
     public func remove(_ route: Route) -> Route? {
         for (method, routes) in self {

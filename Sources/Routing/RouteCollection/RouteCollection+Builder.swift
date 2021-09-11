@@ -1,7 +1,7 @@
 import HTTP
 
 extension RouteCollection {
-    /// `Builder` helps to build a **tree** of `RouteCollection`s with `Route`s.
+    /// Helps to build a **tree** of `RouteCollection`s with `Route`s.
     open class Builder {
         /// An instance of `RouteCollection`.
         public var routes: RouteCollection
@@ -15,7 +15,7 @@ extension RouteCollection {
             self.routes = routes
         }
 
-        /// Creates a new instance of `Route` with a `DELETE` HTTP request method.
+        /// Creates a new instance of `Route` with the `DELETE` HTTP request method.
         ///
         /// - Parameters:
         ///   - path: A path to a resource. Defaults to `/`.
@@ -33,7 +33,7 @@ extension RouteCollection {
             _request(path, methods: [.DELETE], name: name, middleware: middleware, handler: handler).first
         }
 
-        /// Creates a new instance of `Route` with a `GET` HTTP request method.
+        /// Creates a new instance of `Route` with the `GET` HTTP request method.
         ///
         /// - Parameters:
         ///   - path: A path to a resource. Defaults to `/`.
@@ -51,7 +51,7 @@ extension RouteCollection {
             _request(path, methods: [.GET], name: name, middleware: middleware, handler: handler).first
         }
 
-        /// Creates a new instance of `Route` with a `HEAD` HTTP request method.
+        /// Creates a new instance of `Route` with the `HEAD` HTTP request method.
         ///
         /// - Parameters:
         ///   - path: A path to a resource. Defaults to `/`.
@@ -69,7 +69,7 @@ extension RouteCollection {
             _request(path, methods: [.HEAD], name: name, middleware: middleware, handler: handler).first
         }
 
-        /// Creates a new instance of `Route` with a `OPTIONS` HTTP request method.
+        /// Creates a new instance of `Route` with the `OPTIONS` HTTP request method.
         ///
         /// - Parameters:
         ///   - path: A path to a resource. Defaults to `/`.
@@ -87,7 +87,7 @@ extension RouteCollection {
             _request(path, methods: [.OPTIONS], name: name, middleware: middleware, handler: handler).first
         }
 
-        /// Creates a new instance of `Route` with a `PATCH` HTTP request method.
+        /// Creates a new instance of `Route` with the `PATCH` HTTP request method.
         ///
         /// - Parameters:
         ///   - path: A path to a resource. Defaults to `/`.
@@ -105,7 +105,7 @@ extension RouteCollection {
             _request(path, methods: [.PATCH], name: name, middleware: middleware, handler: handler).first
         }
 
-        /// Creates a new instance of `Route` with a `POST` HTTP request method.
+        /// Creates a new instance of `Route` with the `POST` HTTP request method.
         ///
         /// - Parameters:
         ///   - path: A path to a resource. Defaults to `/`.
@@ -123,7 +123,7 @@ extension RouteCollection {
             _request(path, methods: [.POST], name: name, middleware: middleware, handler: handler).first
         }
 
-        /// Creates a new instance of `Route` with a `PUT` HTTP request method.
+        /// Creates a new instance of `Route` with the `PUT` HTTP request method.
         ///
         /// - Parameters:
         ///   - path: A path to a resource. Defaults to `/`.
@@ -186,13 +186,13 @@ extension RouteCollection {
             return routes
         }
 
-        /// Creates a new child instance/node of `Builder` with `RouteCollection`.
+        /// Creates a new child instance of `Builder` with `RouteCollection` to group related `Route`s.
         ///
         /// - Parameters:
         ///   - path: A path prefix to a resource. Defaults to `/`.
         ///   - name: A name prefix for `Route`s. Defaults to an empty string.
         ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
-        /// - Returns: A new child instance/node of `Builder`.
+        /// - Returns: A new child instance of `Builder`.
         public func grouped(
             _ path: String = Route.defaultPath,
             name: String = "",
@@ -211,13 +211,13 @@ extension RouteCollection {
             return builder
         }
 
-        /// Creates a new child instance/node of `Builder` with `RouteCollection`.
+        /// Creates a new child instance of `Builder` with `RouteCollection` to group related `Route`s.
         ///
         /// - Parameters:
         ///   - path: A path prefix to a resource. Defaults to `/`.
         ///   - name: A name prefix for `Route`s. Defaults to an empty string.
         ///   - middleware: An array of registered `Middleware`. Defaults to an empty array.
-        ///   - handler: A handler with a new child instance/node of `Builder` .
+        ///   - handler: A handler with a new child instance of `Builder` .
         public func group(
             _ path: String = Route.defaultPath,
             name: String = "",

@@ -1,7 +1,7 @@
 import Foundation
 import HTTP
 
-/// `Router` has a `RouteCollection`. It can resolve a `Route` in the `RouteCollection` and generate a URL for it.
+/// Resolves `Route`'s in `RouteCollection` and generates URLs for them.
 public final class Router {
     /// An instance of `RouteCollection`.
     public var routes: RouteCollection
@@ -15,11 +15,11 @@ public final class Router {
 }
 
 extension Router {
-    /// Resolves a `Route`by HTTP request method and uri.
+    /// Resolves a `Route`by HTTP request method and URI.
     ///
     /// - Parameters:
     ///   - method: An HTTP request method.
-    ///   - uri: A uri string.
+    ///   - uri: A URI string.
     /// - Returns: A resolved `Route` or `nil`.
     public func resolveRouteBy(method: Request.Method, uri: String) -> Route? {
         let uri = Route.normalize(path: uri)
@@ -89,7 +89,7 @@ extension Router {
     ///
     /// - Parameters:
     ///   - name: A unique name for `Route`.
-    ///   - parameters: A `Route`'s path parameters.
+    ///   - parameters: A path's parameters.
     /// - Returns: A resolved `Route` or `nil`.
     public func resolveRoute(named name: String, parameters: Parameters<String, String>) -> Route? {
         if name.isEmpty { return nil }
@@ -121,11 +121,11 @@ extension Router {
 }
 
 extension Router {
-    /// Generates a URL for `Route` by name, path's parameters and query strings.
+    /// Generates a URL for `Route` by name, path's parameters, and query strings.
     ///
     /// - Parameters:
     ///   - name: A unique name for `Route`.
-    ///   - parameters: A `Route`'s path parameters. Defaults to `nil`.
+    ///   - parameters: A path's parameters. Defaults to `nil`.
     ///   - query: A dictionary of query strings. Defaults to `nil`.
     /// - Returns: A generated URL or `nil`.
     public func generateURLForRoute(

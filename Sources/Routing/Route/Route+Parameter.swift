@@ -22,7 +22,7 @@ extension Route {
 
         /// Initializes a new instance or `nil`.
         ///
-        /// - Warning: It may return `nil` if the name is missing or the value doesn't conform to the requirement or the requirement is invalid or
+        /// - Warning: It may return `nil` if the name is missing, the value doesn't conform to the requirement, the requirement is invalid or
         /// the default value is invalid.
         /// - Parameters:
         ///   - name: A unique name.

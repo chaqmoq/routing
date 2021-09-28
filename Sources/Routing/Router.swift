@@ -91,7 +91,7 @@ extension Router {
     ///   - name: A unique name for `Route`.
     ///   - parameters: A path's parameters.
     /// - Returns: A resolved `Route` or `nil`.
-    public func resolveRoute(named name: String, parameters: Parameters<String, String>) -> Route? {
+    public func resolveRoute(named name: String, parameters: [String: String]) -> Route? {
         if name.isEmpty { return nil }
 
         for (_, methodRoutes) in routes {
@@ -130,8 +130,8 @@ extension Router {
     /// - Returns: A generated URL or `nil`.
     public func generateURLForRoute(
         named name: String,
-        parameters: Parameters<String, String>? = nil,
-        query: Parameters<String, String>? = nil
+        parameters: [String: String]? = nil,
+        query: [String: String]? = nil
     ) -> URL? {
         var resolvedRoute: Route?
 

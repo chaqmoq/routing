@@ -14,7 +14,7 @@ public struct Route {
     static let pathPattern = "\(textPattern)|\(parameterPattern)"
 
     /// A typealias for the handler.
-    public typealias Handler = (Request) -> Any
+    public typealias Handler = (Request) -> Encodable
 
     /// An HTTP request method.
     public var method: Request.Method

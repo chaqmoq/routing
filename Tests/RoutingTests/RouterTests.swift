@@ -222,6 +222,17 @@ final class RouterTests: XCTestCase {
         XCTAssertNil(route)
     }
 
+    func testResolveRouteForRequest() {
+        // Arrange
+        let request = Request()
+
+        // Act
+        let route = router.resolveRoute(for: request)
+
+        // Assert
+        XCTAssertNil(route)
+    }
+
     func testResolveRouteNamed() {
         // Act
         var route = router.resolveRoute(named: "index")

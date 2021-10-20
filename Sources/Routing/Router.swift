@@ -15,6 +15,14 @@ public final class Router {
 }
 
 extension Router {
+    /// Resolves a `Route`for a `Request`.
+    ///
+    /// - Parameter request: An instance of `Request`.
+    /// - Returns: A resolved `Route` or `nil`.
+    public func resolveRoute(for request: Request) -> Route? {
+        resolveRouteBy(method: request.method, uri: request.uri)
+    }
+
     /// Resolves a `Route`by HTTP request method and URI.
     ///
     /// - Parameters:

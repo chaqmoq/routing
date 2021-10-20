@@ -19,11 +19,12 @@ extension Router {
     ///
     /// - Parameters:
     ///   - method: An HTTP request method.
-    ///   - uri: A URI string.
+    ///   - uri: A valid URI.
     /// - Returns: A resolved `Route` or `nil`.
-    public func resolveRouteBy(method: Request.Method, uri: String) -> Route? {
-        let uri = Route.normalize(path: uri)
-        guard let path = URLComponents(string: uri)?.path else { return nil }
+    public func resolveRouteBy(method: Request.Method, uri: URI) -> Route? {
+        guard var uriString = uri.string else { return nil }
+        uriString = Route.normalize(path: uriString)
+        guard let path = URLComponents(string: uriString)?.path else { return nil }
         let methodRoutes = routes[method]
 
         for route in methodRoutes {

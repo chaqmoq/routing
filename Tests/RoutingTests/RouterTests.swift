@@ -36,7 +36,7 @@ final class RouterTests: XCTestCase {
         let name = "index"
 
         // Act
-        let route = router.resolveRouteBy(method: method, uri: "/")
+        let route = router.resolveRouteBy(method: method, uri: URI(string: "/")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
@@ -48,13 +48,13 @@ final class RouterTests: XCTestCase {
         let name = "post_list"
 
         // Act
-        var route = router.resolveRouteBy(method: method, uri: "/posts/")
+        var route = router.resolveRouteBy(method: method, uri: URI(string: "/posts/")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/posts")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/posts")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
@@ -66,25 +66,25 @@ final class RouterTests: XCTestCase {
         let name = "post_delete"
 
         // Act
-        var route = router.resolveRouteBy(method: method, uri: "/posts/1")
+        var route = router.resolveRouteBy(method: method, uri: URI(string: "/posts/1")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/posts/1/")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/posts/1/")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/posts")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/posts")!)
 
         // Assert
         XCTAssertNotEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/posts/a")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/posts/a")!)
 
         // Assert
         XCTAssertNil(route)
@@ -96,31 +96,31 @@ final class RouterTests: XCTestCase {
         let name = "category_get"
 
         // Act
-        var route = router.resolveRouteBy(method: method, uri: "/categories/")
+        var route = router.resolveRouteBy(method: method, uri: URI(string: "/categories/")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/categories")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/categories")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/categories/1")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/categories/1")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/categories/1/")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/categories/1/")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/categories/a")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/categories/a")!)
 
         // Assert
         XCTAssertNil(route)
@@ -132,31 +132,31 @@ final class RouterTests: XCTestCase {
         let name = "blog_page"
 
         // Act
-        var route = router.resolveRouteBy(method: method, uri: "/blog/")
+        var route = router.resolveRouteBy(method: method, uri: URI(string: "/blog/")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/blog")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/blog")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/blog/1")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/blog/1")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/blog/1/")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/blog/1/")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/blog/a")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/blog/a")!)
 
         // Assert
         XCTAssertNil(route)
@@ -168,19 +168,19 @@ final class RouterTests: XCTestCase {
         let name = "blog_page_post_get"
 
         // Act
-        var route = router.resolveRouteBy(method: method, uri: "/blog/1/posts/2/")
+        var route = router.resolveRouteBy(method: method, uri: URI(string: "/blog/1/posts/2/")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/blog/1/posts/2")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/blog/1/posts/2")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/blog/a/posts/a")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/blog/a/posts/a")!)
 
         // Assert
         XCTAssertNil(route)
@@ -192,31 +192,31 @@ final class RouterTests: XCTestCase {
         let name = "category_post_get"
 
         // Act
-        var route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts/1/")
+        var route = router.resolveRouteBy(method: method, uri: URI(string: "/categories/swift/posts/1/")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts/1")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/categories/swift/posts/1")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts/")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/categories/swift/posts/")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/categories/swift/posts")!)
 
         // Assert
         XCTAssertEqual(route?.name, name)
 
         // Act
-        route = router.resolveRouteBy(method: method, uri: "/categories/swift/posts/a")
+        route = router.resolveRouteBy(method: method, uri: URI(string: "/categories/swift/posts/a")!)
 
         // Assert
         XCTAssertNil(route)

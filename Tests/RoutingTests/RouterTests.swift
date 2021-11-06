@@ -224,7 +224,8 @@ final class RouterTests: XCTestCase {
 
     func testResolveRouteForRequest() {
         // Arrange
-        let request = Request()
+        let eventLoop = EmbeddedEventLoop()
+        let request = Request(eventLoop: eventLoop)
 
         // Act
         let route = router.resolveRoute(for: request)

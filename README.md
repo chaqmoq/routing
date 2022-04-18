@@ -1,7 +1,7 @@
 <div align="center">
     <h1>Routing</h1>
     <p>
-        <a href="https://swift.org/download/#releases"><img src="https://img.shields.io/badge/swift-5.3+-brightgreen.svg" /></a>
+        <a href="https://swift.org/download/#releases"><img src="https://img.shields.io/badge/swift-5.5+-brightgreen.svg" /></a>
         <a href="https://github.com/chaqmoq/routing/blob/master/LICENSE/"><img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" /></a>
         <a href="https://github.com/chaqmoq/routing/actions"><img src="https://github.com/chaqmoq/routing/workflows/ci/badge.svg" /></a>
         <a href="https://www.codacy.com/gh/chaqmoq/routing/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=chaqmoq/routing&amp;utm_campaign=Badge_Grade"><img src="https://app.codacy.com/project/badge/Grade/efd97c9d7ea44f0da2db6289ebefc939" /></a>

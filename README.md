@@ -6,6 +6,7 @@
         <a href="https://github.com/chaqmoq/routing/actions"><img src="https://github.com/chaqmoq/routing/workflows/ci/badge.svg" /></a>
         <a href="https://www.codacy.com/gh/chaqmoq/routing/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=chaqmoq/routing&amp;utm_campaign=Badge_Grade"><img src="https://app.codacy.com/project/badge/Grade/efd97c9d7ea44f0da2db6289ebefc939" /></a>
         <a href="https://codecov.io/gh/chaqmoq/routing"><img src="https://codecov.io/gh/chaqmoq/routing/branch/master/graph/badge.svg?token=2CYMGSBM5S" /></a>
+        <a href="https://sonarcloud.io/project/overview?id=chaqmoq_routing"><img src="https://sonarcloud.io/api/project_badges/measure?project=chaqmoq_routing&metric=alert_status" /></a>
         <a href="https://chaqmoq.dev/routing/"><img src="https://github.com/chaqmoq/routing/raw/gh-pages/badge.svg" /></a>
         <a href="https://github.com/chaqmoq/routing/blob/master/CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-guide-brightgreen.svg" /></a>
         <a href="https://twitter.com/chaqmoqdev"><img src="https://img.shields.io/badge/twitter-chaqmoqdev-brightgreen.svg" /></a>

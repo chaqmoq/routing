@@ -117,6 +117,16 @@ extension Route: CustomStringConvertible {
 }
 
 extension Route {
+    /// Gets a parameter value for a parameter name.
+    ///
+    /// - Parameter parameter: A parameter name.
+    /// - Returns: A parameter value.
+    public subscript(parameter name: String) -> String? {
+        parameters?.first(where: { $0.name == name })?.value
+    }
+}
+
+extension Route {
     /// Checks if a path is valid or not.
     ///
     /// - Parameter path: A path to a resource.

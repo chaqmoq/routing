@@ -121,8 +121,48 @@ extension Route {
     ///
     /// - Parameter parameter: A parameter name.
     /// - Returns: A parameter value.
-    public subscript(parameter name: String) -> String? {
-        parameters?.first(where: { $0.name == name })?.value
+    public subscript<T>(parameter name: String) -> T? {
+        guard let string = parameters?.first(where: { $0.name == name })?.value else { return nil }
+        let type = T.self
+
+        if type == String.self {
+            return string as? T
+        } else if type == Int.self {
+            return Int(string) as? T
+        } else if type == Int8.self {
+            return Int8(string) as? T
+        } else if type == Int16.self {
+            return Int16(string) as? T
+        } else if type == Int32.self {
+            return Int32(string) as? T
+        } else if type == Int64.self {
+            return Int64(string) as? T
+        } else if type == UInt.self {
+            return UInt(string) as? T
+        } else if type == UInt8.self {
+            return UInt8(string) as? T
+        } else if type == UInt16.self {
+            return UInt16(string) as? T
+        } else if type == UInt32.self {
+            return UInt32(string) as? T
+        } else if type == UInt64.self {
+            return UInt64(string) as? T
+        } else if type == UUID.self {
+            return UUID(uuidString: string) as? T
+        } else if type == Double.self {
+            return Double(string) as? T
+        } else if type == Float.self {
+            return Float(string) as? T
+        } else if type == Bool.self {
+            return Bool(string) as? T
+        } else if type == URL.self {
+            return URL(string: string) as? T
+        } else if type == Date.self {
+            return ISO8601DateFormatter().date(from: string) as? T
+        }
+        // TODO: consider converting to dictionary and array
+
+        return nil
     }
 }
 

@@ -43,31 +43,16 @@ final class RouteTests: XCTestCase {
 
     func testInitWithInvalidPaths() {
         // Arrange
-        var path = "/posts//{id<\\d+>?1}"
+        let invalidPaths = [
+            "/posts//{id<\\d+>?1}",
+            "posts/{id<\\d+>?1}",
+            "/posts/{id<\\d+>!}"
+        ]
 
-        // Act
-        var route = Route(method: .GET, path: path) { _ in Response() }
-
-        // Assert
-        XCTAssertNil(route)
-
-        // Arrange
-        path = "posts/{id<\\d+>?1}"
-
-        // Act
-        route = Route(method: .GET, path: path) { _ in Response() }
-
-        // Assert
-        XCTAssertNil(route)
-
-        // Arrange
-        path = "/posts/{id<\\d+>!}"
-
-        // Act
-        route = Route(method: .GET, path: path) { _ in Response() }
-
-        // Assert
-        XCTAssertNil(route)
+        // Act/Assert
+        for invalidPath in invalidPaths {
+            XCTAssertNil(Route(method: .GET, path: invalidPath) { _ in Response() })
+        }
     }
 
     func testUpdateParameter() {

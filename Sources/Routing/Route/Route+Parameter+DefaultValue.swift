@@ -10,11 +10,9 @@ extension Route.Parameter {
         /// See `CustomStringConvertible`.
         public var description: String {
             switch self {
-            case let .optional(value):
-                return "\(Route.Parameter.optionalSymbol)\(value)"
+            case let .optional(value): return "\(Route.Parameter.optionalSymbol)\(value)"
             case let .forced(value):
-                if value.isEmpty { return "\(Route.Parameter.optionalSymbol)" }
-                return "\(Route.Parameter.forcedSymbol)\(value)"
+                return value.isEmpty ? "\(Route.Parameter.optionalSymbol)" : "\(Route.Parameter.forcedSymbol)\(value)"
             }
         }
     }

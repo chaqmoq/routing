@@ -3,7 +3,7 @@ import HTTP
 import XCTest
 
 final class RouterTests: XCTestCase {
-    var router: Router!
+    var router: LegacyRouter!
 
     override func setUp() {
         super.setUp()
@@ -27,7 +27,7 @@ final class RouterTests: XCTestCase {
             ) { _ in Response() }!,
             Route(method: .GET, path: "/tags/{name?}", name: "tag_get") { _ in Response() }!
         ])
-        router = Router(routes: routes)
+        router = LegacyRouter(routes: routes)
     }
 
     func testResolveRouteWithoutPath() {
@@ -419,5 +419,30 @@ final class RouterTests: XCTestCase {
 
         // Assert
         XCTAssertNil(url)
+    }
+
+    func test1() {
+        let router = TrieRouter()
+        let route1 = Route(method: .GET, path: "/posts/name") { _ in Response() }!
+        let route2 = Route(method: .GET, path: "/posts/id/comments") { _ in Response() }!
+        let route3 = Route(method: .GET, path: "/posts/hello{id<\\d+>}world") { _ in Response() }!
+        let route4 = Route(method: .GET, path: "/posts/{id<\\d+>}/comments") { _ in Response() }!
+
+//        router.register(route: route1)
+//        router.register(route: route2)
+        router.register(route: route3)
+        router.register(route: route4)
+
+//        XCTAssertNotEqual(route1, router.resolve(method: route1.method, uri: URI(string: "/posts")!))
+//        XCTAssertEqual(route1, router.resolve(method: route1.method, uri: URI(string: "/posts/name")!))
+//        XCTAssertNotEqual(route1, router.resolve(method: route1.method, uri: URI(string: "/posts/name/test")!))
+//        XCTAssertNotEqual(route2, router.resolve(method: route2.method, uri: URI(string: "/posts/id")!))
+//        XCTAssertEqual(route2, router.resolve(method: route2.method, uri: URI(string: "/posts/id/comments")!))
+//        XCTAssertNotEqual(route2, router.resolve(method: route2.method, uri: URI(string: "/posts/id/comments/hello")!))
+
+        XCTAssertEqual(route3, router.resolve(method: route3.method, uri: URI(string: "/posts/hello1world")!))
+        XCTAssertEqual(route3, router.resolve(method: route3.method, uri: URI(string: "/posts/hello1world/")!))
+        XCTAssertEqual(route4, router.resolve(method: route4.method, uri: URI(string: "/posts/1/comments")!))
+        XCTAssertEqual(route4, router.resolve(method: route4.method, uri: URI(string: "/posts/1/comments/")!))
     }
 }

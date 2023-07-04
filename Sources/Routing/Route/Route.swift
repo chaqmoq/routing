@@ -29,15 +29,17 @@ public struct Route {
     public var name: String
 
     /// A read-only set of parameters extracted from the path.
-    public var parameters: Set<Parameter>? { mutableParameters }
+    public var parameters: Set<Parameter> { mutableParameters }
 
-    private var mutableParameters: Set<Parameter>?
+    private var mutableParameters: Set<Parameter>
 
     /// An array of registered `Middleware`.
     public var middleware: [Middleware]
 
     /// A handler to call.
     public var handler: Handler
+
+    private var dateFormatter = ISO8601DateFormatter()
 
     /// Initializes a new instance with the `defaultPath`.
     ///
@@ -55,6 +57,7 @@ public struct Route {
         self.method = method
         path = Route.defaultPath
         pattern = Route.generatePattern(for: path)
+        mutableParameters = .init()
         self.name = name
         self.middleware = middleware
         self.handler = handler
@@ -110,7 +113,7 @@ extension Route: CustomStringConvertible {
     public var description: String {
         var description = "method=\(method.rawValue),\npath=\(path),\npattern=\(pattern)"
         if !name.isEmpty { description.append(",\nname=\(name)") }
-        if let parameters = parameters { description.append(",\nparameters=\(parameters)") }
+        if !parameters.isEmpty { description.append(",\nparameters=\(parameters)") }
 
         return description
     }
@@ -122,7 +125,7 @@ extension Route {
     /// - Parameter parameter: A parameter name.
     /// - Returns: A parameter value.
     public subscript<T>(parameter name: String) -> T? {
-        guard let string = parameters?.first(where: { $0.name == name })?.value else { return nil }
+        guard let string = parameters.first(where: { $0.name == name })?.value else { return nil }
         let type = T.self
 
         if type == String.self {
@@ -158,7 +161,7 @@ extension Route {
         } else if type == URL.self {
             return URL(string: string) as? T
         } else if type == Date.self {
-            return ISO8601DateFormatter().date(from: string) as? T
+            return dateFormatter.date(from: string) as? T
         }
         // TODO: consider converting to dictionary and array
 
@@ -170,14 +173,14 @@ extension Route {
     /// Checks if a path is valid or not.
     ///
     /// - Parameter path: A path to a resource.
-    /// - Returns: If the path is valid, it returns `true` and a set of extracted parameters. Otherwise, it returns `false` and `nil`.
-    public static func isValid(path: String) -> (Bool, Set<Parameter>?) {
+    /// - Returns: If the path is valid, it returns `true` and a set of extracted parameters. Otherwise, it returns `false` and an empty `Set<Parameter>`.
+    public static func isValid(path: String) -> (Bool, Set<Parameter>) {
         let separator = Route.defaultPath
-        if path == separator { return (true, nil) }
-        if !path.starts(with: separator) || path.contains(separator + separator) { return (false, nil) }
-        guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return (false, nil) }
+        if path == separator { return (true, .init()) }
+        if !path.starts(with: separator) || path.contains(separator + separator) { return (false, .init()) }
+        guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return (false, .init()) }
         let pathComponents = path.components(separatedBy: separator).filter { $0 != "" }
-        var parameters: Set<Parameter> = .init()
+        var parameters = Set<Parameter>()
 
         for pathComponent in pathComponents {
             let range = NSRange(location: 0, length: pathComponent.utf8.count)
@@ -195,7 +198,7 @@ extension Route {
 
                         if let startIndex = startRange?.upperBound, let endIndex = endRange?.lowerBound {
                             let pattern = String(pathComponentPart[startIndex ..< endIndex])
-                            if (try? NSRegularExpression(pattern: pattern)) == nil { return (false, nil) }
+                            if (try? NSRegularExpression(pattern: pattern)) == nil { return (false, .init()) }
                         }
                     }
 
@@ -207,10 +210,10 @@ extension Route {
                 }
             }
 
-            if matchesString != pathComponent { return (false, nil) }
+            if matchesString != pathComponent { return (false, .init()) }
         }
 
-        return (true, parameters.isEmpty ? nil : parameters)
+        return (true, parameters)
     }
 
     /// Normalizes a path.
@@ -235,30 +238,26 @@ extension Route {
     ///   - path: A path to a resource.
     ///   - parameters: A set of parameters.
     /// - Returns: A regular expression pattern.
-    public static func generatePattern(for path: String, with parameters: Set<Parameter>? = nil) -> String {
+    public static func generatePattern(for path: String, with parameters: Set<Parameter> = .init()) -> String {
         var pattern = path
+        let separator = Route.defaultPath
 
-        if let parameters = parameters {
-            let separator = Route.defaultPath
-
-            for parameter in parameters {
-                if parameter.defaultValue != nil,
-                   let range = pattern.range(of: "\(separator)\(parameter)"),
-                   range.upperBound == pattern.endIndex
-                {
-                    var parameterPattern = parameter.pattern
-                    parameterPattern.insert(
-                        contentsOf: separator,
-                        at: parameterPattern.index(parameterPattern.startIndex, offsetBy: 1)
-                    )
-                    pattern = pattern.replacingOccurrences(
-                        of: "\(separator)\(parameter)",
-                        with: parameterPattern
-                    )
-                }
-
-                pattern = pattern.replacingOccurrences(of: "\(parameter)", with: parameter.pattern)
+        for parameter in parameters {
+            if parameter.defaultValue != nil,
+               let range = pattern.range(of: "\(separator)\(parameter)"),
+               range.upperBound == pattern.endIndex {
+                var parameterPattern = parameter.pattern
+                parameterPattern.insert(
+                    contentsOf: separator,
+                    at: parameterPattern.index(parameterPattern.startIndex, offsetBy: 1)
+                )
+                pattern = pattern.replacingOccurrences(
+                    of: "\(separator)\(parameter)",
+                    with: parameterPattern
+                )
             }
+
+            pattern = pattern.replacingOccurrences(of: "\(parameter)", with: parameter.pattern)
         }
 
         return pattern
@@ -320,14 +319,14 @@ extension Route {
     /// - Returns: An updated instance of `Parameter` or `nil`.
     @discardableResult
     public mutating func updateParameter(_ parameter: Parameter) -> Parameter? {
-        guard let index = mutableParameters?.firstIndex(of: parameter),
-              let existingParameter = mutableParameters?[index] else { return nil }
+        guard let index = mutableParameters.firstIndex(of: parameter) else { return nil }
+        let existingParameter = mutableParameters[index]
         guard let newParameter = Parameter(
             name: existingParameter.name,
             value: parameter.value,
             requirement: existingParameter.requirement,
             defaultValue: existingParameter.defaultValue
         ) else { return existingParameter }
-        return mutableParameters?.update(with: newParameter)
+        return mutableParameters.update(with: newParameter)
     }
 }

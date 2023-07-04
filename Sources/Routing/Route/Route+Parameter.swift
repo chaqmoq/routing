@@ -12,7 +12,7 @@ extension Route {
         public let name: String
 
         /// A validated value by the requirement.
-        public let value: String
+        public var value: String
 
         /// A regular expression for the value.
         public let requirement: String

@@ -2,7 +2,7 @@ import Foundation
 import HTTP
 
 /// Resolves `Route`'s in `RouteCollection` and generates URLs for them.
-public final class Router {
+public final class LegacyRouter {
     /// An instance of `RouteCollection`.
     public var routes: RouteCollection
 
@@ -14,7 +14,7 @@ public final class Router {
     }
 }
 
-extension Router {
+extension LegacyRouter {
     /// Resolves a `Route`for a `Request`.
     ///
     /// - Parameter request: An instance of `Request`.
@@ -41,26 +41,25 @@ extension Router {
 
                 if let pattern = routeRegex.firstMatch(in: path, range: pathRange) {
                     var resolvedRoute = route
+                    var parameters = resolvedRoute.parameters
 
-                    if var parameters = resolvedRoute.parameters {
-                        if let parameterRegex = try? NSRegularExpression(pattern: Route.parameterPattern) {
-                            let routePathRange = NSRange(location: 0, length: route.path.utf8.count)
-                            let parameterMatches = parameterRegex.matches(in: route.path, range: routePathRange)
+                    if let parameterRegex = try? NSRegularExpression(pattern: Route.parameterPattern) {
+                        let routePathRange = NSRange(location: 0, length: route.path.utf8.count)
+                        let parameterMatches = parameterRegex.matches(in: route.path, range: routePathRange)
 
-                            for (index, parameterMatch) in parameterMatches.enumerated() {
-                                if let nameRange = Range(parameterMatch.range, in: route.path),
-                                   let valueRange = Range(pattern.range(at: index + 1), in: path)
-                                {
-                                    if let parameter = parameters.first(where: { route.path[nameRange] == "\($0)" }) {
-                                        let newParameter = Route.Parameter(
-                                            name: parameter.name,
-                                            value: String(path[valueRange]),
-                                            requirement: parameter.requirement,
-                                            defaultValue: parameter.defaultValue
-                                        )!
-                                        resolvedRoute.updateParameter(newParameter)
-                                        parameters.remove(parameter)
-                                    }
+                        for (index, parameterMatch) in parameterMatches.enumerated() {
+                            if let nameRange = Range(parameterMatch.range, in: route.path),
+                               let valueRange = Range(pattern.range(at: index + 1), in: path)
+                            {
+                                if let parameter = parameters.first(where: { route.path[nameRange] == "\($0)" }) {
+                                    let newParameter = Route.Parameter(
+                                        name: parameter.name,
+                                        value: String(path[valueRange]),
+                                        requirement: parameter.requirement,
+                                        defaultValue: parameter.defaultValue
+                                    )!
+                                    resolvedRoute.updateParameter(newParameter)
+                                    parameters.remove(parameter)
                                 }
                             }
                         }
@@ -83,7 +82,9 @@ extension Router {
 
         for (_, methodRoutes) in routes {
             if let route = methodRoutes.first(where: { $0.name == name }) {
-                if let parameters = route.parameters, parameters.contains(where: { $0.defaultValue == nil }) {
+                let parameters = route.parameters
+
+                if parameters.contains(where: { $0.defaultValue == nil }) {
                     return nil
                 }
 
@@ -105,19 +106,19 @@ extension Router {
 
         for (_, methodRoutes) in routes {
             if var route = methodRoutes.first(where: { $0.name == name }) {
-                if let routeParameters = route.parameters {
-                    for routeParameter in routeParameters {
-                        if let value = parameters[routeParameter.name] {
-                            let newParameter = Route.Parameter(
-                                name: routeParameter.name,
-                                value: value,
-                                requirement: routeParameter.requirement,
-                                defaultValue: routeParameter.defaultValue
-                            )!
-                            route.updateParameter(newParameter)
-                        } else if routeParameter.defaultValue == nil {
-                            return nil
-                        }
+                let routeParameters = route.parameters
+
+                for routeParameter in routeParameters {
+                    if let value = parameters[routeParameter.name] {
+                        let newParameter = Route.Parameter(
+                            name: routeParameter.name,
+                            value: value,
+                            requirement: routeParameter.requirement,
+                            defaultValue: routeParameter.defaultValue
+                        )!
+                        route.updateParameter(newParameter)
+                    } else if routeParameter.defaultValue == nil {
+                        return nil
                     }
                 }
 
@@ -129,7 +130,7 @@ extension Router {
     }
 }
 
-extension Router {
+extension LegacyRouter {
     /// Generates a URL for `Route` by name, path's parameters, and query strings.
     ///
     /// - Parameters:
@@ -153,34 +154,33 @@ extension Router {
         guard let route = resolvedRoute else { return nil }
         var path = route.path
         let range = NSRange(location: 0, length: path.utf8.count)
+        let routeParameters = route.parameters
 
-        if let routeParameters = route.parameters {
-            for routeParameter in routeParameters {
-                let pattern = Route.parameterPattern.replacingOccurrences(
-                    of: Route.parameterNamePattern,
-                    with: routeParameter.name
-                )
-                guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
+        for routeParameter in routeParameters {
+            let pattern = Route.parameterPattern.replacingOccurrences(
+                of: Route.parameterNamePattern,
+                with: routeParameter.name
+            )
+            guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
 
-                if let defaultValue = routeParameter.defaultValue {
-                    if let value = parameters?[routeParameter.name] {
-                        path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
-                    } else {
-                        switch defaultValue {
-                        case let .optional(value):
-                            if value.isEmpty {
-                                path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
-                            } else {
-                                path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
-                            }
-                        case let .forced(value):
+            if let defaultValue = routeParameter.defaultValue {
+                if let value = parameters?[routeParameter.name] {
+                    path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
+                } else {
+                    switch defaultValue {
+                    case let .optional(value):
+                        if value.isEmpty {
+                            path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: "")
+                        } else {
                             path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
                         }
-                    }
-                } else {
-                    if let value = parameters?[routeParameter.name] {
+                    case let .forced(value):
                         path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
                     }
+                }
+            } else {
+                if let value = parameters?[routeParameter.name] {
+                    path = regex.stringByReplacingMatches(in: path, range: range, withTemplate: value)
                 }
             }
         }

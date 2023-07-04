@@ -17,7 +17,7 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.pattern, route.path)
         XCTAssertEqual(route.name, name)
         XCTAssertTrue(route.middleware.isEmpty)
-        XCTAssertNil(route.parameters)
+        XCTAssertTrue(route.parameters.isEmpty)
     }
 
     func testInit() {
@@ -35,8 +35,8 @@ final class RouteTests: XCTestCase {
         XCTAssertEqual(route.pattern, "/posts(/\\d+|1)?")
         XCTAssertEqual(route.name, name)
         XCTAssertTrue(route.middleware.isEmpty)
-        XCTAssertEqual(route.parameters!.count, 1)
-        XCTAssertTrue(route.parameters!.contains(where: {
+        XCTAssertEqual(route.parameters.count, 1)
+        XCTAssertTrue(route.parameters.contains(where: {
             $0.name == "id" && $0.value == "" && $0.requirement == "\\d+" && $0.defaultValue == .optional("1")
         }))
     }
@@ -69,10 +69,10 @@ final class RouteTests: XCTestCase {
         )
 
         // Assert
-        XCTAssertTrue(route.parameters!.contains(where: {
+        XCTAssertTrue(route.parameters.contains(where: {
             $0.name == "id" && $0.value == "" && $0.requirement == "\\d+" && $0.defaultValue == .optional("1")
         }))
-        XCTAssertFalse(route.parameters!.contains(where: {
+        XCTAssertFalse(route.parameters.contains(where: {
             $0.name == "id" && ($0.value == "a" || $0.requirement == "[a-zA-Z]" || $0.defaultValue == .forced("b"))
         }))
 
@@ -80,7 +80,7 @@ final class RouteTests: XCTestCase {
         route.updateParameter(Route.Parameter(name: "id", value: "2")!)
 
         // Assert
-        XCTAssertTrue(route.parameters!.contains(where: {
+        XCTAssertTrue(route.parameters.contains(where: {
             $0.name == "id" && $0.value == "2" && $0.requirement == "\\d+" && $0.defaultValue == .optional("1")
         }))
     }

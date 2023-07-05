@@ -79,7 +79,7 @@ public final class TrieRouter: Router {
             }
         }
 
-        if var route = current.route {
+        if var route = current.route, route.method == method {
             for parameter in parameters {
                 route.updateParameter(parameter)
             }

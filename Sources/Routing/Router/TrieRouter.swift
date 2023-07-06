@@ -4,8 +4,14 @@ import HTTP
 public final class TrieRouter: Router {
     let root: Node
 
-    public init() {
+    public init(routes: RouteCollection = .init()) {
         root = .init()
+
+        for (_, methodRoutes) in routes {
+            for route in methodRoutes {
+                register(route: route)
+            }
+        }
     }
 
     public func register(route: Route) {

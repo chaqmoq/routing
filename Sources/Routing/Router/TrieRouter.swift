@@ -30,6 +30,24 @@ public final class TrieRouter: Router {
                 } else {
                     index = current.variables.count
                     current.addVariable(path: path, pattern: pattern)
+
+                    if path == paths.last {
+                        let parametersPath = parameters.reduce("") { (concatenatedPath, parameter) in
+                            "\(concatenatedPath)" + "\(parameter)"
+                        }
+
+                        if path == parametersPath {
+                            let parametersWithDefaultValues = parameters.filter { $0.defaultValue != nil }
+
+                            if parameters.count == parametersWithDefaultValues.count {
+                                let defaultValuesPath = parametersWithDefaultValues.reduce("") { (concatenatedPath, parameter) in
+                                    "\(concatenatedPath)" + "\(parameter.defaultValue!)".dropFirst()
+                                }
+                                current.addConstant(path: defaultValuesPath)
+                                current.constants[defaultValuesPath]!.route = route
+                            }
+                        }
+                    }
                 }
 
                 current = current.variables[index]

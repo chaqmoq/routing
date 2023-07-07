@@ -1,6 +1,6 @@
 import HTTP
 
-public class RouteBuilder {
+open class RouteBuilder {
     let path: String
     let name: String
     let middleware: [Middleware]

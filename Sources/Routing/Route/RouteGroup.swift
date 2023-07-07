@@ -1,6 +1,6 @@
 import HTTP
 
-public class RouteGroup: RouteBuilder {
+open class RouteGroup: RouteBuilder {
     var router: Router?
 
     public func grouped(

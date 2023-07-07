@@ -1,7 +1,7 @@
 import Foundation
 import HTTP
 
-public class TrieRouter: RouteGroup, Router {
+open class TrieRouter: RouteGroup, Router {
     let root: Node
 
     public init() {

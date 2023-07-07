@@ -1,17 +1,11 @@
 import Foundation
 import HTTP
 
-public final class TrieRouter: Router {
+public final class TrieRouter: RouteGroup, Router {
     let root: Node
 
-    public init(routes: RouteCollection = .init()) {
+    public init() {
         root = .init()
-
-        for (_, methodRoutes) in routes {
-            for route in methodRoutes {
-                register(route: route)
-            }
-        }
     }
 
     public func register(route: Route) {
@@ -37,6 +31,7 @@ public final class TrieRouter: Router {
                     index = current.variables.count
                     current.addVariable(path: path, pattern: pattern)
 
+                    // Handle default values
                     if path == paths.last {
                         let parametersPath = parameters.reduce("") { (concatenatedPath, parameter) in
                             "\(concatenatedPath)" + "\(parameter)"
@@ -112,6 +107,17 @@ public final class TrieRouter: Router {
         }
 
         return nil
+    }
+
+    public override func grouped(
+        _ path: String = Route.defaultPath,
+        name: String = "",
+        middleware: [Middleware] = .init()
+    ) -> RouteGroup? {
+        let group = super.grouped(path, name: name, middleware: middleware)
+        group?.router = self
+
+        return group
     }
 
     private func extractParameters(

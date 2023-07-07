@@ -2,7 +2,7 @@ import HTTP
 @testable import Routing
 import XCTest
 
-final class RouterTests: XCTestCase {
+final class TrieRouterTests: XCTestCase {
     var router: Router!
 
     override func setUp() {

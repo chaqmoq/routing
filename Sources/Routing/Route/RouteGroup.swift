@@ -8,18 +8,20 @@ open class RouteGroup: RouteBuilder {
         name: String = "",
         middleware: [Middleware] = .init()
     ) -> RouteGroup? {
-        var path = Route.normalize(path: path)
         let (isValid, _) = Route.isValid(path: path)
-        guard isValid else { return nil }
 
-        if !self.path.isEmpty {
-            path = self.path + path
+        if isValid {
+            let group = RouteGroup(
+                path: self.path.appending(path: path),
+                name: self.name + name,
+                middleware: self.middleware + middleware
+            )
+            group?.router = router
+
+            return group
         }
 
-        let group = RouteGroup(path: path, name: self.name + name, middleware: self.middleware + middleware)
-        group.router = router
-
-        return group
+        return nil
     }
 
     public func group(

@@ -5,10 +5,22 @@ open class RouteBuilder {
     let name: String
     let middleware: [Middleware]
 
-    init(path: String = "", name: String = "", middleware: [Middleware] = .init()) {
-        self.path = path
+    init(name: String = "", middleware: [Middleware] = .init()) {
+        path = Route.defaultPath
         self.name = name
         self.middleware = middleware
+    }
+
+    init?(path: String, name: String = "", middleware: [Middleware] = .init()) {
+        let (isValid, _) = Route.isValid(path: path)
+
+        if isValid {
+            self.path = path
+            self.name = name
+            self.middleware = middleware
+        } else {
+            return nil
+        }
     }
 
     @discardableResult
@@ -99,20 +111,14 @@ open class RouteBuilder {
         middleware: [Middleware] = .init(),
         handler: @escaping Route.Handler
     ) -> [Route] {
+        let (isValid, _) = Route.isValid(path: path)
         var routes = [Route]()
 
-        for method in methods {
-            var path = Route.normalize(path: path)
-            let (isValid, _) = Route.isValid(path: path)
-
-            if isValid {
-                if !self.path.isEmpty {
-                    path = self.path + path
-                }
-
+        if isValid {
+            for method in methods {
                 if let route = Route(
                     method: method,
-                    path: path,
+                    path: self.path.appending(path: path),
                     name: self.name + name,
                     middleware: self.middleware + middleware,
                     handler: handler

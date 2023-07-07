@@ -80,7 +80,7 @@ public struct Route {
         handler: @escaping Handler
     ) {
         self.method = method
-        self.path = Route.normalize(path: path)
+        self.path = path
         pattern = self.path
         self.name = name
         self.middleware = middleware
@@ -214,22 +214,6 @@ extension Route {
         }
 
         return (true, parameters)
-    }
-
-    /// Normalizes a path.
-    ///
-    /// - Parameter path: A path to a resource.
-    /// - Returns: A normalized path.
-    public static func normalize(path: String) -> String {
-        let separator = Route.defaultPath
-        let doubleSeparator = separator + separator
-
-        return !path.isEmpty &&
-            path != separator &&
-            path.last == separator.last &&
-            !path.hasSuffix(doubleSeparator)
-            ? String(path.dropLast())
-            : path
     }
 
     /// Generates a regular expression pattern for the path with parameters.

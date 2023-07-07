@@ -6,10 +6,11 @@ open class TrieRouter: RouteGroup, Router {
 
     public init() {
         root = .init()
+        super.init()
     }
 
     public func register(route: Route) {
-        let paths = route.path.pathComponents
+        let paths = route.path.paths
         var current = root
 
         for path in paths {
@@ -59,7 +60,7 @@ open class TrieRouter: RouteGroup, Router {
     }
 
     public func resolve(method: Request.Method, uri: URI) -> Route? {
-        guard let urlPaths = uri.path?.pathComponents else { return nil }
+        guard let urlPaths = uri.path?.paths else { return nil }
         var current = root
         var parameters = Set<Route.Parameter>()
 

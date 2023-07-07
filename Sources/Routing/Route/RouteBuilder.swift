@@ -3,7 +3,7 @@ import HTTP
 public class RouteBuilder {
     let path: String
     let name: String
-    public var middleware: [Middleware]
+    let middleware: [Middleware]
 
     init(path: String = "", name: String = "", middleware: [Middleware] = .init()) {
         self.path = path

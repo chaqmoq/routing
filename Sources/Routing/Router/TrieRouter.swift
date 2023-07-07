@@ -60,24 +60,24 @@ open class TrieRouter: RouteGroup, Router {
     }
 
     public func resolve(method: Request.Method, uri: URI) -> Route? {
-        guard let urlPaths = uri.path?.paths else { return nil }
+        guard let uriPaths = uri.path?.paths else { return nil }
         var current = root
         var parameters = Set<Route.Parameter>()
 
-        for urlPath in urlPaths {
-            if current.constants[urlPath] == nil {
+        for uriPath in uriPaths {
+            if current.constants[uriPath] == nil {
                 var existingIndex: Int?
 
                 for (index, variable) in current.variables.enumerated() {
                     if let regex = try? NSRegularExpression(pattern: "^\(variable.pattern)$") {
-                        let range = NSRange(location: 0, length: urlPath.utf8.count)
+                        let range = NSRange(location: 0, length: uriPath.utf8.count)
 
-                        if let result = regex.firstMatch(in: urlPath, range: range) {
+                        if let result = regex.firstMatch(in: uriPath, range: range) {
                             existingIndex = index
                             let pathParameters = extractParameters(
                                 result: result,
                                 routePath: variable.path,
-                                urlPath: urlPath
+                                uriPath: uriPath
                             )
 
                             for pathParameter in pathParameters {
@@ -95,11 +95,11 @@ open class TrieRouter: RouteGroup, Router {
                     return nil
                 }
             } else {
-                current = current.constants[urlPath]!
+                current = current.constants[uriPath]!
             }
         }
 
-        if var route = current.route, route.method == method {
+        if var route = current.route {
             for parameter in parameters {
                 route.updateParameter(parameter)
             }
@@ -124,7 +124,7 @@ open class TrieRouter: RouteGroup, Router {
     private func extractParameters(
         result: NSTextCheckingResult,
         routePath: String,
-        urlPath: String
+        uriPath: String
     ) -> Set<Route.Parameter> {
         var (_, parameters) = Route.isValid(path: "/\(routePath)")
 
@@ -134,9 +134,9 @@ open class TrieRouter: RouteGroup, Router {
 
             for (index, match) in matches.enumerated() {
                 if let nameRange = Range(match.range, in: routePath),
-                   let valueRange = Range(result.range(at: index + 1), in: urlPath),
+                   let valueRange = Range(result.range(at: index + 1), in: uriPath),
                    var parameter = parameters.first(where: { routePath[nameRange] == "\($0)" }) {
-                    parameter.value = String(urlPath[valueRange])
+                    parameter.value = String(uriPath[valueRange])
                     parameters.update(with: parameter)
                 }
             }

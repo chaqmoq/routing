@@ -17,8 +17,8 @@ extension String {
 
         prefix += suffix
 
-        if prefix == "//" {
-            return String(prefix.dropLast())
+        if prefix == "//" || prefix.starts(with: "//") {
+            return String(prefix.dropFirst())
         }
 
         return prefix

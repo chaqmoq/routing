@@ -42,11 +42,12 @@ open class TrieRouter: RouteGroup, Router {
                             let parametersWithDefaultValues = parameters.filter { $0.defaultValue != nil }
 
                             if parameters.count == parametersWithDefaultValues.count {
+                                current.routes[route.method] = route
                                 let defaultValuesPath = parametersWithDefaultValues.reduce("") { (concatenatedPath, parameter) in
                                     "\(concatenatedPath)" + "\(parameter.defaultValue!)".dropFirst()
                                 }
                                 current.addConstant(path: defaultValuesPath)
-                                current.constants[defaultValuesPath]!.route = route
+                                current.constants[defaultValuesPath]!.routes[route.method] = route
                             }
                         }
                     }
@@ -56,7 +57,7 @@ open class TrieRouter: RouteGroup, Router {
             }
         }
 
-        current.route = route
+        current.routes[route.method] = route
     }
 
     public func resolve(method: Request.Method, uri: URI) -> Route? {
@@ -99,7 +100,7 @@ open class TrieRouter: RouteGroup, Router {
             }
         }
 
-        if var route = current.route {
+        if var route = current.routes[method] {
             for parameter in parameters {
                 route.updateParameter(parameter)
             }
@@ -151,7 +152,7 @@ extension TrieRouter {
         let path: String
         let pattern: String
         let type: Kind
-        var route: Route? = nil
+        var routes = [Request.Method: Route]()
         private(set) var constants = [String: Node]()
         private(set) var variables = [Node]()
 

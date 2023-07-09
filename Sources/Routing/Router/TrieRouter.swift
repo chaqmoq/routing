@@ -6,6 +6,7 @@ open class TrieRouter: RouteGroup, Router {
 
     public init() {
         root = .init()
+
         super.init()
     }
 
@@ -24,72 +25,23 @@ open class TrieRouter: RouteGroup, Router {
 
                 current = current.constants[path]!
             } else {
-                let variableIndex: Int
-                let pattern = Route.generatePattern(for: path, with: parameters)
-
-                if let existingVariableIndex = current.variables.firstIndex(where: { $0.path == path }) {
-                    variableIndex = existingVariableIndex
+                if let nextVariable = current.variables.first(where: { $0.path == path }) {
+                    current = nextVariable
                 } else {
-                    variableIndex = current.variables.count
+                    let pattern = Route.generatePattern(for: path, with: parameters)
                     current.addVariable(path: path, pattern: pattern)
+                    let nextVariable = current.variables.last!
 
-                    // Handle parameters with default values
-                    if index == lastIndex {
-                        let parametersPath = parameters.reduce("") { (concatenatedPath, parameter) in
-                            "\(concatenatedPath)" + "\(parameter)"
-                        }
-
-                        if path == parametersPath {
-                            let parametersWithDefaultValues = parameters.filter { $0.defaultValue != nil }
-
-                            if parameters.count == parametersWithDefaultValues.count {
-                                current.routes[route.method] = route
-                                let defaultValuesPath = parametersWithDefaultValues.reduce("") { (concatenatedPath, parameter) in
-                                    "\(concatenatedPath)" + "\(parameter.defaultValue!)".dropFirst()
-                                }
-                                current.addConstant(path: defaultValuesPath)
-                                current.constants[defaultValuesPath]!.routes[route.method] = route
-                            }
-                        }
+                    if index == lastIndex && path == concatenateParameters(parameters) {
+                        registerRoute(route, with: parameters, for: current)
                     }
-                }
 
-                current = current.variables[variableIndex]
+                    current = nextVariable
+                }
             }
         }
 
         current.routes[route.method] = route
-    }
-
-    private func nextNode(current: Node, path: String, method: Request.Method, parameters: inout Set<Route.Parameter>) -> Node? {
-        var nextNode: Node?
-
-        for variable in current.variables {
-            if let regex = try? NSRegularExpression(pattern: "^\(variable.pattern)$") {
-                let range = NSRange(location: 0, length: path.utf8.count)
-
-                if let result = regex.firstMatch(in: path, range: range) {
-                    if variable.routes[method] == nil && variable.constants.isEmpty && variable.variables.isEmpty {
-                        continue
-                    } else {
-                        nextNode = variable
-                        let pathParameters = extractParameters(
-                            result: result,
-                            routePath: variable.path,
-                            uriPath: path
-                        )
-
-                        for pathParameter in pathParameters {
-                            parameters.insert(pathParameter)
-                        }
-
-                        break
-                    }
-                }
-            }
-        }
-
-        return nextNode
     }
 
     public func resolve(method: Request.Method, uri: URI) -> Route? {
@@ -100,15 +52,22 @@ open class TrieRouter: RouteGroup, Router {
 
         for (index, uriPath) in uriPaths.enumerated() {
             if current.constants[uriPath] == nil {
-                if let nextNode = nextNode(current: current, path: uriPath, method: method, parameters: &parameters) {
-                    current = nextNode
+                if let variable = variable(current: current, path: uriPath, method: method, parameters: &parameters) {
+                    current = variable
                 } else {
                     return nil
                 }
             } else {
-                if index != lastIndex && current.constants[uriPath]!.constants.isEmpty && current.constants[uriPath]!.variables.isEmpty {
-                    if let nextNode = nextNode(current: current, path: uriPath, method: method, parameters: &parameters) {
-                        current = nextNode
+                if index != lastIndex,
+                   current.constants[uriPath]!.constants.isEmpty,
+                   current.constants[uriPath]!.variables.isEmpty {
+                    if let nextVariable = variable(
+                        current: current,
+                        path: uriPath,
+                        method: method,
+                        parameters: &parameters
+                    ) {
+                        current = nextVariable
                     } else {
                         return nil
                     }
@@ -139,29 +98,88 @@ open class TrieRouter: RouteGroup, Router {
 
         return group
     }
+}
 
+extension TrieRouter {
     private func extractParameters(
         result: NSTextCheckingResult,
         routePath: String,
         uriPath: String
     ) -> Set<Route.Parameter> {
         var (_, parameters) = Route.isValid(path: "/\(routePath)")
+        let regex = try! NSRegularExpression(pattern: Route.parameterPattern)
+        let range = NSRange(location: 0, length: routePath.utf8.count)
+        let matches = regex.matches(in: routePath, range: range)
 
-        if let regex = try? NSRegularExpression(pattern: Route.parameterPattern) {
-            let range = NSRange(location: 0, length: routePath.utf8.count)
-            let matches = regex.matches(in: routePath, range: range)
-
-            for (index, match) in matches.enumerated() {
-                if let nameRange = Range(match.range, in: routePath),
-                   let valueRange = Range(result.range(at: index + 1), in: uriPath),
-                   var parameter = parameters.first(where: { routePath[nameRange] == "\($0)" }) {
-                    parameter.value = String(uriPath[valueRange])
-                    parameters.update(with: parameter)
-                }
+        for (index, match) in matches.enumerated() {
+            if let nameRange = Range(match.range, in: routePath),
+               let valueRange = Range(result.range(at: index + 1), in: uriPath),
+               var parameter = parameters.first(where: { routePath[nameRange] == "\($0)" }) {
+                parameter.value = String(uriPath[valueRange])
+                parameters.update(with: parameter)
             }
         }
 
         return parameters
+    }
+
+    private func variable(
+        current: Node,
+        path: String,
+        method: Request.Method,
+        parameters: inout Set<Route.Parameter>
+    ) -> Node? {
+        var nextVariable: Node?
+
+        for variable in current.variables {
+            let regex = try! NSRegularExpression(pattern: "^\(variable.pattern)$")
+            let range = NSRange(location: 0, length: path.utf8.count)
+
+            if let result = regex.firstMatch(in: path, range: range) {
+                if variable.routes[method] == nil && variable.constants.isEmpty && variable.variables.isEmpty {
+                    continue
+                } else {
+                    nextVariable = variable
+                    let pathParameters = extractParameters(
+                        result: result,
+                        routePath: variable.path,
+                        uriPath: path
+                    )
+
+                    for pathParameter in pathParameters {
+                        parameters.insert(pathParameter)
+                    }
+
+                    break
+                }
+            }
+        }
+
+        return nextVariable
+    }
+
+    private func concatenateParameters(_ parameters: Set<Route.Parameter>) -> String {
+        parameters.reduce("") { (parametersPath, parameter) in
+            "\(parametersPath)" + "\(parameter)"
+        }
+    }
+
+    private func concatenateDefaultValues(for parameters: Set<Route.Parameter>) -> String {
+        parameters.reduce("") { (defaultValuesPath, parameter) in
+            "\(defaultValuesPath)" + "\(parameter.defaultValue!)".dropFirst()
+        }
+    }
+
+    private func registerRoute(_ route: Route, with parameters: Set<Route.Parameter>, for current: Node) {
+        let parametersWithDefaultValues = parameters.filter { $0.defaultValue != nil }
+
+        if parameters.count == parametersWithDefaultValues.count {
+            current.routes[route.method] = route
+
+            let defaultValuesPath = concatenateDefaultValues(for: parametersWithDefaultValues)
+            current.addConstant(path: defaultValuesPath)
+            current.constants[defaultValuesPath]!.routes[route.method] = route
+        }
     }
 }
 

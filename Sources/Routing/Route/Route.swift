@@ -297,7 +297,7 @@ extension Route {
         return nil
     }
 
-    /// Updates a parameter extracted from the path.
+    /// Updates a parameter's value extracted from the path.
     ///
     /// - Parameter parameter: An instance of `Parameter`.
     /// - Returns: An updated instance of `Parameter` or `nil`.

@@ -11,9 +11,10 @@ open class TrieRouter: RouteGroup, Router {
 
     public func register(route: Route) {
         let paths = route.path.paths
+        let lastIndex = paths.count - 1
         var current = root
 
-        for path in paths {
+        for (index, path) in paths.enumerated() {
             let (_, parameters) = Route.isValid(path: "/\(path)")
 
             if parameters.isEmpty {
@@ -23,17 +24,17 @@ open class TrieRouter: RouteGroup, Router {
 
                 current = current.constants[path]!
             } else {
-                let index: Int
+                let variableIndex: Int
                 let pattern = Route.generatePattern(for: path, with: parameters)
 
-                if let existingIndex = current.variables.firstIndex(where: { $0.path == path }) {
-                    index = existingIndex
+                if let existingVariableIndex = current.variables.firstIndex(where: { $0.path == path }) {
+                    variableIndex = existingVariableIndex
                 } else {
-                    index = current.variables.count
+                    variableIndex = current.variables.count
                     current.addVariable(path: path, pattern: pattern)
 
-                    // Handle default values
-                    if path == paths.last {
+                    // Handle parameters with default values
+                    if index == lastIndex {
                         let parametersPath = parameters.reduce("") { (concatenatedPath, parameter) in
                             "\(concatenatedPath)" + "\(parameter)"
                         }
@@ -53,50 +54,67 @@ open class TrieRouter: RouteGroup, Router {
                     }
                 }
 
-                current = current.variables[index]
+                current = current.variables[variableIndex]
             }
         }
 
         current.routes[route.method] = route
     }
 
+    private func nextNode(current: Node, path: String, method: Request.Method, parameters: inout Set<Route.Parameter>) -> Node? {
+        var nextNode: Node?
+
+        for variable in current.variables {
+            if let regex = try? NSRegularExpression(pattern: "^\(variable.pattern)$") {
+                let range = NSRange(location: 0, length: path.utf8.count)
+
+                if let result = regex.firstMatch(in: path, range: range) {
+                    if variable.routes[method] == nil && variable.constants.isEmpty && variable.variables.isEmpty {
+                        continue
+                    } else {
+                        nextNode = variable
+                        let pathParameters = extractParameters(
+                            result: result,
+                            routePath: variable.path,
+                            uriPath: path
+                        )
+
+                        for pathParameter in pathParameters {
+                            parameters.insert(pathParameter)
+                        }
+
+                        break
+                    }
+                }
+            }
+        }
+
+        return nextNode
+    }
+
     public func resolve(method: Request.Method, uri: URI) -> Route? {
         guard let uriPaths = uri.path?.paths else { return nil }
+        let lastIndex = uriPaths.count - 1
         var current = root
         var parameters = Set<Route.Parameter>()
 
-        for uriPath in uriPaths {
+        for (index, uriPath) in uriPaths.enumerated() {
             if current.constants[uriPath] == nil {
-                var existingIndex: Int?
-
-                for (index, variable) in current.variables.enumerated() {
-                    if let regex = try? NSRegularExpression(pattern: "^\(variable.pattern)$") {
-                        let range = NSRange(location: 0, length: uriPath.utf8.count)
-
-                        if let result = regex.firstMatch(in: uriPath, range: range) {
-                            existingIndex = index
-                            let pathParameters = extractParameters(
-                                result: result,
-                                routePath: variable.path,
-                                uriPath: uriPath
-                            )
-
-                            for pathParameter in pathParameters {
-                                parameters.insert(pathParameter)
-                            }
-
-                            break
-                        }
-                    }
-                }
-
-                if let existingIndex {
-                    current = current.variables[existingIndex]
+                if let nextNode = nextNode(current: current, path: uriPath, method: method, parameters: &parameters) {
+                    current = nextNode
                 } else {
                     return nil
                 }
             } else {
-                current = current.constants[uriPath]!
+                if index != lastIndex && current.constants[uriPath]!.constants.isEmpty && current.constants[uriPath]!.variables.isEmpty {
+                    if let nextNode = nextNode(current: current, path: uriPath, method: method, parameters: &parameters) {
+                        current = nextNode
+                    } else {
+                        return nil
+                    }
+                } else {
+                    current = current.constants[uriPath]!
+                }
             }
         }
 

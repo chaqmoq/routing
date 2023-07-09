@@ -1,0 +1,166 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Route/RouteBuilder.swift",
+      "line": 3,
+      "symbol": "RouteBuilder",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Route/RouteBuilder.swift",
+      "line": 27,
+      "symbol": "RouteBuilder.delete(_:name:middleware:handler:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Route/RouteBuilder.swift",
+      "line": 37,
+      "symbol": "RouteBuilder.get(_:name:middleware:handler:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Route/RouteBuilder.swift",
+      "line": 47,
+      "symbol": "RouteBuilder.head(_:name:middleware:handler:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Route/RouteBuilder.swift",
+      "line": 57,
+      "symbol": "RouteBuilder.options(_:name:middleware:handler:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Route/RouteBuilder.swift",
+      "line": 67,
+      "symbol": "RouteBuilder.patch(_:name:middleware:handler:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Route/RouteBuilder.swift",
+      "line": 77,
+      "symbol": "RouteBuilder.post(_:name:middleware:handler:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Route/RouteBuilder.swift",
+      "line": 87,
+      "symbol": "RouteBuilder.put(_:name:middleware:handler:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Route/RouteBuilder.swift",
+      "line": 97,
+      "symbol": "RouteBuilder.request(_:methods:middleware:handler:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Route/RouteGroup.swift",
+      "line": 3,
+      "symbol": "RouteGroup",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Route/RouteGroup.swift",
+      "line": 6,
+      "symbol": "RouteGroup.grouped(_:name:middleware:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Route/RouteGroup.swift",
+      "line": 27,
+      "symbol": "RouteGroup.group(_:name:middleware:handler:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Router/Router.swift",
+      "line": 3,
+      "symbol": "Router",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Router/Router.swift",
+      "line": 4,
+      "symbol": "Router.register(route:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Router/Router.swift",
+      "line": 5,
+      "symbol": "Router.resolve(request:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Router/Router.swift",
+      "line": 6,
+      "symbol": "Router.resolve(method:uri:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Router/Router.swift",
+      "line": 9,
+      "symbol": "Router",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Router/Router.swift",
+      "line": 10,
+      "symbol": "Router.resolve(request:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Router/TrieRouter.swift",
+      "line": 4,
+      "symbol": "TrieRouter",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Router/TrieRouter.swift",
+      "line": 7,
+      "symbol": "TrieRouter.init()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Router/TrieRouter.swift",
+      "line": 13,
+      "symbol": "TrieRouter.register(route:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Router/TrieRouter.swift",
+      "line": 47,
+      "symbol": "TrieRouter.resolve(method:uri:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/routing/routing/Sources/Routing/Router/TrieRouter.swift",
+      "line": 91,
+      "symbol": "TrieRouter.grouped(_:name:middleware:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/runner/work/routing/routing"
+}

@@ -30,7 +30,11 @@ open class RouteGroup: RouteBuilder {
         middleware: [Middleware] = .init(),
         handler: @escaping (RouteGroup) -> Void
     ) {
-        if let group = grouped(path, name: name, middleware: middleware) {
+        if let group = grouped(
+            path,
+            name: name,
+            middleware: middleware
+        ) {
             handler(group)
         }
     }
@@ -42,7 +46,13 @@ open class RouteGroup: RouteBuilder {
         middleware: [Middleware] = .init(),
         handler: @escaping Route.Handler
     ) -> [Route] {
-        let routes = super._request(path, methods: methods, name: name, middleware: middleware, handler: handler)
+        let routes = super._request(
+            path,
+            methods: methods,
+            name: name,
+            middleware: middleware,
+            handler: handler
+        )
 
         for route in routes {
             router?.register(route: route)

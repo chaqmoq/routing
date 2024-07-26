@@ -5,13 +5,20 @@ open class RouteBuilder {
     let name: String
     let middleware: [Middleware]
 
-    init(name: String = "", middleware: [Middleware] = .init()) {
+    init(
+        name: String = "",
+        middleware: [Middleware] = .init()
+    ) {
         path = Route.defaultPath
         self.name = name
         self.middleware = middleware
     }
 
-    init?(path: String, name: String = "", middleware: [Middleware] = .init()) {
+    init?(
+        path: String,
+        name: String = "",
+        middleware: [Middleware] = .init()
+    ) {
         let (isValid, _) = Route.isValid(path: path)
 
         if isValid {
@@ -30,7 +37,13 @@ open class RouteBuilder {
         middleware: [Middleware] = .init(),
         handler: @escaping Route.Handler
     ) -> Route? {
-        _request(path, methods: [.DELETE], name: name, middleware: middleware, handler: handler).first
+        _request(
+            path,
+            methods: [.DELETE],
+            name: name,
+            middleware: middleware,
+            handler: handler
+        ).first
     }
 
     @discardableResult
@@ -40,7 +53,13 @@ open class RouteBuilder {
         middleware: [Middleware] = .init(),
         handler: @escaping Route.Handler
     ) -> Route? {
-        _request(path, methods: [.GET], name: name, middleware: middleware, handler: handler).first
+        _request(
+            path,
+            methods: [.GET],
+            name: name,
+            middleware: middleware,
+            handler: handler
+        ).first
     }
 
     @discardableResult
@@ -50,7 +69,13 @@ open class RouteBuilder {
         middleware: [Middleware] = .init(),
         handler: @escaping Route.Handler
     ) -> Route? {
-        _request(path, methods: [.HEAD], name: name, middleware: middleware, handler: handler).first
+        _request(
+            path,
+            methods: [.HEAD],
+            name: name,
+            middleware: middleware,
+            handler: handler
+        ).first
     }
 
     @discardableResult
@@ -60,7 +85,13 @@ open class RouteBuilder {
         middleware: [Middleware] = .init(),
         handler: @escaping Route.Handler
     ) -> Route? {
-        _request(path, methods: [.OPTIONS], name: name, middleware: middleware, handler: handler).first
+        _request(
+            path,
+            methods: [.OPTIONS],
+            name: name,
+            middleware: middleware,
+            handler: handler
+        ).first
     }
 
     @discardableResult
@@ -70,7 +101,13 @@ open class RouteBuilder {
         middleware: [Middleware] = .init(),
         handler: @escaping Route.Handler
     ) -> Route? {
-        _request(path, methods: [.PATCH], name: name, middleware: middleware, handler: handler).first
+        _request(
+            path,
+            methods: [.PATCH],
+            name: name,
+            middleware: middleware,
+            handler: handler
+        ).first
     }
 
     @discardableResult
@@ -80,7 +117,13 @@ open class RouteBuilder {
         middleware: [Middleware] = .init(),
         handler: @escaping Route.Handler
     ) -> Route? {
-        _request(path, methods: [.POST], name: name, middleware: middleware, handler: handler).first
+        _request(
+            path,
+            methods: [.POST],
+            name: name,
+            middleware: middleware,
+            handler: handler
+        ).first
     }
 
     @discardableResult
@@ -90,7 +133,13 @@ open class RouteBuilder {
         middleware: [Middleware] = .init(),
         handler: @escaping Route.Handler
     ) -> Route? {
-        _request(path, methods: [.PUT], name: name, middleware: middleware, handler: handler).first
+        _request(
+            path,
+            methods: [.PUT],
+            name: name,
+            middleware: middleware,
+            handler: handler
+        ).first
     }
 
     @discardableResult
@@ -100,7 +149,12 @@ open class RouteBuilder {
         middleware: [Middleware] = .init(),
         handler: @escaping Route.Handler
     ) -> [Route] {
-        _request(path, methods: methods, middleware: middleware, handler: handler)
+        _request(
+            path,
+            methods: methods,
+            middleware: middleware,
+            handler: handler
+        )
     }
 
     @discardableResult

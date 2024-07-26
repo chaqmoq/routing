@@ -28,12 +28,22 @@ open class TrieRouter: RouteGroup, Router {
                 if let nextVariable = current.variables.first(where: { $0.path == path }) {
                     current = nextVariable
                 } else {
-                    let pattern = Route.generatePattern(for: path, with: parameters)
-                    current.addVariable(path: path, pattern: pattern)
+                    let pattern = Route.generatePattern(
+                        for: path,
+                        with: parameters
+                    )
+                    current.addVariable(
+                        path: path,
+                        pattern: pattern
+                    )
                     let nextVariable = current.variables.last!
 
                     if index == lastIndex && path == concatenateParameters(parameters) {
-                        registerRoute(route, with: parameters, for: current)
+                        registerRoute(
+                            route,
+                            with: parameters,
+                            for: current
+                        )
                     }
 
                     current = nextVariable
@@ -52,7 +62,12 @@ open class TrieRouter: RouteGroup, Router {
 
         for (index, uriPath) in uriPaths.enumerated() {
             if current.constants[uriPath] == nil {
-                if let variable = variable(current: current, path: uriPath, method: method, parameters: &parameters) {
+                if let variable = variable(
+                    current: current,
+                    path: uriPath,
+                    method: method,
+                    parameters: &parameters
+                ) {
                     current = variable
                 } else {
                     return nil
@@ -93,7 +108,11 @@ open class TrieRouter: RouteGroup, Router {
         name: String = "",
         middleware: [Middleware] = .init()
     ) -> RouteGroup? {
-        let group = super.grouped(path, name: name, middleware: middleware)
+        let group = super.grouped(
+            path,
+            name: name,
+            middleware: middleware
+        )
         group?.router = self
 
         return group
@@ -108,8 +127,14 @@ extension TrieRouter {
     ) -> Set<Route.Parameter> {
         var (_, parameters) = Route.isValid(path: "/\(routePath)")
         let regex = try! NSRegularExpression(pattern: Route.parameterPattern)
-        let range = NSRange(location: 0, length: routePath.utf8.count)
-        let matches = regex.matches(in: routePath, range: range)
+        let range = NSRange(
+            location: 0,
+            length: routePath.utf8.count
+        )
+        let matches = regex.matches(
+            in: routePath,
+            range: range
+        )
 
         for (index, match) in matches.enumerated() {
             if let nameRange = Range(match.range, in: routePath),
@@ -133,10 +158,18 @@ extension TrieRouter {
 
         for variable in current.variables {
             let regex = try! NSRegularExpression(pattern: "^\(variable.pattern)$")
-            let range = NSRange(location: 0, length: path.utf8.count)
+            let range = NSRange(
+                location: 0,
+                length: path.utf8.count
+            )
 
-            if let result = regex.firstMatch(in: path, range: range) {
-                if variable.routes[method] == nil && variable.constants.isEmpty && variable.variables.isEmpty {
+            if let result = regex.firstMatch(
+                in: path,
+                range: range
+            ) {
+                if variable.routes[method] == nil,
+                   variable.constants.isEmpty,
+                   variable.variables.isEmpty {
                     continue
                 } else {
                     nextVariable = variable
@@ -170,7 +203,11 @@ extension TrieRouter {
         }
     }
 
-    private func registerRoute(_ route: Route, with parameters: Set<Route.Parameter>, for current: Node) {
+    private func registerRoute(
+        _ route: Route,
+        with parameters: Set<Route.Parameter>,
+        for current: Node
+    ) {
         let parametersWithDefaultValues = parameters.filter { $0.defaultValue != nil }
 
         if parameters.count == parametersWithDefaultValues.count {
@@ -203,7 +240,10 @@ extension TrieRouter {
             type = .constant
         }
 
-        init(path: String, pattern: String) {
+        init(
+            path: String, 
+            pattern: String)
+        {
             self.path = path
             self.pattern = pattern
             type = .variable
@@ -213,7 +253,10 @@ extension TrieRouter {
             constants[path] = Node(path: path)
         }
 
-        func addVariable(path: String, pattern: String) {
+        func addVariable(
+            path: String,
+            pattern: String
+        ) {
             variables.append(Node(path: path, pattern: pattern))
         }
     }

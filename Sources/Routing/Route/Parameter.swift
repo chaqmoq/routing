@@ -29,7 +29,12 @@ extension Route {
         ///   - value: A validated value by the requirement.
         ///   - requirement: A regular expression for the value.
         ///   - defaultValue: A default value if the value is missing.
-        public init?(name: String, value: String = "", requirement: String = "", defaultValue: DefaultValue? = nil) {
+        public init?(
+            name: String,
+            value: String = "",
+            requirement: String = "",
+            defaultValue: DefaultValue? = nil
+        ) {
             if name.isEmpty || defaultValue == .forced("") { return nil }
             self.name = name
             self.value = value
@@ -40,7 +45,10 @@ extension Route {
                 guard let regex = try? NSRegularExpression(pattern: self.requirement) else { return nil }
 
                 if !self.value.isEmpty {
-                    let valueRange = NSRange(location: 0, length: self.value.utf8.count)
+                    let valueRange = NSRange(
+                        location: 0, 
+                        length: self.value.utf8.count
+                    )
                     guard regex.firstMatch(in: self.value, range: valueRange) != nil else { return nil }
                 }
             }
@@ -52,22 +60,18 @@ extension Route.Parameter {
     /// A generated pattern for the parameter.
     public var pattern: String {
         if !requirement.isEmpty {
-            if let defaultValue = defaultValue {
+            if let defaultValue {
                 switch defaultValue {
-                case let .optional(value),
-                     let .forced(value):
-                    if value.isEmpty { return "(\(requirement))?" }
-                    return "(\(requirement)|\(value))?"
+                case let .optional(value), let .forced(value):
+                    return value.isEmpty ? "(\(requirement))?" : "(\(requirement)|\(value))?"
                 }
             }
 
             return "(\(requirement))"
-        } else if let defaultValue = defaultValue {
+        } else if let defaultValue {
             switch defaultValue {
-            case let .optional(value),
-                 let .forced(value):
-                if value.isEmpty { return "(.+)?" }
-                return "(.+|\(value))?"
+            case let .optional(value), let .forced(value):
+                return value.isEmpty ? "(.+)?" : "(.+|\(value))?"
             }
         }
 
@@ -77,10 +81,14 @@ extension Route.Parameter {
 
 extension Route.Parameter: Hashable {
     /// See `Equatable`.
-    public static func == (lhs: Route.Parameter, rhs: Route.Parameter) -> Bool { lhs.name == rhs.name }
+    public static func == (lhs: Route.Parameter, rhs: Route.Parameter) -> Bool {
+        lhs.name == rhs.name
+    }
 
     /// See `Hashable`.
-    public func hash(into hasher: inout Hasher) { hasher.combine(name) }
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+    }
 }
 
 extension Route.Parameter: CustomStringConvertible {
@@ -93,7 +101,10 @@ extension Route.Parameter: CustomStringConvertible {
             pattern += "\(requirementEnclosingSymbols.0)\(requirement)\(requirementEnclosingSymbols.1)"
         }
 
-        if let defaultValue = defaultValue { pattern += "\(defaultValue)" }
+        if let defaultValue {
+            pattern += "\(defaultValue)"
+        }
+
         pattern += "\(Route.Parameter.nameEnclosingSymbols.1)"
 
         return pattern

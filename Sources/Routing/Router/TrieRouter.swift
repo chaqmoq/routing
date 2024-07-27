@@ -6,8 +6,8 @@ open class TrieRouter: RouteGroup, Router {
 
     public init() {
         root = .init()
-
         super.init()
+        router = self
     }
 
     public func register(route: Route) {
@@ -101,21 +101,6 @@ open class TrieRouter: RouteGroup, Router {
         }
 
         return nil
-    }
-
-    public override func grouped(
-        _ path: String = Route.defaultPath,
-        name: String = "",
-        middleware: [Middleware] = .init()
-    ) -> RouteGroup? {
-        let group = super.grouped(
-            path,
-            name: name,
-            middleware: middleware
-        )
-        group?.router = self
-
-        return group
     }
 }
 

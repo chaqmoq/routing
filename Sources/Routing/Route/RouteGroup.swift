@@ -36,26 +36,4 @@ open class RouteGroup: RouteBuilder {
             handler(group)
         }
     }
-
-    override func _request(
-        _ path: String = Route.defaultPath,
-        methods: Set<Request.Method> = Set(Request.Method.allCases),
-        name: String = "",
-        middleware: [Middleware] = .init(),
-        handler: @escaping Route.Handler
-    ) -> [Route] {
-        let routes = super._request(
-            path,
-            methods: methods,
-            name: name,
-            middleware: middleware,
-            handler: handler
-        )
-
-        for route in routes {
-            router?.register(route: route)
-        }
-
-        return routes
-    }
 }

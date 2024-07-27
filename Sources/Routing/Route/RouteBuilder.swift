@@ -5,7 +5,7 @@ open class RouteBuilder {
     let name: String
     let middleware: [Middleware]
 
-    var router: Router?
+    weak var router: Router?
 
     init(
         name: String = "",

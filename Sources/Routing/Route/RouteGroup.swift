@@ -1,8 +1,6 @@
 import HTTP
 
 open class RouteGroup: RouteBuilder {
-    var router: Router?
-
     public func grouped(
         _ path: String = Route.defaultPath,
         name: String = "",

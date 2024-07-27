@@ -5,6 +5,8 @@ open class RouteBuilder {
     let name: String
     let middleware: [Middleware]
 
+    var router: Router?
+
     init(
         name: String = "",
         middleware: [Middleware] = .init()
@@ -178,6 +180,7 @@ open class RouteBuilder {
                     handler: handler
                 ) {
                     routes.append(route)
+                    router?.register(route: route)
                 }
             }
         }

@@ -14,11 +14,11 @@ let package = Package(
         .library(name: "Routing", targets: ["Routing"])
     ],
     dependencies: [
-        .package(name: "chaqmoq-http", url: "https://github.com/chaqmoq/http.git", .branch("master"))
+        .package(url: "https://github.com/chaqmoq/http.git", branch: "master")
     ],
     targets: [
         .target(name: "Routing", dependencies: [
-            .product(name: "HTTP", package: "chaqmoq-http")
+            .product(name: "HTTP", package: "http")
         ]),
         .testTarget(name: "RoutingTests", dependencies: [
             .target(name: "Routing")

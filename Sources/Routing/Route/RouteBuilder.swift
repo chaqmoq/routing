@@ -1,10 +1,26 @@
 import HTTP
 
+/// Provides a fluent DSL for registering HTTP routes on an underlying ``Router``.
+///
+/// `RouteBuilder` is the base class for ``RouteGroup`` and ``TrieRouter``.
+/// Call the HTTP-method helpers (`get`, `post`, `put`, …) to create and
+/// register routes whose path is prefixed by this builder's own `path`.
+///
+/// - Note: `router` is a `weak` reference to avoid a retain cycle.  If the
+///   owning ``TrieRouter`` is deallocated before route registration is complete,
+///   registrations will be silently dropped in release builds and will trigger
+///   `assertionFailure` in debug builds.
 open class RouteBuilder {
+    /// The path prefix that every route registered through this builder inherits.
     let path: String
+
+    /// The name prefix that every route registered through this builder inherits.
     let name: String
+
+    /// The middleware stack prepended to every route registered through this builder.
     let middleware: [Middleware]
 
+    /// Weak reference to the router that persists and resolves routes.
     weak var router: Router?
 
     init(

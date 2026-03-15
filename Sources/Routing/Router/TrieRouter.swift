@@ -1,6 +1,34 @@
 import Foundation
 import HTTP
 
+/// A `Router` implementation backed by a [trie](https://en.wikipedia.org/wiki/Trie)
+/// (prefix tree) of path segments.
+///
+/// ## Route matching priority
+/// 1. **Constant** segments are always preferred over variable ones.
+/// 2. Among variable nodes, the first registered match wins.
+///
+/// ## Thread safety
+/// `TrieRouter` is safe to call from multiple threads simultaneously.
+/// An `NSLock` serialises all mutations and reads of the internal trie.
+///
+/// ## Usage
+/// ```swift
+/// let router = TrieRouter()
+///
+/// router.get("/posts")          { req in … }
+/// router.get("/posts/{id}")     { req in … }
+/// router.post("/posts")         { req in … }
+///
+/// router.group("/api/v1") { v1 in
+///     v1.get("/users")          { req in … }
+///     v1.get("/users/{id}")     { req in … }
+/// }
+///
+/// if let route = router.resolve(method: .GET, uri: request.uri) {
+///     let id: Int? = route[parameter: "id"]
+/// }
+/// ```
 open class TrieRouter: RouteGroup, Router {
     let root: Node
 

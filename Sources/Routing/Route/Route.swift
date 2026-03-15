@@ -39,7 +39,9 @@ public struct Route {
     /// A handler to call.
     public var handler: Handler
 
-    private var dateFormatter = ISO8601DateFormatter()
+    // A single shared formatter; `ISO8601DateFormatter` is thread-safe for reading
+    // and expensive to construct, so one instance is enough for the whole process.
+    private static let dateFormatter = ISO8601DateFormatter()
 
     /// Initializes a new instance with the `defaultPath`.
     ///
@@ -172,7 +174,7 @@ extension Route {
         } else if type == URL.self {
             return URL(string: string) as? T
         } else if type == Date.self {
-            return dateFormatter.date(from: string) as? T
+            return Route.dateFormatter.date(from: string) as? T
         }
         // TODO: consider converting to dictionary and array
 
@@ -269,6 +271,26 @@ extension Route {
         }
 
         return pattern
+    }
+
+    /// Generates a pattern for a single path **segment** (no leading `/`) using
+    /// **named** capture groups so that extraction in `TrieRouter` is unambiguous
+    /// regardless of how many groups a requirement pattern itself contains.
+    ///
+    /// This is intentionally simpler than `generatePattern(for:with:)`: the
+    /// separator-insertion path in the full-route version never triggers for bare
+    /// segments, so we only need plain token replacement.
+    static func generateNamedPattern(for path: String, with parameters: Set<Parameter>) -> String {
+        var namedPattern = path
+
+        for parameter in parameters {
+            namedPattern = namedPattern.replacingOccurrences(
+                of: "\(parameter)",
+                with: parameter.namedPattern
+            )
+        }
+
+        return namedPattern
     }
 
     /// Creates a new instance of `Parameter` based on the parameter pattern `{name<requirement>?defaultValue}`.

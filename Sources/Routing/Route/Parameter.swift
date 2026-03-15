@@ -57,7 +57,8 @@ extension Route {
 }
 
 extension Route.Parameter {
-    /// A generated pattern for the parameter.
+    /// A generated pattern for the parameter using an anonymous capture group.
+    /// Used in the public `Route.pattern` string.
     public var pattern: String {
         if !requirement.isEmpty {
             if let defaultValue {
@@ -76,6 +77,34 @@ extension Route.Parameter {
         }
 
         return "(.+)"
+    }
+
+    /// A generated pattern for the parameter using a **named** capture group
+    /// (`(?P<name>...)`).  Used internally by the trie router so that parameter
+    /// values can be extracted by name rather than by capture-group index,
+    /// which would break whenever a requirement pattern itself contains groups.
+    var namedPattern: String {
+        if !requirement.isEmpty {
+            if let defaultValue {
+                switch defaultValue {
+                case let .optional(value), let .forced(value):
+                    return value.isEmpty
+                        ? "(?P<\(name)>\(requirement))?"
+                        : "(?P<\(name)>\(requirement)|\(value))?"
+                }
+            }
+
+            return "(?P<\(name)>\(requirement))"
+        } else if let defaultValue {
+            switch defaultValue {
+            case let .optional(value), let .forced(value):
+                return value.isEmpty
+                    ? "(?P<\(name)>.+)?"
+                    : "(?P<\(name)>.+|\(value))?"
+            }
+        }
+
+        return "(?P<\(name)>.+)"
     }
 }
 

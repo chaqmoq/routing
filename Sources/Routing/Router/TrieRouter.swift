@@ -4,6 +4,10 @@ import HTTP
 open class TrieRouter: RouteGroup, Router {
     let root: Node
 
+    // Protects all mutable state in the trie (Node.routes / constants / variables)
+    // against concurrent register/resolve calls.
+    private let lock = NSLock()
+
     public init() {
         root = .init()
         super.init()
@@ -11,6 +15,9 @@ open class TrieRouter: RouteGroup, Router {
     }
 
     public func register(route: Route) {
+        lock.lock()
+        defer { lock.unlock() }
+
         let paths = route.path.paths
         let lastIndex = paths.count - 1
         var current = root
@@ -26,24 +33,26 @@ open class TrieRouter: RouteGroup, Router {
                 current = current.constants[path]!
             } else {
                 if let nextVariable = current.variables.first(where: { $0.path == path }) {
+                    // Register default-value fallbacks even when the variable node
+                    // already exists (e.g. a second route sharing the same parameterised segment).
+                    if index == lastIndex && path == concatenateParameters(parameters, orderedBy: path) {
+                        registerRoute(route, with: parameters, for: current)
+                    }
+
                     current = nextVariable
                 } else {
-                    let pattern = Route.generatePattern(
-                        for: path,
-                        with: parameters
-                    )
-                    current.addVariable(
-                        path: path,
-                        pattern: pattern
-                    )
-                    let nextVariable = current.variables.last!
+                    let pattern = Route.generatePattern(for: path, with: parameters)
+                    let namedPattern = Route.generateNamedPattern(for: path, with: parameters)
+                    current.addVariable(path: path, pattern: pattern, namedPattern: namedPattern)
 
-                    if index == lastIndex && path == concatenateParameters(parameters) {
-                        registerRoute(
-                            route,
-                            with: parameters,
-                            for: current
-                        )
+                    // Safe access — we just appended, but guard defensively.
+                    guard let nextVariable = current.variables.last else {
+                        assertionFailure("Variable node was just appended but array is empty")
+                        return
+                    }
+
+                    if index == lastIndex && path == concatenateParameters(parameters, orderedBy: path) {
+                        registerRoute(route, with: parameters, for: current)
                     }
 
                     current = nextVariable
@@ -55,6 +64,9 @@ open class TrieRouter: RouteGroup, Router {
     }
 
     public func resolve(method: Request.Method, uri: URI) -> Route? {
+        lock.lock()
+        defer { lock.unlock() }
+
         guard let uriPaths = uri.path?.paths else { return nil }
         let lastIndex = uriPaths.count - 1
         var current = root
@@ -105,26 +117,21 @@ open class TrieRouter: RouteGroup, Router {
 }
 
 extension TrieRouter {
+    /// Extracts parameter values from a matched URI segment using named capture groups,
+    /// so the result is correct regardless of how many groups a requirement pattern contains.
     private func extractParameters(
         result: NSTextCheckingResult,
         routePath: String,
         uriPath: String
     ) -> Set<Route.Parameter> {
         var (_, parameters) = Route.isValid(path: "/\(routePath)")
-        let regex = try! NSRegularExpression(pattern: Route.parameterPattern)
-        let range = NSRange(
-            location: 0,
-            length: routePath.utf8.count
-        )
-        let matches = regex.matches(
-            in: routePath,
-            range: range
-        )
 
-        for (index, match) in matches.enumerated() {
-            if let nameRange = Range(match.range, in: routePath),
-               let valueRange = Range(result.range(at: index + 1), in: uriPath),
-               var parameter = parameters.first(where: { routePath[nameRange] == "\($0)" }) {
+        for var parameter in parameters {
+            // Named groups return NSNotFound when the group didn't participate
+            // in the match (e.g. an optional parameter with no value in the URI).
+            let nsRange = result.range(withName: parameter.name)
+
+            if let valueRange = Range(nsRange, in: uriPath) {
                 parameter.value = String(uriPath[valueRange])
                 parameters.update(with: parameter)
             }
@@ -142,16 +149,12 @@ extension TrieRouter {
         var nextVariable: Node?
 
         for variable in current.variables {
-            let regex = try! NSRegularExpression(pattern: "^\(variable.pattern)$")
-            let range = NSRange(
-                location: 0,
-                length: path.utf8.count
-            )
+            // Skip nodes whose regex couldn't be compiled at registration time.
+            guard let regex = variable.compiledRegex else { continue }
 
-            if let result = regex.firstMatch(
-                in: path,
-                range: range
-            ) {
+            let range = NSRange(location: 0, length: path.utf8.count)
+
+            if let result = regex.firstMatch(in: path, range: range) {
                 if variable.routes[method] == nil,
                    variable.constants.isEmpty,
                    variable.variables.isEmpty {
@@ -176,16 +179,28 @@ extension TrieRouter {
         return nextVariable
     }
 
-    private func concatenateParameters(_ parameters: Set<Route.Parameter>) -> String {
-        parameters.reduce("") { (parametersPath, parameter) in
-            "\(parametersPath)" + "\(parameter)"
-        }
+    /// Returns the concatenation of parameter descriptions in the order they
+    /// appear in `path`, making the comparison deterministic for multi-parameter
+    /// segments regardless of Set iteration order.
+    private func concatenateParameters(_ parameters: Set<Route.Parameter>, orderedBy path: String) -> String {
+        parameters
+            .sorted { lhs, rhs in
+                let lhsPos = path.range(of: "\(lhs)")?.lowerBound ?? path.endIndex
+                let rhsPos = path.range(of: "\(rhs)")?.lowerBound ?? path.endIndex
+                return lhsPos < rhsPos
+            }
+            .reduce("") { $0 + "\($1)" }
     }
 
+    /// Returns a stable key for the default-values constant node.
+    /// Sorts by name so the key is consistent regardless of Set iteration order.
     private func concatenateDefaultValues(for parameters: Set<Route.Parameter>) -> String {
-        parameters.reduce("") { (defaultValuesPath, parameter) in
-            "\(defaultValuesPath)" + "\(parameter.defaultValue!)".dropFirst()
-        }
+        parameters
+            .sorted { $0.name < $1.name }
+            .reduce("") { path, parameter in
+                guard let defaultValue = parameter.defaultValue else { return path }
+                return path + "\(defaultValue)".dropFirst()
+            }
     }
 
     private func registerRoute(
@@ -210,6 +225,11 @@ extension TrieRouter {
         let path: String
         let pattern: String
         let type: Kind
+
+        /// Pre-compiled regex built from the named-group pattern; `nil` for constant nodes
+        /// or when the pattern fails to compile.
+        let compiledRegex: NSRegularExpression?
+
         var routes = [Request.Method: Route]()
         private(set) var constants = [String: Node]()
         private(set) var variables = [Node]()
@@ -219,18 +239,20 @@ extension TrieRouter {
             case variable
         }
 
+        /// Initializer for constant nodes.
         init(path: String = "") {
             self.path = path
             pattern = ""
+            compiledRegex = nil
             type = .constant
         }
 
-        init(
-            path: String, 
-            pattern: String)
-        {
+        /// Initializer for variable nodes. Compiles the regex from `namedPattern` once
+        /// at registration time so `resolve` never pays the compilation cost.
+        init(path: String, pattern: String, namedPattern: String) {
             self.path = path
             self.pattern = pattern
+            compiledRegex = try? NSRegularExpression(pattern: "^\(namedPattern)$")
             type = .variable
         }
 
@@ -238,11 +260,8 @@ extension TrieRouter {
             constants[path] = Node(path: path)
         }
 
-        func addVariable(
-            path: String,
-            pattern: String
-        ) {
-            variables.append(Node(path: path, pattern: pattern))
+        func addVariable(path: String, pattern: String, namedPattern: String) {
+            variables.append(Node(path: path, pattern: pattern, namedPattern: namedPattern))
         }
     }
 }

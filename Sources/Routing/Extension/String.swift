@@ -11,12 +11,16 @@ extension String {
             prefix = String(prefix.dropLast())
         }
 
-        if suffix != "/" && suffix.last == "/" {
+        // Appending the root path "/" to any prefix is a no-op.
+        // Without this guard, "/foo" + "/" would produce "/foo/" (trailing slash).
+        if suffix == "/" { return prefix }
+
+        if suffix.last == "/" {
             suffix = String(suffix.dropLast())
         }
 
         prefix += suffix
 
-        return prefix == "//" || prefix.starts(with: "//") ? String(prefix.dropFirst()) : prefix
+        return prefix.starts(with: "//") ? String(prefix.dropFirst()) : prefix
     }
 }

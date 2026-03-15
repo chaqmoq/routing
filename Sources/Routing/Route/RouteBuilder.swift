@@ -180,7 +180,15 @@ open class RouteBuilder {
                     handler: handler
                 ) {
                     routes.append(route)
-                    router?.register(route: route)
+
+                    if let router = router {
+                        router.register(route: route)
+                    } else {
+                        assertionFailure(
+                            "Router is nil — ensure the TrieRouter outlives all " +
+                            "RouteBuilder/RouteGroup instances that register routes."
+                        )
+                    }
                 }
             }
         }

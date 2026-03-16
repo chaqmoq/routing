@@ -20,6 +20,13 @@ extension Route {
         /// A default value if the value is missing.
         public let defaultValue: DefaultValue?
 
+        /// Pre-compiled regex for the requirement string, cached at init time.
+        ///
+        /// Stored here so that callers such as `trieURL` can validate parameter values
+        /// against the requirement without recompiling `NSRegularExpression` on every
+        /// call.  `nil` when `requirement` is empty (no constraint).
+        let compiledRequirement: NSRegularExpression?
+
         /// Initializes a new instance or `nil`.
         ///
         /// - Warning: It may return `nil` if the name is missing, the value doesn't conform to the requirement, the
@@ -44,14 +51,17 @@ extension Route {
 
             if !self.requirement.isEmpty {
                 guard let regex = try? NSRegularExpression(pattern: self.requirement) else { return nil }
+                compiledRequirement = regex
 
                 if !self.value.isEmpty {
                     let valueRange = NSRange(
-                        location: 0, 
+                        location: 0,
                         length: self.value.utf8.count
                     )
                     guard regex.firstMatch(in: self.value, range: valueRange) != nil else { return nil }
                 }
+            } else {
+                compiledRequirement = nil
             }
         }
     }

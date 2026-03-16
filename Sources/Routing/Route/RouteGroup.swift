@@ -64,4 +64,27 @@ open class RouteGroup: RouteBuilder {
             handler(group)
         }
     }
+
+    /// Returns a child group with the same path and name but with additional
+    /// middleware prepended — without introducing a new path prefix.
+    ///
+    /// Use this when you want to guard a set of routes behind authentication or
+    /// rate-limiting middleware without changing the URL structure.
+    ///
+    /// ```swift
+    /// router.group("/api") { api in
+    ///     api.grouped(middleware: [AuthMiddleware()]) { auth in
+    ///         auth.get("/profile") { … }   // resolves to /api/profile
+    ///     }
+    /// }
+    /// ```
+    public func grouped(middleware: [Middleware]) -> RouteGroup? {
+        grouped(Route.defaultPath, middleware: middleware)
+    }
+
+    /// Creates a child group with additional middleware (no path prefix change)
+    /// and passes it to `handler` for route registration.
+    public func group(middleware: [Middleware], handler: @escaping (RouteGroup) -> Void) {
+        group(Route.defaultPath, middleware: middleware, handler: handler)
+    }
 }

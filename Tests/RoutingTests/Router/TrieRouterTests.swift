@@ -454,4 +454,280 @@ final class TrieRouterTests: XCTestCase {
 
         group.wait()
     }
+
+    // MARK: - Wildcard (*)
+
+    func testWildcardMatchesAnySegment() {
+        // Arrange
+        router.get("/posts/*/comments") { _ in Response() }
+
+        // Act
+        let matchesNumber = router.resolve(method: .GET, uri: uri("/posts/42/comments"))
+        let matchesWord = router.resolve(method: .GET, uri: uri("/posts/anything/comments"))
+        let noMatch = router.resolve(method: .GET, uri: uri("/posts/42/other"))
+
+        // Assert
+        XCTAssertNotNil(matchesNumber)
+        XCTAssertNotNil(matchesWord)
+        XCTAssertNil(noMatch)
+    }
+
+    func testWildcardDoesNotCaptureValue() {
+        // Arrange
+        router.get("/posts/*/comments") { _ in Response() }
+
+        // Act
+        let route = router.resolve(method: .GET, uri: uri("/posts/42/comments"))
+
+        // Assert
+        XCTAssertNotNil(route)
+        let v: String? = route?[parameter: "nonexistent"]
+        XCTAssertNil(v)
+    }
+
+    func testConstantPrecedesWildcard() {
+        // Arrange
+        router.get("/posts/latest/comments") { _ in Response() }
+        router.get("/posts/*/comments") { _ in Response() }
+
+        // Act
+        let constant = router.resolve(method: .GET, uri: uri("/posts/latest/comments"))
+        let wildcard = router.resolve(method: .GET, uri: uri("/posts/42/comments"))
+
+        // Assert
+        XCTAssertEqual(constant?.path, "/posts/latest/comments")
+        XCTAssertEqual(wildcard?.path, "/posts/*/comments")
+    }
+
+    // MARK: - Catchall (**)
+
+    func testCatchallMatchesMultipleSegments() {
+        // Arrange
+        router.get("/static/**") { _ in Response() }
+
+        // Act
+        let singleLevel = router.resolve(method: .GET, uri: uri("/static/css/main.css"))
+        let singleSegment = router.resolve(method: .GET, uri: uri("/static/a"))
+        let multiLevel = router.resolve(method: .GET, uri: uri("/static/a/b/c/d"))
+
+        // Assert
+        XCTAssertNotNil(singleLevel)
+        XCTAssertNotNil(singleSegment)
+        XCTAssertNotNil(multiLevel)
+    }
+
+    func testCatchallCapturesRemainingSegments() {
+        // Arrange
+        router.get("/static/**") { _ in Response() }
+
+        // Act
+        let route = router.resolve(method: .GET, uri: uri("/static/css/main.css"))
+
+        // Assert
+        XCTAssertEqual(route?.catchall, ["css", "main.css"])
+    }
+
+    func testCatchallSingleSegment() {
+        // Arrange
+        router.get("/files/**") { _ in Response() }
+
+        // Act
+        let route = router.resolve(method: .GET, uri: uri("/files/readme.txt"))
+
+        // Assert
+        XCTAssertEqual(route?.catchall, ["readme.txt"])
+    }
+
+    func testCatchallDoesNotMatchParentPath() {
+        // Arrange
+        router.get("/static/**") { _ in Response() }
+
+        // Act
+        let route = router.resolve(method: .GET, uri: uri("/static"))
+
+        // Assert
+        XCTAssertNil(route)
+    }
+
+    // MARK: - RouteParameterConvertible
+
+    struct PostID: RouteParameterConvertible {
+        let rawValue: Int
+        static func convert(from string: String) -> PostID? {
+            Int(string).map(PostID.init(rawValue:))
+        }
+    }
+
+    func testCustomTypeConvertible() {
+        // Arrange
+        router.get("/posts/{id<\\d+>}") { _ in Response() }
+
+        // Act
+        let route = router.resolve(method: .GET, uri: uri("/posts/7"))!
+        let id: PostID? = route[parameter: "id"]
+
+        // Assert
+        XCTAssertEqual(id?.rawValue, 7)
+    }
+
+    func testBuiltInTypesViaConvertible() {
+        // Arrange
+        router.get("/items/{n<\\d+>}") { _ in Response() }
+
+        // Act
+        let route = router.resolve(method: .GET, uri: uri("/items/99"))!
+        let intVal: Int? = route[parameter: "n"]
+        let uintVal: UInt? = route[parameter: "n"]
+        let doubleVal: Double? = route[parameter: "n"]
+        let stringVal: String? = route[parameter: "n"]
+
+        // Assert
+        XCTAssertEqual(intVal, 99)
+        XCTAssertEqual(uintVal, 99)
+        XCTAssertEqual(doubleVal, 99.0)
+        XCTAssertEqual(stringVal, "99")
+    }
+
+    // MARK: - Middleware-only grouping
+
+    func testMiddlewareOnlyGroupDoesNotChangePrefix() {
+        // Arrange
+        struct MarkerMiddleware: Middleware {
+            let tag: String
+            func respond(to request: Request, chainingTo next: Responder) async throws -> any Encodable {
+                try await next(request)
+            }
+        }
+
+        router.group(middleware: [MarkerMiddleware(tag: "auth")]) { group in
+            group.get("/profile") { _ in Response() }
+        }
+
+        // Act
+        let route = router.resolve(method: .GET, uri: uri("/profile"))
+
+        // Assert
+        XCTAssertNotNil(route)
+        XCTAssertEqual(route?.path, "/profile")
+        XCTAssertEqual(route?.middleware.count, 1)
+    }
+
+    // MARK: - TrieRouter
+
+    func testFrozenRouterResolvesRoutes() {
+        // Arrange
+        router.get("/posts", name: "posts.index") { _ in Response() }
+        router.get("/posts/{id<\\d+>}", name: "posts.show") { _ in Response() }
+
+        // Act
+        let frozen = router.build()
+        let indexRoute = frozen.resolve(method: .GET, uri: uri("/posts"))
+        let showRoute = frozen.resolve(method: .GET, uri: uri("/posts/5"))
+        let noMatch = frozen.resolve(method: .POST, uri: uri("/posts"))
+
+        // Assert
+        XCTAssertNotNil(indexRoute)
+        XCTAssertNotNil(showRoute)
+        XCTAssertNil(noMatch)
+    }
+
+    func testFrozenRouterConcurrentResolvesDoNotCrash() {
+        // Arrange
+        router.get("/posts/{id<\\d+>}") { _ in Response() }
+        let frozen = router.build()
+
+        // Act
+        let q = DispatchQueue(label: "frozen.test", attributes: .concurrent)
+        let g = DispatchGroup()
+
+        for _ in 0 ..< 200 {
+            g.enter()
+            q.async {
+                _ = frozen.resolve(method: .GET, uri: self.uri("/posts/1"))
+                g.leave()
+            }
+        }
+
+        g.wait()
+        // Reaching here without crashing is the pass condition.
+    }
+
+    // MARK: - URL generation
+
+    func testURLGenerationSimplePath() {
+        // Arrange
+        router.get("/posts", name: "posts.index") { _ in Response() }
+
+        // Act
+        let url = router.url(for: "posts.index")
+
+        // Assert
+        XCTAssertEqual(url, "/posts")
+    }
+
+    func testURLGenerationWithParameter() {
+        // Arrange
+        router.get("/posts/{id<\\d+>}", name: "posts.show") { _ in Response() }
+
+        // Act
+        let url = router.url(for: "posts.show", parameters: ["id": "42"])
+
+        // Assert
+        XCTAssertEqual(url, "/posts/42")
+    }
+
+    func testURLGenerationWithMultipleParameters() {
+        // Arrange
+        router.get("/users/{userId}/posts/{postId}", name: "user.post") { _ in Response() }
+
+        // Act
+        let url = router.url(for: "user.post", parameters: ["userId": "3", "postId": "9"])
+
+        // Assert
+        XCTAssertEqual(url, "/users/3/posts/9")
+    }
+
+    func testURLGenerationMissingRequiredParameterReturnsNil() {
+        // Arrange
+        router.get("/posts/{id}", name: "posts.show") { _ in Response() }
+
+        // Act
+        let url = router.url(for: "posts.show", parameters: [:])
+
+        // Assert
+        XCTAssertNil(url)
+    }
+
+    func testURLGenerationUnknownNameReturnsNil() {
+        // Arrange / Act
+        let url = router.url(for: "nonexistent")
+
+        // Assert
+        XCTAssertNil(url)
+    }
+
+    func testURLGenerationRequirementValidation() {
+        // Arrange
+        router.get("/posts/{id<\\d+>}", name: "posts.show") { _ in Response() }
+
+        // Act
+        let invalidUrl = router.url(for: "posts.show", parameters: ["id": "abc"])
+        let validUrl = router.url(for: "posts.show", parameters: ["id": "5"])
+
+        // Assert
+        XCTAssertNil(invalidUrl)
+        XCTAssertEqual(validUrl, "/posts/5")
+    }
+
+    func testFrozenRouterURLGeneration() {
+        // Arrange
+        router.get("/posts/{id<\\d+>}", name: "posts.show") { _ in Response() }
+        let frozen = router.build()
+
+        // Act
+        let url = frozen.url(for: "posts.show", parameters: ["id": "7"])
+
+        // Assert
+        XCTAssertEqual(url, "/posts/7")
+    }
 }

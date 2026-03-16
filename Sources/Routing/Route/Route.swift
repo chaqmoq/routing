@@ -12,7 +12,16 @@ public struct Route {
     static let parameterPattern = """
     (\\{\(parameterNamePattern)(<[^\\/{}<>]+>)?(\\?(\(textPattern))?|!\(textPattern))?\\})+
     """
-    static let pathPattern = "\(textPattern)|\(parameterPattern)"
+    static let wildcardComponent = "\\*{1,2}"
+    static let pathPattern = "\(textPattern)|\(parameterPattern)|\(wildcardComponent)"
+
+    /// Pre-compiled version of `pathPattern`. `NSRegularExpression` compilation is
+    /// expensive — caching it here means `isValid` pays that cost exactly once for the
+    /// lifetime of the process instead of once per call-site invocation.
+    private static let _compiledPathPattern: NSRegularExpression = {
+        // swiftlint:disable:next force_try
+        try! NSRegularExpression(pattern: Route.pathPattern)
+    }()
 
     /// A typealias for the handler.
     public typealias Handler = (Request) async throws -> Encodable
@@ -34,6 +43,11 @@ public struct Route {
 
     private var mutableParameters: Set<Parameter>
 
+    /// The path segments captured by a `**` (catchall) route component.
+    public var catchall: [String] { mutableCatchall }
+
+    private var mutableCatchall: [String] = []
+
     /// An array of registered `Middleware`.
     public var middleware: [Middleware]
 
@@ -42,7 +56,7 @@ public struct Route {
 
     // A single shared formatter; `ISO8601DateFormatter` is thread-safe for reading
     // and expensive to construct, so one instance is enough for the whole process.
-    private static let dateFormatter = ISO8601DateFormatter()
+    static let dateFormatter = ISO8601DateFormatter()
 
     /// Initializes a new instance with the `defaultPath`.
     ///
@@ -138,48 +152,13 @@ extension Route {
     ///
     /// - Parameter parameter: A parameter name.
     /// - Returns: A parameter value.
-    public subscript<T>(parameter name: String) -> T? {
-        guard let string = parameters.first(where: { $0.name == name })?.value else { return nil }
-        let type = T.self
-
-        if type == String.self {
-            return string as? T
-        } else if type == Int.self {
-            return Int(string) as? T
-        } else if type == Int8.self {
-            return Int8(string) as? T
-        } else if type == Int16.self {
-            return Int16(string) as? T
-        } else if type == Int32.self {
-            return Int32(string) as? T
-        } else if type == Int64.self {
-            return Int64(string) as? T
-        } else if type == UInt.self {
-            return UInt(string) as? T
-        } else if type == UInt8.self {
-            return UInt8(string) as? T
-        } else if type == UInt16.self {
-            return UInt16(string) as? T
-        } else if type == UInt32.self {
-            return UInt32(string) as? T
-        } else if type == UInt64.self {
-            return UInt64(string) as? T
-        } else if type == UUID.self {
-            return UUID(uuidString: string) as? T
-        } else if type == Double.self {
-            return Double(string) as? T
-        } else if type == Float.self {
-            return Float(string) as? T
-        } else if type == Bool.self {
-            return Bool(string) as? T
-        } else if type == URL.self {
-            return URL(string: string) as? T
-        } else if type == Date.self {
-            return Route.dateFormatter.date(from: string) as? T
-        }
-        // TODO: consider converting to dictionary and array
-
-        return nil
+    public subscript<T: RouteParameterConvertible>(parameter name: String) -> T? {
+        // `Parameter` hashes and equates by `name`, so a sentinel struct lets us use
+        // `Set.firstIndex(of:)` — an O(1) hash-based lookup — instead of the O(n)
+        // `first(where:)` scan.
+        guard let sentinel = Parameter(name: name),
+              let index = mutableParameters.firstIndex(of: sentinel) else { return nil }
+        return T.convert(from: mutableParameters[index].value)
     }
 }
 
@@ -193,7 +172,7 @@ extension Route {
         let separator = Route.defaultPath
         guard path != separator else { return (true, .init()) }
         guard path.starts(with: separator), !path.contains(separator + separator) else { return (false, .init()) }
-        guard let regex = try? NSRegularExpression(pattern: Route.pathPattern) else { return (false, .init()) }
+        let regex = Route._compiledPathPattern
         let pathComponents = path.components(separatedBy: separator).filter { $0 != "" }
         var parameters = Set<Parameter>()
 
@@ -232,6 +211,11 @@ extension Route {
             }
         }
 
+        // ** must be the last segment
+        for (i, component) in pathComponents.enumerated() where component == "**" {
+            if i != pathComponents.count - 1 { return (false, .init()) }
+        }
+
         return (true, parameters)
     }
 
@@ -242,7 +226,7 @@ extension Route {
     ///   - parameters: A set of parameters.
     /// - Returns: A regular expression pattern.
     public static func generatePattern(
-        for path: String, 
+        for path: String,
         with parameters: Set<Parameter> = .init()
     ) -> String {
         var pattern = path
@@ -271,6 +255,10 @@ extension Route {
                 with: parameter.pattern
             )
         }
+
+        // Replace wildcard patterns (** before * to avoid partial match)
+        pattern = pattern.replacingOccurrences(of: "**", with: "(.+)")
+        pattern = pattern.replacingOccurrences(of: "*",  with: "(.+)")
 
         return pattern
     }
@@ -360,5 +348,27 @@ extension Route {
         ) else { return existingParameter }
 
         return mutableParameters.update(with: newParameter)
+    }
+
+    /// Sets the catchall path segments captured by a `**` component.
+    ///
+    /// - Parameter values: The path segments to store.
+    mutating func setCatchall(_ values: [String]) {
+        mutableCatchall = values
+    }
+
+    /// Fast-path used by the router's resolve hot-path to write a validated parameter
+    /// value directly into the stored set, bypassing `Parameter.init?`'s requirement
+    /// re-validation.  The value is already proven valid by the node's `compiledRegex`.
+    ///
+    /// `Set.firstIndex(of:)` on a `Hashable` type is O(1) average — it uses the hash
+    /// to locate the bucket directly.  `Set.update(with:)` is also O(1).
+    mutating func directSetParameterValue(_ value: String, forName name: String) {
+        // Create a sentinel with the target name; Parameter hashes/equates by name only.
+        guard let sentinel = Parameter(name: name),
+              let index = mutableParameters.firstIndex(of: sentinel) else { return }
+        var updated = mutableParameters[index]
+        updated.value = value
+        mutableParameters.update(with: updated)
     }
 }

@@ -1,7 +1,8 @@
 import Foundation
 import HTTP
 
-/// A combination of an HTTP request method, path, name, an array of `Middleware`, and a handler that points to a location where a resource exists.
+/// A combination of an HTTP request method, path, name, an array of `Middleware`, and a handler that points to a
+/// location where a resource exists.
 public struct Route {
     /// A default path `/`.
     public static let defaultPath = "/"
@@ -186,7 +187,8 @@ extension Route {
     /// Checks if a path is valid or not.
     ///
     /// - Parameter path: A path to a resource.
-    /// - Returns: If the path is valid, it returns `true` and a set of extracted parameters. Otherwise, it returns `false` and an empty `Set<Parameter>`.
+    /// - Returns: If the path is valid, it returns `true` and a set of extracted parameters. Otherwise, it returns
+    /// `false` and an empty `Set<Parameter>`.
     public static func isValid(path: String) -> (Bool, Set<Parameter>) {
         let separator = Route.defaultPath
         guard path != separator else { return (true, .init()) }

@@ -145,18 +145,41 @@ open class TrieRouter: RouteGroup, Router {
 }
 
 extension TrieRouter {
-    /// Extracts parameter values from a matched URI segment using named capture groups,
-    /// so the result is correct regardless of how many groups a requirement pattern contains.
+    /// Extracts parameter values from `uriPath` for a matched variable `node`.
+    ///
+    /// A fresh regex is compiled from `node.namedPattern` (e.g. `^(?<id>\\d+)$`)
+    /// so that each captured group can be looked up by name rather than by index.
+    /// This is intentionally separate from `compiledRegex` (which uses anonymous
+    /// groups) so that the two concerns — *matching* and *extraction* — never
+    /// interfere with each other.
+    ///
+    /// - Parameters:
+    ///   - node:    The variable `Node` that was selected as the match.
+    ///   - uriPath: The single URI segment string (e.g. `"42"`).
+    /// - Returns: A set of `Route.Parameter` values with `.value` populated.
     private func extractParameters(
-        result: NSTextCheckingResult,
-        routePath: String,
+        node: Node,
         uriPath: String
     ) -> Set<Route.Parameter> {
-        var (_, parameters) = Route.isValid(path: "/\(routePath)")
+        var (_, parameters) = Route.isValid(path: "/\(node.path)")
+
+        // Build a named-group regex only when needed (i.e. after the anonymous-
+        // group match has already confirmed this node is the winner).
+        guard
+            !node.namedPattern.isEmpty,
+            let namedRegex = try? NSRegularExpression(pattern: "^\(node.namedPattern)$")
+        else {
+            return parameters
+        }
+
+        let range = NSRange(location: 0, length: uriPath.utf8.count)
+        guard let result = namedRegex.firstMatch(in: uriPath, range: range) else {
+            return parameters
+        }
 
         for var parameter in parameters {
-            // Named groups return NSNotFound when the group didn't participate
-            // in the match (e.g. an optional parameter with no value in the URI).
+            // `range(withName:)` returns {NSNotFound, 0} when a group didn't
+            // participate (e.g. an optional parameter that was omitted).
             let nsRange = result.range(withName: parameter.name)
 
             if let valueRange = Range(nsRange, in: uriPath) {
@@ -182,18 +205,14 @@ extension TrieRouter {
 
             let range = NSRange(location: 0, length: path.utf8.count)
 
-            if let result = regex.firstMatch(in: path, range: range) {
+            if regex.firstMatch(in: path, range: range) != nil {
                 if variable.routes[method] == nil,
                    variable.constants.isEmpty,
                    variable.variables.isEmpty {
                     continue
                 } else {
                     nextVariable = variable
-                    let pathParameters = extractParameters(
-                        result: result,
-                        routePath: variable.path,
-                        uriPath: path
-                    )
+                    let pathParameters = extractParameters(node: variable, uriPath: path)
 
                     for pathParameter in pathParameters {
                         parameters.insert(pathParameter)
@@ -254,9 +273,15 @@ extension TrieRouter {
         let pattern: String
         let type: Kind
 
-        /// Pre-compiled regex built from the named-group pattern; `nil` for constant nodes
-        /// or when the pattern fails to compile.
+        /// Pre-compiled regex built from the **anonymous-group** pattern; used during
+        /// the matching phase in `variable(_:path:method:parameters:)`.
+        /// `nil` for constant nodes or when the pattern fails to compile.
         let compiledRegex: NSRegularExpression?
+
+        /// The named-group version of `pattern` (e.g. `(?<id>\\d+)`).
+        /// Stored so `extractParameters` can build a second regex for named-group
+        /// extraction without recomputing the string.
+        let namedPattern: String
 
         var routes = [Request.Method: Route]()
         private(set) var constants = [String: Node]()
@@ -271,16 +296,23 @@ extension TrieRouter {
         init(path: String = "") {
             self.path = path
             pattern = ""
+            namedPattern = ""
             compiledRegex = nil
             type = .constant
         }
 
-        /// Initializer for variable nodes. Compiles the regex from `namedPattern` once
-        /// at registration time so `resolve` never pays the compilation cost.
+        /// Initializer for variable nodes.
+        ///
+        /// `compiledRegex` is built from the **anonymous-group** `pattern` (e.g.
+        /// `^(\\d+)$`) so it reliably compiles even when `namedPattern` uses ICU
+        /// named-group syntax that may not be available on all platforms.
+        /// The named pattern is stored separately and used only during parameter
+        /// extraction after a match has been confirmed.
         init(path: String, pattern: String, namedPattern: String) {
             self.path = path
             self.pattern = pattern
-            compiledRegex = try? NSRegularExpression(pattern: "^\(namedPattern)$")
+            self.namedPattern = namedPattern
+            compiledRegex = try? NSRegularExpression(pattern: "^\(pattern)$")
             type = .variable
         }
 

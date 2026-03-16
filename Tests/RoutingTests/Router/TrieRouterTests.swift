@@ -21,7 +21,7 @@ final class TrieRouterTests: XCTestCase {
 
     /// Wraps the URI initialiser so that only this one line needs updating if
     /// the HTTP package ever changes its API.
-    private func uri(_ path: String) -> URI { URI(string: path) }
+    private func uri(_ path: String) -> URI { URI(path)! }
 
     // MARK: - Root route
 
@@ -370,7 +370,7 @@ final class TrieRouterTests: XCTestCase {
         router.get("/posts") { _ in Response() }
 
         // Act
-        let route = router.resolve(method: .GET, uri: URI(string: ""))
+        let route = router.resolve(method: .GET, uri: URI("")!)
 
         // Assert
         XCTAssertNil(route)

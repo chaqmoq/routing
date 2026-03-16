@@ -22,7 +22,8 @@ extension Route {
 
         /// Initializes a new instance or `nil`.
         ///
-        /// - Warning: It may return `nil` if the name is missing, the value doesn't conform to the requirement, the requirement is invalid or
+        /// - Warning: It may return `nil` if the name is missing, the value doesn't conform to the requirement, the
+        /// requirement is invalid or
         /// the default value is invalid.
         /// - Parameters:
         ///   - name: A unique name.
@@ -84,27 +85,31 @@ extension Route.Parameter {
     /// values can be extracted by name rather than by capture-group index,
     /// which would break whenever a requirement pattern itself contains groups.
     var namedPattern: String {
+        // NOTE: Use (?<name>...) — the .NET/ICU style — rather than (?P<name>...).
+        // NSTextCheckingResult.range(withName:) only resolves groups whose names
+        // are declared with (?<name>...) syntax; the Python-style (?P<name>...)
+        // variant compiles fine in ICU but is silently ignored by the Apple API.
         if !requirement.isEmpty {
             if let defaultValue {
                 switch defaultValue {
                 case let .optional(value), let .forced(value):
                     return value.isEmpty
-                        ? "(?P<\(name)>\(requirement))?"
-                        : "(?P<\(name)>\(requirement)|\(value))?"
+                        ? "(?<\(name)>\(requirement))?"
+                        : "(?<\(name)>\(requirement)|\(value))?"
                 }
             }
 
-            return "(?P<\(name)>\(requirement))"
+            return "(?<\(name)>\(requirement))"
         } else if let defaultValue {
             switch defaultValue {
             case let .optional(value), let .forced(value):
                 return value.isEmpty
-                    ? "(?P<\(name)>.+)?"
-                    : "(?P<\(name)>.+|\(value))?"
+                    ? "(?<\(name)>.+)?"
+                    : "(?<\(name)>.+|\(value))?"
             }
         }
 
-        return "(?P<\(name)>.+)"
+        return "(?<\(name)>.+)"
     }
 }
 

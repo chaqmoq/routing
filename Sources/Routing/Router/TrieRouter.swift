@@ -25,13 +25,13 @@ import NIOConcurrencyHelpers
 /// ```swift
 /// let router = TrieRouter()
 ///
-/// router.get("/posts")          { req in … }
-/// router.get("/posts/{id}")     { req in … }
-/// router.post("/posts")         { req in … }
+/// router.get("/posts") { req in … }
+/// router.get("/posts/{id}") { req in … }
+/// router.post("/posts") { req in … }
 ///
 /// router.group("/api/v1") { v1 in
-///     v1.get("/users")          { req in … }
-///     v1.get("/users/{id}")     { req in … }
+///     v1.get("/users") { req in … }
+///     v1.get("/users/{id}") { req in … }
 /// }
 ///
 /// if let route = router.resolve(method: .GET, uri: request.uri) {
@@ -72,7 +72,7 @@ open class TrieRouter: RouteGroup, Router {
     /// parameter values.
     ///
     /// - Parameters:
-    ///   - name:       The route name passed when registering the route.
+    ///   - name: The route name passed when registering the route.
     ///   - parameters: A dictionary mapping parameter names to values.
     /// - Returns: The filled-in path string, or `nil` if the name is unknown
     ///   or a required parameter value is missing / fails its requirement.
@@ -530,7 +530,7 @@ public final class FrozenTrieRouter: Router {
     /// parameter values.
     ///
     /// - Parameters:
-    ///   - name:       The route name passed when registering the route.
+    ///   - name: The route name passed when registering the route.
     ///   - parameters: A dictionary mapping parameter names to values.
     /// - Returns: The filled-in path string, or `nil` if the name is unknown
     ///   or a required parameter value is missing / fails its requirement.

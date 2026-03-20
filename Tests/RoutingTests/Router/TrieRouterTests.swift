@@ -612,7 +612,7 @@ final class TrieRouterTests: XCTestCase {
         XCTAssertEqual(route?.middleware.count, 1)
     }
 
-    // MARK: - TrieRouter
+    // MARK: - FrozenTrieRouter
 
     func testFrozenRouterResolvesRoutes() {
         // Arrange

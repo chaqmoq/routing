@@ -29,12 +29,16 @@
   - [Optional Default Values](#optional-default-values)
   - [Forced Default Values](#forced-default-values)
   - [Combining Features](#combining-features)
+  - [Wildcard and Catchall Segments](#wildcard-and-catchall-segments)
 - [Route Groups](#route-groups)
 - [Middleware](#middleware)
+  - [Middleware-only Groups](#middleware-only-groups)
+- [Named Routes and URL Generation](#named-routes-and-url-generation)
 - [Reading Parameter Values](#reading-parameter-values)
 - [Supported Parameter Types](#supported-parameter-types)
+  - [Custom Types](#custom-types)
 - [The Router Protocol](#the-router-protocol)
-- [Thread Safety](#thread-safety)
+- [Thread Safety and FrozenTrieRouter](#thread-safety-and-frozentrierrouter)
 - [Tests](#tests)
 - [License](#license)
 
@@ -48,8 +52,10 @@ Key features:
 
 - **Trie-based O(k) matching** — scales to thousands of routes with no measurable overhead.
 - **Rich parameter syntax** — inline requirements (`{id<\d+>}`), optional defaults (`{page?1}`), and forced defaults (`{id!1}`).
+- **Wildcard and catchall segments** — `*` matches any single segment, `**` matches all remaining segments.
+- **Named routes and URL generation** — register routes with a name and generate their URLs by name.
 - **Route groups** — share a path prefix, name prefix, and middleware stack across a set of routes.
-- **Thread safe** — `TrieRouter` serialises all mutations and reads behind an `NSLock`, making it safe to register and resolve routes from concurrent threads.
+- **Thread safe** — `TrieRouter` serialises mutations behind an `NIOLock` (thin `pthread_mutex` wrapper); call `build()` to get a lock-free `FrozenTrieRouter` for high-concurrency production serving.
 - **Type-safe parameter extraction** — a generic subscript converts URL segment strings to `Int`, `UUID`, `Date`, and many other types with no boilerplate.
 
 ---
@@ -110,16 +116,19 @@ import Routing
 let router = TrieRouter()
 
 // 2. Register routes
-router.get("/")              { req in "Hello, world!" }
-router.get("/posts")         { req in try await PostController.index(req) }
-router.post("/posts")        { req in try await PostController.create(req) }
-router.get("/posts/{id}")    { req in try await PostController.show(req) }
-router.put("/posts/{id}")    { req in try await PostController.update(req) }
+router.get("/") { req in "Hello, world!" }
+router.get("/posts") { req in try await PostController.index(req) }
+router.post("/posts") { req in try await PostController.create(req) }
+router.get("/posts/{id}") { req in try await PostController.show(req) }
+router.put("/posts/{id}") { req in try await PostController.update(req) }
 router.delete("/posts/{id}") { req in try await PostController.delete(req) }
 
-// 3. Resolve an incoming request
-if let route = router.resolve(request: incomingRequest) {
-    let response = try await route.handler(incomingRequest)
+// 3. Build a lock-free router for production use
+let frozen = router.build()
+
+// 4. Resolve an incoming request
+if let route = frozen.resolve(method: .GET, uri: request.uri) {
+    let response = try await route.handler(request)
 }
 ```
 
@@ -140,8 +149,8 @@ Every path must start with `/`. Segments are separated by `/`. A path is rejecte
 Plain text segments match literally and case-sensitively.
 
 ```swift
-router.get("/posts")            // ✓  GET /posts
-router.get("/api/v1/articles")  // ✓  GET /api/v1/articles
+router.get("/posts") // ✓  GET /posts
+router.get("/api/v1/articles") // ✓  GET /api/v1/articles
 ```
 
 ### Path Parameters
@@ -179,7 +188,7 @@ router.get("/users/{slug<[a-z0-9-]+>}")
 
 **Priority:** constant segments always win over variable ones at the same position. `GET /posts/latest` resolves to a dedicated constant route even when `GET /posts/{id<\d+>}` is also registered.
 
-Requirements may contain their own inner capture groups (e.g. `{kind<(asc|desc)>}`). The router extracts parameter values by named capture groups internally, so inner groups never corrupt adjacent parameter values — a correctness fix not present in older versions.
+Requirements may contain their own inner capture groups (e.g. `{kind<(asc|desc)>}`). The router extracts parameter values by named capture groups internally, so inner groups never corrupt adjacent parameter values.
 
 ### Optional Default Values
 
@@ -222,6 +231,26 @@ router.get("/posts/{id<\\d+>?1}")
 // GET /posts/abc →  nil          (non-numeric)
 ```
 
+### Wildcard and Catchall Segments
+
+Use `*` to match any single path segment without capturing its value, and `**` to match all remaining segments. The matched segments for `**` are available on `route.catchall`.
+
+```swift
+// Wildcard: matches one segment, no capture
+router.get("/files/*/preview") { req in … }
+// GET /files/report.pdf/preview  ✓
+// GET /files/a/b/preview         ✗  (two segments between /files and /preview)
+
+// Catchall: matches the rest of the path from that point on
+router.get("/static/**") { req in
+    let parts = route.catchall  // e.g. ["css", "main.css"] for /static/css/main.css
+}
+// GET /static/css/main.css  ✓  catchall = ["css", "main.css"]
+// GET /static/js/app.js     ✓  catchall = ["js", "app.js"]
+```
+
+Matching priority is: constant > variable > wildcard > catchall.
+
 ---
 
 ## Route Groups
@@ -232,10 +261,10 @@ Groups let you share a prefix, name, and middleware across related routes.
 
 ```swift
 router.group("/api/v1", name: "api.v1.") { v1 in
-    v1.get("/users",         name: "users.index")  { req in … }
-    v1.post("/users",        name: "users.create") { req in … }
-    v1.get("/users/{id}",    name: "users.show")   { req in … }
-    v1.put("/users/{id}",    name: "users.update") { req in … }
+    v1.get("/users", name: "users.index") { req in … }
+    v1.post("/users", name: "users.create") { req in … }
+    v1.get("/users/{id}", name: "users.show") { req in … }
+    v1.put("/users/{id}", name: "users.update") { req in … }
     v1.delete("/users/{id}", name: "users.delete") { req in … }
 }
 // Registered paths:  /api/v1/users,  /api/v1/users/{id}
@@ -283,11 +312,51 @@ router.get(
 
 // Group — all enclosed routes inherit the middleware stack
 router.group("/admin", middleware: [AuthMiddleware()]) { admin in
-    admin.get("/dashboard")  { req in … }   // [AuthMiddleware]
-    admin.get("/users",
-              middleware: [LogMiddleware()]) { req in … }  // [AuthMiddleware, LogMiddleware]
+    admin.get("/dashboard") { req in … }  // [AuthMiddleware]
+    admin.get("/users", middleware: [LogMiddleware()]) { req in … }  // [AuthMiddleware, LogMiddleware]
 }
 ```
+
+### Middleware-only Groups
+
+You can add middleware to a set of routes without changing their URL structure by passing only the `middleware` argument:
+
+```swift
+router.group("/api") { api in
+    api.group(middleware: [AuthMiddleware()]) { auth in
+        auth.get("/profile") { req in … }   // resolves to /api/profile
+        auth.get("/settings") { req in … }  // resolves to /api/settings
+    }
+    api.get("/status") { req in … }  // no AuthMiddleware
+}
+```
+
+---
+
+## Named Routes and URL Generation
+
+Assign a name when registering a route, then use `url(for:parameters:)` to generate its URL at runtime without hard-coding paths.
+
+```swift
+router.get("/posts/{id<\\d+>}", name: "posts.show") { req in … }
+router.get("/users/{slug}", name: "users.profile") { req in … }
+
+let frozen = router.build()
+
+frozen.url(for: "posts.show", parameters: ["id": "42"])
+// → "/posts/42"
+
+frozen.url(for: "users.profile", parameters: ["slug": "jane"])
+// → "/users/jane"
+
+frozen.url(for: "posts.show", parameters: ["id": "abc"])
+// → nil  (value "abc" fails the \d+ requirement)
+
+frozen.url(for: "posts.show", parameters: [:])
+// → nil  (required parameter missing)
+```
+
+Names are inherited from parent groups, so `router.group("/api/v1", name: "api.v1.")` prepends the prefix to every route name inside it.
 
 ---
 
@@ -296,14 +365,14 @@ router.group("/admin", middleware: [AuthMiddleware()]) { admin in
 Use the generic subscript `route[parameter: "name"]` to read and convert captured values:
 
 ```swift
-guard let route = router.resolve(method: .GET, uri: request.uri) else {
+guard let route = frozen.resolve(method: .GET, uri: request.uri) else {
     // No matching route — respond with 404
 }
 
-let id:   Int?    = route[parameter: "id"]
+let id: Int? = route[parameter: "id"]
 let slug: String? = route[parameter: "slug"]
-let uid:  UUID?   = route[parameter: "uid"]
-let date: Date?   = route[parameter: "createdAt"]  // ISO 8601
+let uid: UUID? = route[parameter: "uid"]
+let date: Date? = route[parameter: "createdAt"]  // ISO 8601
 ```
 
 The subscript returns `nil` when the parameter is absent or the value cannot be converted to the requested type.
@@ -322,6 +391,21 @@ The subscript returns `nil` when the parameter is absent or the value cannot be 
 | `UUID` | `UUID(uuidString:)` |
 | `URL` | `URL(string:)` |
 | `Date` | `ISO8601DateFormatter` (shared static instance) |
+
+### Custom Types
+
+Conform any type to `RouteParameterConvertible` to use it with the subscript:
+
+```swift
+struct UserID: RouteParameterConvertible {
+    let rawValue: Int
+    static func convert(from string: String) -> UserID? {
+        Int(string).map(UserID.init(rawValue:))
+    }
+}
+
+let userID: UserID? = route[parameter: "id"]
+```
 
 ---
 
@@ -352,13 +436,27 @@ final class StubRouter: Router {
 
 ---
 
-## Thread Safety
+## Thread Safety and FrozenTrieRouter
 
-`TrieRouter` is designed to be shared across threads.
+`TrieRouter` is safe to use from multiple threads simultaneously. All mutations (`register`) and reads (`resolve`, `url`) are serialised behind an `NIOLock` — a thin `pthread_mutex` wrapper from SwiftNIO with lower overhead than a GCD queue.
 
-- Both `register` and `resolve` are protected by an `NSLock` for their full duration.
-- The intended pattern is to register all routes once at startup and then call `resolve` from concurrent request-handling threads; the lock ensures correctness even if that ordering is not strictly observed.
-- If you need higher read concurrency under extreme load, subclass `TrieRouter` and replace `NSLock` with a `pthread_rwlock_t` (multiple concurrent readers, exclusive writer) or a concurrent `DispatchQueue` with `.barrier` writes.
+For high-concurrency production serving, call `build()` once all routes are registered. This returns a `FrozenTrieRouter` that shares the trie without any synchronisation overhead on each request:
+
+```swift
+// At startup — register all routes on the mutable router
+let router = TrieRouter()
+router.get("/posts") { … }
+router.get("/posts/{id}") { … }
+// …
+
+// Freeze the router — zero synchronisation per resolve call
+let frozen = router.build()
+
+// At request time — safe to call from any number of concurrent threads
+if let route = frozen.resolve(method: .GET, uri: request.uri) { … }
+```
+
+`FrozenTrieRouter` intentionally does not support `register` — calling it triggers an `assertionFailure`. Register all routes before calling `build()`.
 
 ---
 
@@ -381,10 +479,15 @@ The test suite includes:
 - constant and parameterised route resolution
 - requirement matching and non-matching
 - optional and forced default values
+- wildcard `*` and catchall `**` segment matching
 - route groups and name propagation
+- middleware-only groups
 - all seven standard HTTP methods
+- named routes and URL generation
 - parameter type conversion via the generic subscript
+- custom `RouteParameterConvertible` types
 - a regression test for requirements containing inner capture groups
+- `FrozenTrieRouter` resolution and URL generation
 - concurrent `resolve` stress test
 - concurrent `register` + `resolve` interleave test
 

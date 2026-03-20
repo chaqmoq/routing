@@ -5,7 +5,7 @@ import HTTP
 ///
 /// ```swift
 /// router.group("/api/v1", name: "api.v1.", middleware: [AuthMiddleware()]) { v1 in
-///     v1.get("/users")      { req in … }   // registered as /api/v1/users
+///     v1.get("/users") { req in … }   // registered as /api/v1/users
 ///     v1.get("/users/{id}") { req in … }   // registered as /api/v1/users/{id}
 /// }
 /// ```
@@ -14,8 +14,8 @@ open class RouteGroup: RouteBuilder {
     /// prepended with the values from the receiver.
     ///
     /// - Parameters:
-    ///   - path:       Additional path prefix (must be valid per ``Route/isValid(path:)``).
-    ///   - name:       Additional name prefix.
+    ///   - path: Additional path prefix (must be valid per ``Route/isValid(path:)``).
+    ///   - name: Additional name prefix.
     ///   - middleware: Middleware to prepend to every route in the new group.
     /// - Returns: A child `RouteGroup`, or `nil` if `path` is invalid.
     public func grouped(
@@ -46,10 +46,10 @@ open class RouteGroup: RouteBuilder {
     /// not called.
     ///
     /// - Parameters:
-    ///   - path:       Additional path prefix.
-    ///   - name:       Additional name prefix.
+    ///   - path: Additional path prefix.
+    ///   - name: Additional name prefix.
     ///   - middleware: Middleware to prepend to every route registered in `handler`.
-    ///   - handler:    Closure that receives the child group and registers routes on it.
+    ///   - handler: Closure that receives the child group and registers routes on it.
     public func group(
         _ path: String = Route.defaultPath,
         name: String = "",

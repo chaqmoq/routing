@@ -1,7 +1,7 @@
 <div align="center">
     <h1>Routing</h1>
     <p>
-        <a href="https://swift.org/download/#releases"><img src="https://img.shields.io/badge/swift-5.5+-brightgreen.svg" /></a>
+        <a href="https://swift.org/download/#releases"><img src="https://img.shields.io/badge/swift-5.10+-brightgreen.svg" /></a>
         <a href="https://github.com/chaqmoq/routing/blob/master/LICENSE/"><img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" /></a>
         <a href="https://github.com/chaqmoq/routing/actions"><img src="https://github.com/chaqmoq/routing/workflows/ci/badge.svg" /></a>
         <a href="https://github.com/chaqmoq/routing/blob/master/CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-guide-brightgreen.svg" /></a>
@@ -60,10 +60,9 @@ Key features:
 
 | | Minimum version |
 |---|---|
-| Swift | 5.5 |
-| iOS / tvOS | 13 |
-| macOS | 12 |
-| watchOS | 6 |
+| Swift | 5.10 |
+| macOS | 14 |
+| Ubuntu | 20.04 |
 
 ---
 
@@ -74,7 +73,7 @@ Key features:
 Add the package to your `Package.swift` `dependencies` array and to the relevant target:
 
 ```swift
-// swift-tools-version:5.5
+// swift-tools-version:5.10
 import PackageDescription
 
 let package = Package(

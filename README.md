@@ -79,7 +79,7 @@ import PackageDescription
 let package = Package(
     name: "MyApp",
     dependencies: [
-        .package(url: "https://github.com/chaqmoq/routing.git", from: "1.0.0")
+        .package(url: "https://github.com/chaqmoq/routing.git", branch: "master")
     ],
     targets: [
         .target(

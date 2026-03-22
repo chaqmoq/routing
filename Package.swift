@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "chaqmoq-routing",
     platforms: [
-        .macOS(.v14)
+        .macOS(.v12)
     ],
     products: [
         .library(name: "Routing", targets: ["Routing"])

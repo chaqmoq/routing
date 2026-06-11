@@ -518,8 +518,19 @@ public final class FrozenTrieRouter: Router {
         self.namedRoutes = namedRoutes
     }
 
+    /// Always traps: routes cannot be registered on a frozen router.
+    ///
+    /// `FrozenTrieRouter` shares its trie with the `TrieRouter` it was built from and
+    /// performs zero synchronisation on `resolve`. Mutating it after `build()` would be
+    /// a data race, and silently dropping the route would leave a missing endpoint with
+    /// no diagnostic. `preconditionFailure` (unlike `assertionFailure`) is active in
+    /// release builds, so the misuse is caught everywhere — not only in debug.
+    ///
+    /// Register all routes on the ``TrieRouter`` *before* calling ``TrieRouter/build()``.
     public func register(route: Route) {
-        assertionFailure("Cannot register routes on a FrozenTrieRouter. Register all routes on the TrieRouter before calling build().")
+        preconditionFailure(
+            "Cannot register routes on a FrozenTrieRouter. Register all routes on the TrieRouter before calling build()."
+        )
     }
 
     public func resolve(method: Request.Method, uri: URI) -> Route? {

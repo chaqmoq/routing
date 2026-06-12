@@ -6,7 +6,7 @@ import XCTest
 ///
 /// Every test follows the Arrange / Act / Assert pattern and is grouped into
 /// clearly labelled sections so that failures pinpoint the affected feature.
-final class TrieRouterTests: XCTestCase {
+final class TrieRouterTests: XCTestCase, @unchecked Sendable {
 
     // MARK: - Setup
 

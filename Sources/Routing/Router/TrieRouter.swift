@@ -509,7 +509,7 @@ extension TrieRouter {
 /// All routes must be registered on the ``TrieRouter`` before `build()` is
 /// called. After that, `FrozenTrieRouter` can be shared across any number of
 /// concurrent threads with zero synchronisation overhead.
-public final class FrozenTrieRouter: Router {
+public final class FrozenTrieRouter: Router, @unchecked Sendable {
     fileprivate let root: TrieRouter.Node
     public let namedRoutes: [String: Route]
 

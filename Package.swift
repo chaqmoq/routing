@@ -20,6 +20,5 @@ let package = Package(
         .testTarget(name: "RoutingTests", dependencies: [
             .target(name: "Routing")
         ])
-    ],
-    swiftLanguageModes: [.v5]
+    ]
 )

@@ -56,7 +56,7 @@ public struct Route {
 
     // A single shared formatter; `ISO8601DateFormatter` is thread-safe for reading
     // and expensive to construct, so one instance is enough for the whole process.
-    static let dateFormatter = ISO8601DateFormatter()
+    nonisolated(unsafe) static let dateFormatter = ISO8601DateFormatter()
 
     /// Initializes a new instance with the `defaultPath`.
     ///

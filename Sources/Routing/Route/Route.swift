@@ -3,7 +3,7 @@ import HTTP
 
 /// A combination of an HTTP request method, path, name, an array of `Middleware`, and a handler that points to a
 /// location where a resource exists.
-public struct Route {
+public struct Route: Sendable {
     /// A default path `/`.
     public static let defaultPath = "/"
 
@@ -24,7 +24,7 @@ public struct Route {
     }()
 
     /// A typealias for the handler.
-    public typealias Handler = (Request) async throws -> Encodable
+    public typealias Handler = @Sendable (Request) async throws -> Encodable
 
     /// An HTTP request method.
     public var method: Request.Method
@@ -46,7 +46,7 @@ public struct Route {
     /// The path segments captured by a `**` (catchall) route component.
     public var catchall: [String] { mutableCatchall }
 
-    private var mutableCatchall: [String] = []
+    private var mutableCatchall: [String] = .init()
 
     /// An array of registered `Middleware`.
     public var middleware: [Middleware]

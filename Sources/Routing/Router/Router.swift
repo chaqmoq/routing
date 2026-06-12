@@ -8,7 +8,7 @@ import HTTP
 ///
 /// Conforming types must be class-bound (`AnyObject`) because routers are
 /// typically shared across the application lifetime.
-public protocol Router: AnyObject {
+public protocol Router: AnyObject, Sendable {
     /// Stores a `Route` so it can be found later by ``resolve(method:uri:)``.
     func register(route: Route)
 

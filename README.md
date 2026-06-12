@@ -347,7 +347,7 @@ frozen.url(for: "users.profile", parameters: ["slug": "jane"])
 frozen.url(for: "posts.show", parameters: ["id": "abc"])
 // → nil  (value "abc" fails the \d+ requirement)
 
-frozen.url(for: "posts.show", parameters: [:])
+frozen.url(for: "posts.show", parameters: .init())
 // → nil  (required parameter missing)
 ```
 
@@ -419,7 +419,7 @@ Provide your own implementation wherever a `Router` is expected — for example,
 
 ```swift
 final class StubRouter: Router {
-    private(set) var registered: [Route] = []
+    private(set) var registered: [Route] = .init()
 
     func register(route: Route) { registered.append(route) }
 

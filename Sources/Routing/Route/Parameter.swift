@@ -123,6 +123,8 @@ extension Route.Parameter {
     }
 }
 
+extension Route.Parameter: Sendable {}
+
 extension Route.Parameter: Hashable {
     /// See `Equatable`.
     public static func == (lhs: Route.Parameter, rhs: Route.Parameter) -> Bool {

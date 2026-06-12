@@ -692,7 +692,7 @@ final class TrieRouterTests: XCTestCase, @unchecked Sendable {
         router.get("/posts/{id}", name: "posts.show") { _ in Response() }
 
         // Act
-        let url = router.url(for: "posts.show", parameters: [:])
+        let url = router.url(for: "posts.show", parameters: .init())
 
         // Assert
         XCTAssertNil(url)

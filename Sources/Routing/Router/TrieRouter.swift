@@ -41,9 +41,9 @@ import NIOConcurrencyHelpers
 /// // Build a lock-free router for production use
 /// let frozen = router.build()
 /// ```
-open class TrieRouter: RouteGroup, Router {
+open class TrieRouter: RouteGroup, Router, @unchecked Sendable {
     let root: Node
-    private var namedRoutes: [String: Route] = [:]
+    private var namedRoutes: [String: Route] = .init()
 
     // NIOLock wraps pthread_mutex — lower overhead than DispatchQueue.sync because
     // there is no thread-hop, no work-item allocation, and no GCD scheduler involvement.
@@ -76,7 +76,7 @@ open class TrieRouter: RouteGroup, Router {
     ///   - parameters: A dictionary mapping parameter names to values.
     /// - Returns: The filled-in path string, or `nil` if the name is unknown
     ///   or a required parameter value is missing / fails its requirement.
-    public func url(for name: String, parameters: [String: String] = [:]) -> String? {
+    public func url(for name: String, parameters: [String: String] = .init()) -> String? {
         lock.withLock { trieURL(namedRoutes: namedRoutes, name: name, parameters: parameters) }
     }
 
@@ -306,7 +306,7 @@ fileprivate func trieVariable(
             matches = !path.isEmpty
         } else if let regex = variable.compiledRegex {
             let nsRange = NSRange(location: 0, length: path.utf8.count)
-            matches = regex.firstMatch(in: path, options: [], range: nsRange) != nil
+            matches = regex.firstMatch(in: path, options: .init(), range: nsRange) != nil
         } else {
             continue
         }
@@ -450,7 +450,7 @@ extension TrieRouter {
             compiledRegex = nil
             extractionRegex = nil
             isUnconstrained = false
-            cachedParameters = []
+            cachedParameters = .init()
             type = .constant
         }
 
@@ -480,7 +480,7 @@ extension TrieRouter {
             compiledRegex = nil
             extractionRegex = nil
             isUnconstrained = false
-            cachedParameters = []
+            cachedParameters = .init()
             type = kind
         }
 
@@ -545,7 +545,7 @@ public final class FrozenTrieRouter: Router, @unchecked Sendable {
     ///   - parameters: A dictionary mapping parameter names to values.
     /// - Returns: The filled-in path string, or `nil` if the name is unknown
     ///   or a required parameter value is missing / fails its requirement.
-    public func url(for name: String, parameters: [String: String] = [:]) -> String? {
+    public func url(for name: String, parameters: [String: String] = .init()) -> String? {
         trieURL(namedRoutes: namedRoutes, name: name, parameters: parameters)
     }
 }

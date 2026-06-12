@@ -24,7 +24,7 @@ public struct Route: Sendable {
     }()
 
     /// A typealias for the handler.
-    public typealias Handler = @Sendable (Request) async throws -> Encodable
+    public typealias Handler = @Sendable (Request) async throws -> any Encodable & Sendable
 
     /// An HTTP request method.
     public var method: Request.Method
